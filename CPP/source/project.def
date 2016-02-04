@@ -1,0 +1,3 @@
+LIBRARY	manifold_op
+EXPORTS
+	mexFunction

@@ -1,0 +1,18 @@
+﻿Der Buildvorgang wurde am 18.01.2016 18:21:05 gestartet.
+     1>Projekt "C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source\ConsoleApplication1\ConsoleApplication1\ConsoleApplication1.vcxproj" auf Knoten "2", Build Ziel(e).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\Hendrik\Downloads\opencv\build\include /I"C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"x64\Release\ConsoleApplication1.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt ConsoleApplication1.cpp
+         ConsoleApplication1.cpp
+     1>ConsoleApplication1.cpp(101): warning C4244: '=': Konvertierung von 'float' in 'uchar', möglicher Datenverlust
+     1>ConsoleApplication1.cpp(147): warning C4244: '=': Konvertierung von 'float' in 'uchar', möglicher Datenverlust
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source\ConsoleApplication1\x64\Release\ConsoleApplication1.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\Hendrik\Downloads\opencv\build\x64\vc12\lib /LIBPATH:"C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source" /LIBPATH:"C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source" opencv_world310.lib opencv_world310d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source\ConsoleApplication1\x64\Release\ConsoleApplication1.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source\ConsoleApplication1\x64\Release\ConsoleApplication1.lib" /MACHINE:X64 x64\Release\ConsoleApplication1.obj
+         x64\Release\stdafx.obj
+         Code wird generiert.
+         Codegenerierung ist abgeschlossen.
+         ConsoleApplication1.vcxproj -> C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source\ConsoleApplication1\x64\Release\ConsoleApplication1.exe
+     1>Die Erstellung des Projekts "C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source\ConsoleApplication1\ConsoleApplication1\ConsoleApplication1.vcxproj" ist abgeschlossen, Build Ziel(e).
+
+Build erfolgreich.
+
+Verstrichene Zeit 00:00:01.84

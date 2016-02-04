@@ -1,0 +1,86 @@
+﻿Der Buildvorgang wurde am 29.01.2016 21:09:06 gestartet.
+     1>Projekt "C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source\flexboxCPP.vcxproj" auf Knoten "2", Build Ziel(e).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Program Files\MATLAB\extern\include" /I"C:\Program Files\MATLAB\R2014a\extern\include" /I"C:\Program Files\MATLAB\R2014b\extern\include" /I..\common /Zi /nologo /W4 /WX- /Od /Ob2 /Ot /D CODE_ANALYSIS /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D _MBCS /D project_pnorm_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /openmp /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /analyze /errorReport:prompt   /analyze:quiet functions.cpp
+         functions.cpp
+     1>functions.cpp(104): warning C4267: 'Initialisierung': Konvertierung von 'size_t' nach 'int', Datenverlust möglich
+     1>functions.cpp(121): warning C4267: 'Initialisierung': Konvertierung von 'size_t' nach 'int', Datenverlust möglich
+     1>functions.cpp(152): warning C4267: 'Initialisierung': Konvertierung von 'size_t' nach 'int', Datenverlust möglich
+     1>functions.cpp(160): warning C4267: 'Initialisierung': Konvertierung von 'size_t' nach 'int', Datenverlust möglich
+     1>functions.cpp(161): warning C4267: 'Initialisierung': Konvertierung von 'size_t' nach 'int', Datenverlust möglich
+     1>functions.cpp(163): warning C4267: 'Argument': Konvertierung von 'size_t' nach 'const int', Datenverlust möglich
+     1>functions.cpp(171): warning C4267: 'Initialisierung': Konvertierung von 'size_t' nach 'int', Datenverlust möglich
+     1>functions.cpp(199): warning C4267: 'Initialisierung': Konvertierung von 'size_t' nach 'int', Datenverlust möglich
+     1>functions.cpp(58): warning C4100: 'nlhs': Unreferenzierter formaler Parameter
+     1>functions.cpp(161): warning C4189: 'n': Lokale Variable ist initialisiert aber nicht referenziert
+     1>functions.cpp(160): warning C4189: 'm': Lokale Variable ist initialisiert aber nicht referenziert
+     1>functions.cpp(588): warning C4267: 'Initialisierung': Konvertierung von 'size_t' nach 'int', Datenverlust möglich
+     1>functions.cpp(589): warning C4267: 'Initialisierung': Konvertierung von 'size_t' nach 'int', Datenverlust möglich
+     1>functions.cpp(590): warning C4244: 'Initialisierung': Konvertierung von 'double' in 'float', möglicher Datenverlust
+     1>c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(159): warning C4127: Bedingter Ausdruck ist konstant
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(152): Bei der Kompilierung der  Klassen-template der flexVector<int>::flexVector(const flexVector<int> &)-Memberfunktion
+                 functions.cpp(112): Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "flexVector<int>::flexVector(const flexVector<int> &)".
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexTermPrimal.h(14): Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "flexVector<int>".
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexTermPrimal.h(37): Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "flexTermPrimal<T>".
+     1>c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(52): warning C4127: Bedingter Ausdruck ist konstant
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(51): Bei der Kompilierung der  Klassen-template der void flexVector<int>::deleteRange(T *,T *)-Memberfunktion
+                 with
+                 [
+                     T=int
+                 ]
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(268): Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "void flexVector<int>::deleteRange(T *,T *)".
+                 with
+                 [
+                     T=int
+                 ]
+     1>c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(324): warning C4127: Bedingter Ausdruck ist konstant
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(318): Bei der Kompilierung der  Klassen-template der flexVector<T> &flexVector<T>::operator =(const flexVector<T> &)-Memberfunktion
+                 with
+                 [
+                     T=float
+                 ]
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexL2DataTerm.h(15): Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "flexVector<T> &flexVector<T>::operator =(const flexVector<T> &)".
+                 with
+                 [
+                     T=float
+                 ]
+     1>c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(84): warning C4127: Bedingter Ausdruck ist konstant
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(83): Bei der Kompilierung der  Klassen-template der void flexVector<flexVector<int>>::constructRange(T *,T *)-Memberfunktion
+                 with
+                 [
+                     T=flexVector<int>
+                 ]
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(105): Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "void flexVector<flexVector<int>>::constructRange(T *,T *)".
+                 with
+                 [
+                     T=flexVector<int>
+                 ]
+     1>C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\xutility(2132): warning C4996: 'std::_Copy_impl': Function call with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\xutility(2113): Siehe Deklaration von 'std::_Copy_impl'
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(162): Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "_OutIt std::copy<T*,T*>(_InIt,_InIt,_OutIt)".
+                 with
+                 [
+                     _OutIt=int *
+         ,            T=int
+         ,            _InIt=int *
+                 ]
+                 c:\users\hendrik\dropbox\uni\projects\2015 - flexbox\cpp\source\flexVector.h(152): Bei der Kompilierung der  Klassen-template der flexVector<int>::flexVector(const flexVector<int> &)-Memberfunktion
+                 functions.cpp(112): Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "flexVector<int>::flexVector(const flexVector<int> &)".
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\xutility(2113): Siehe Deklaration von 'std::_Copy_impl'
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\xutility(2113): Siehe Deklaration von 'std::_Copy_impl'
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\xutility(2113): Siehe Deklaration von 'std::_Copy_impl'
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\xutility(2113): Siehe Deklaration von 'std::_Copy_impl'
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"..\flexboxCPP.mexw64" /NOLOGO /LIBPATH:"C:\Program Files\MATLAB\extern\lib\win64\microsoft" /LIBPATH:"C:\Program Files\MATLAB\R2014a\extern\lib\win64\microsoft" /LIBPATH:"C:\Program Files\MATLAB\R2014b\extern\lib\win64\microsoft" libmex.lib libmx.lib /DEF:"project.def" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"..\flexboxCPP.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\flexboxCPP.lib" /MACHINE:X64 /PROFILE /DLL x64\Debug\flexboxCPP.res
+         x64\Debug\cubicInterpolation.obj
+         x64\Debug\functions.obj
+         x64\Debug\linearInterpolation.obj
+         x64\Debug\tools.obj
+            Bibliothek "..\flexboxCPP.lib" und Objekt "..\flexboxCPP.exp" werden erstellt.
+     1>flexboxCPP.exp : warning LNK4070: Die /OUT:manifold_op.dll-Direktive in .EXP weicht vom Ausgabedateinamen "..\flexboxCPP.mexw64" ab; Direktive wird ignoriert.
+         flexboxCPP.vcxproj -> C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source\..\flexboxCPP.mexw64
+     1>Die Erstellung des Projekts "C:\Users\Hendrik\Dropbox\Uni\Projects\2015 - flexbox\CPP\source\flexboxCPP.vcxproj" ist abgeschlossen, Build Ziel(e).
+
+Build erfolgreich.
+
+Verstrichene Zeit 00:00:05.15

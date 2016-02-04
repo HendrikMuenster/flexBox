@@ -1,0 +1,1 @@
+float linearInterpolation(const float *image, float x, float y, const size_t *sizeMat);
