@@ -80,7 +80,7 @@ main = flexbox;
 
 %add primal vars v_1,v_2
 numberV1 = main.addPrimalVar(size(f1));
-numberV2 = main.addPrimalVar(size(f1));
+numberV2 = main.addPrimalVar(size(f2));
 
 %add optical flow data term
 main.addTerm(L1opticalFlowTerm(1,f1,f2),[numberV1,numberV2]);
