@@ -25,6 +25,7 @@ classdef basicOpticalFlow < primalPart
             dims = size(image1);
             nPx = prod(dims);
             obj = obj@primalPart(alpha);%two primal variables
+			obj.numPrimals = 2;
             
             if (exist('discretization','var') && strcmp(discretization,'forward'))
                 grad = generateForwardGradientND( dims,ones(numel(dims),1) );

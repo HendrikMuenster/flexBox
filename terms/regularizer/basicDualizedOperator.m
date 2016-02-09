@@ -26,11 +26,16 @@ classdef basicDualizedOperator < dualPart & tildeMultiOperatorMultiDual
                     for j=1:numPrimals
                         opNum = (i-1)*numPrimals + j;
                         
-                        obj.operator{opNum} = A{opNum};
-                        obj.length{opNum} = size(A{opNum},1);
+                        opTmp = A{opNum};
+                        opTmp = opTmp{:};%uncell
                         
-                        obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(A{opNum}),1));
-                        obj.myTau{j} = obj.myTau{i} + max(sum(abs(A{opNum}),2));
+                        obj.operator{opNum} = opTmp;
+                        obj.length{opNum} = size(opTmp,1);
+                        
+                        
+                        
+                        obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(opTmp),1));
+                        obj.myTau{j} = obj.myTau{i} + max(sum(abs(opTmp),2));
                     end
                 end
             else

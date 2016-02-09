@@ -1,10 +1,9 @@
-%prox for G = alpha / 2 |u_t + \nabla u\cdot v|^2, where v is the unknown
+%term representing alpha |u_t + \nabla u\cdot v|_1, where v is the unknown
 classdef L1opticalFlowTerm < basicOpticalFlow
 
     methods
         function obj = L1opticalFlowTerm(alpha,image1,image2,varargin)
             obj = obj@basicOpticalFlow(alpha,image1,image2,varargin);%two primal variables
-            obj.numPrimals = 2;
         end
         
         function init(obj,myNumber,main)

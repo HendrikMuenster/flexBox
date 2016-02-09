@@ -1,9 +1,9 @@
 %class for Kullback-Leibler Divergence, incorporates positivity of Ku
 % \min_u Ku-f + f\log(f/Ku) s.t. u>=0
-classdef KLDataTerm < basicDualizedDataterm
+classdef KLdataTerm < basicDualizedDataterm
     methods
-        function obj = KLDataTerm(alpha,A,f,varargin)
-            obj = obj@basicDualizedDataterm(alpha,1,A,f,varargin);
+        function obj = KLdataTerm(alpha,A,f,varargin)
+            obj = obj@basicDualizedDataterm(alpha,A,f,varargin);
             
             obj.f = max(0,obj.f); %f has to be positive
         end

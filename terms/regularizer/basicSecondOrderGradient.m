@@ -1,4 +1,4 @@
-%
+%represents \| K[u,w1,w2] \| with K=[Dx,-I,0,Dy,0,-I]
 classdef basicSecondOrderGradient < dualPart & tildeMultiOperatorMultiDual
     properties
     end

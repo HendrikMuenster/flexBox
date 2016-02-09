@@ -1,12 +1,12 @@
 %represents the term \alpha <b,\nabla (u-w)> for two primal variables u and
 %w
-classdef innerProductGradientDifference < basicGradientDifference & innerProductProxDual
+classdef innerProductGradientDiff < basicGradientDifference & innerProductProxDual
     properties
         b
     end
     
     methods
-        function obj = innerProductGradientDifference(alpha,dims,b,varargin)
+        function obj = innerProductGradientDiff(alpha,dims,b,varargin)
             obj = obj@basicGradientDifference(alpha,dims,varargin);
             
             if (numel(b) == numel(dims)*prod(dims))

@@ -1,0 +1,76 @@
+
+\documentclass[final,leqno,onefignum,onetabnum]{article}
+
+\usepackage{amsmath}
+%\usepackage{amsthm}
+\usepackage{amsfonts}
+
+  \usepackage[caption=false]{subfig}
+  \usepackage{graphicx}
+  \usepackage{todonotes}
+  \usepackage{tikz,tikz-cd,pgf}
+\usepackage{listings}
+\usepackage[numbered]{mcode} %for matlab code
+  
+  \usepackage{algorithm}
+  \usepackage{algpseudocode}
+   \usepackage{longtable}
+  
+  \usepackage{pgfplots}
+  \pgfplotsset{compat=1.12}
+  
+  \usepackage{multirow}
+  \newcommand{\R}{\mathbb{R}}
+  \newcommand{\N}[1]{\mathbb{N}^{#1}}
+  \newcommand{\1}[1]{\mathds{1}_{#1}}
+  \newcommand{\st}{\qquad\text{s. t.}\qquad}
+
+  \renewcommand{\liminf}[1]{\underset{#1}{\lim\inf}\;}
+  \renewcommand{\limsup}[1]{\underset{#1}{\lim\sup}\;}
+  
+  \newcommand{\CX}{\mathcal{X}}
+  \newcommand{\CY}{\mathcal{Y}}
+  \newcommand{\CZ}{\mathcal{Z}}
+  \newcommand{\dif}{\mathrm{d}}
+  
+  \DeclareMathOperator*{\argmin}{\arg \min}%
+  \DeclareMathOperator*{\argmax}{\arg \max}%
+  \newcommand*\cpp{C\kern-0.2ex\raisebox{0.4ex}{\scalebox{0.8}{+\kern-0.4ex+}}}
+  \newcommand{\tabitem}{~~\llap{\textbullet}~~}
+
+  %For pseudocode
+ \newcommand*\Let[2]{\State #1 $\gets$ #2}
+  
+\title{A \textbf{\underline{Flex}}ible Primal-Dual Tool\textbf{\underline{Box}} \\\large Manual}
+\author{Hendrik Dirks}
+
+
+\begin{document}
+	
+\maketitle
+
+
+\section{How-To}
+
+\section{Arbitrary Operators}
+\textbf{Classes}: \textit{L1operatorIso, L1operatorAniso, L2operator, frobeniusOperator}\\
+Adding an arbitrary operator in some norm is simple. Let us assume we some term $\alpha \|Ku\|_{1,2}$ with 
+\begin{align*}
+	K=\begin{pmatrix}K_1&K_2\\K_3&K_4\end{pmatrix}, u=\begin{pmatrix}u_1\\u_2\end{pmatrix},
+\end{align*}
+where the norm $\|\cdot\|_{1,2}$ refers to the isotropic L1-norm. We can insert this term into \textbf{FlexBox} by calling
+\begin{lstlisting} 
+%Begin: Code example
+main.addTerm(L1operatorIso(alpha,2,{K_1,K_2,K_3,K_4}),[numberU_1,numberU_2]);
+%End: Code example
+\end{lstlisting}
+The operator $K$ has to be specified row-wise in a cell-array. The second argument $2$ tells the toolbox that every two elements in the cell-array correspond to one row. Please note that empty blocks in $K$ have to be specified as empty sparse matrices.
+
+
+	
+\listoftodos
+
+%\bibliographystyle{plain}
+%\bibliography{references}
+	
+\end{document}

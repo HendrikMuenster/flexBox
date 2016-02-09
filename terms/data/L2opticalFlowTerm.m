@@ -4,7 +4,6 @@ classdef L2opticalFlowTerm < basicOpticalFlow
     methods
         function obj = L2opticalFlowTerm(alpha,image1,image2,varargin)
             obj = obj@basicOpticalFlow(alpha,image1,image2,varargin);
-            obj.numPrimals = 2;
         end
         
         function init(obj,myNumber,main)

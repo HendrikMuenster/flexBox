@@ -121,10 +121,15 @@ end
 main.addTerm(labelingTerm(1,image,labels),1:numberOfLabels);
 
 for i=1:numberOfLabels
-    main.addTerm(L1gradientHuber(0.5,size(image),0.0001),i);
+    main.addTerm(L1gradientIso(0.5,size(image)),i);
 end
 
 main.runAlgorithm;
+
+for i=1:numberOfLabels
+    labelMatrix(:,:,i) = main.getPrimal(i);
+end
+
 %%
 
 figure(1);imagesc(image);axis image;colormap(gray);colorbar;
