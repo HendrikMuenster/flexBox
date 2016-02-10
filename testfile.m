@@ -40,7 +40,7 @@ numberW2 = main.addPrimalVar(size(image));
 %add data fit 1/2\|u-f\|_2^2
 main.addTerm(L2dataTerm(1,imageNoisy),numberU);
 
-%add regularizer 0.05*\|\nabla (u-w)\|_1
+%add regularizer 0.05*\|\nabla (u)-w\|_1
 main.addTerm(L1secondOrderGradientIso(0.05,size(image)),[numberU,numberW1,numberW2]);
 
 %add regularizer 0.05*\|\nabla (w)\|_1
