@@ -25,8 +25,8 @@ classdef flexbox < handle
     end
     
     methods
-        %% Constructor
         function obj = flexbox
+            % Constructor
             obj.params.tol = 1e-5; 
             obj.params.maxIt = 10000;   
             %obj.params.sigma = 0.1;
@@ -44,8 +44,6 @@ classdef flexbox < handle
             
             %try to use CPP
             obj.params.tryCPP = 0;
-            
-            
             
             obj.primals = {};
             obj.duals = {};
@@ -69,6 +67,9 @@ classdef flexbox < handle
         end
         
         function number = addPrimalVar(obj,dims)
+            %number = addPrimalVar(dims)
+            %adds a primal var of dimensions #dims to FlexBox and returns
+            %the internal #number
             numberElements = prod(dims);
             
             obj.x{end+1} = zeros(numberElements,1);
@@ -81,45 +82,40 @@ classdef flexbox < handle
             number = obj.numberPvars;
         end
         
-        function addTerm(obj,term,corresponding)
-                if (numel(corresponding) ~= term.numPrimals)
-                    error(['Number of corresponding primals wrong. Expecting ',num2str(term.numPrimals),' variables'])
-                end
-            
-                %overwrite class name:
-                s = superclasses(class(term));
-                
-                if (sum(ismember(s, 'primalPart')) > 0)
-                    %this is a primal part
-                    obj.primals{end+1} = term;
-                    obj.PcP{end+1} = corresponding;
-                elseif (sum(ismember(s, 'dualPart')) > 0)
-                    %this is a dual part
-                    obj.duals{end+1} = term;
-                    %save corresponding Dual->Primal,Dual->Dual
-                    obj.DcP{end+1} = corresponding;
-                    obj.DcD{end+1} = numel(obj.y) + 1 : numel(obj.y) + term.numVars;
+        function numberDuals = addTerm(obj,term,corresponding)
+            %numberDuals = addTerm(obj,term,corresponding)
+            %adds a functional term to FlexBox. The variable #corresponding
+            %specifies the internal number of corresponding primal variables.
+            %The output #numberDuals contains internal number(s) of the created
+            %dual variables or 0 if no dual variable has been created
+            numberDuals = 0;
 
-                    %create variables
-                    for i=1:term.numVars
-                        obj.y{end+1} = zeros(term.length{i},1);
-                        obj.yOld{end+1} = zeros(term.length{i},1);
-                    end
-                end
-        end
-        
-        %extracts the primal xBars specified in numbers
-        function result = getXBar(obj,numbers)
-            result = obj.xBar(obj.idxStart{min(numbers)} : obj.idxEnd{max(numbers)});
-        end
-        
-        function result = getX(obj,numbers)
-            result = obj.x(obj.idxStart{min(numbers)} : obj.idxEnd{max(numbers)});
-        end
-        
-        function addDual(obj,dualPart,varargin)
-                
+            if (numel(corresponding) ~= term.numPrimals)
+                error(['Number of corresponding primals wrong. Expecting ',num2str(term.numPrimals),' variables'])
+            end
 
+            %overwrite class name:
+            s = superclasses(class(term));
+
+            if (sum(ismember(s, 'primalPart')) > 0)
+                %this is a primal part
+                obj.primals{end+1} = term;
+                obj.PcP{end+1} = corresponding;
+            elseif (sum(ismember(s, 'dualPart')) > 0)
+                %this is a dual part
+                obj.duals{end+1} = term;
+                %save corresponding Dual->Primal,Dual->Dual
+                obj.DcP{end+1} = corresponding;
+                obj.DcD{end+1} = numel(obj.y) + 1 : numel(obj.y) + term.numVars;
+
+                numberDuals = obj.DcD{end};
+
+                %create variables
+                for i=1:term.numVars
+                    obj.y{end+1} = zeros(term.length{i},1);
+                    obj.yOld{end+1} = zeros(term.length{i},1);
+                end
+            end
         end
         
         function showPrimal(obj,number)
@@ -145,10 +141,118 @@ classdef flexbox < handle
         end
         
         function u = getPrimal(obj,number)
+            %u = getPrimal(number)
+            %returns the primal variable specified by #number and reshapes the
+            %variable to the correct size
             u = reshape(obj.x{number},obj.dims{number});
         end
         
-        function doIteration(obj)
+        function y = getDual(obj,number)
+            %y = getDual(number)
+            %returns the dual variable specified by #number as a vector
+            y = obj.y{number};
+        end
+        
+        function doCPP(obj)
+            %create function call
+            
+            mexCallString = [];
+            for i=1:numel(obj.primals)
+                
+                ClassName = class(obj.primals{i});
+                
+                mexCallString = [mexCallString,'''primal''',',''', ClassName  ,''',','obj.primals{',num2str(i),'}.factor',',','obj.primals{',num2str(i),'}.dims',','];
+                
+                if (strcmp(ClassName,'L1dataTerm') || strcmp(ClassName,'L2dataTerm'))
+                    mexCallString = [mexCallString,'obj.primals{',num2str(i),'}.f',','];
+                elseif (strcmp(ClassName,'emptyDataTerm'))
+                    
+                end
+
+                
+                %obj.primals{i}
+            end
+            
+            for i=1:numel(obj.duals)
+                
+                ClassName = class(obj.duals{i});
+                
+                %overwrite class name:
+                s = superclasses(ClassName);
+                
+                if (sum(ismember(s, 'L1IsoProxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
+                    ClassName = 'L1dualizedOperatorIso';
+                elseif (sum(ismember(s, 'L1AnisoProxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
+                    ClassName = 'L1dualizedOperatorAniso';
+                elseif (sum(ismember(s, 'L2proxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
+                    ClassName = 'L2dualizedOperator';
+                end
+                
+                mexCallString = [mexCallString,'''dual''',',''', ClassName  ,''',','obj.duals{',num2str(i),'}.factor',',','obj.duals{',num2str(i),'}.operator',',','obj.DcP{',num2str(i),'}',','];
+                
+                if (strcmp(ClassName,'L1dualizedDataTerm'))
+                    mexCallString = [mexCallString,'obj.duals{',num2str(i),'}.f',','];
+                end
+                %obj.duals{i}
+            end
+            
+            mexCallString = ['flexboxCPP(',mexCallString,'''end''',');']
+            %result = flexboxCPP('primal','L1dataTerm',obj.primals{1}.factor,obj.primals{1}.dims,obj.primals{1}.f,'dual','L1gradientAniso',obj.duals{1}.factor,obj.duals{1}.operator,'end');
+pause
+            
+            [resultCPP] = eval(mexCallString);
+            figure(1);imagesc(resultCPP,[0,1]);colormap(gray)
+        end
+        
+        function runAlgorithm(obj,varargin)
+            %runAlgorithm
+            %executes FlexBox and resets the internal iteration counter.
+            %The execution can be terminated at any time without loosing
+            %the current state
+            vararginParser;
+            
+            if (exist('noInit','var') && noInit == 1)
+                
+            else
+                obj.init(); %init stuff
+            end
+            
+            if (obj.checkCPP())
+                disp('C++ support for functional detected');
+                disp('Shifting everything to C++ backend');
+                obj.doCPP();
+            else
+                disp('Running flexBox in MATLAB mode');
+                reverseStr = [];
+                iteration = 1;error = Inf;
+                while error>obj.params.tol && iteration < obj.params.maxIt
+                    obj.doIteration;
+
+                    if (mod(iteration,obj.params.checkError) == 0)
+                        error = obj.calculateError;
+                        reverseStr = printToCmd( reverseStr,sprintf(['Iteration: #%d : Residual %.',num2str(-log10(obj.params.tol)),'f'],iteration,error) );
+                    end
+
+                    if (obj.params.showPrimals > 0 && mod(iteration,obj.params.showPrimals) == 1)
+                        obj.showPrimals
+                    end
+
+                    %if (mod(iteration,1) == 0)
+                    %    obj.adaptStepsize;
+                    %end
+
+                    iteration = iteration + 1;
+                end
+                printToCmd( reverseStr,'');
+            end
+        end
+    end
+    
+    methods (Access=protected,Hidden=true )
+        %protected methods that can only be accessed from class or
+        %subclasses. These methods are hidden!
+        
+            function doIteration(obj)
             %save old
             for i=1:numel(obj.xOld)
                 obj.xOld{i} = obj.x{i};
@@ -190,8 +294,6 @@ classdef flexbox < handle
         
         function adaptStepsize(obj)
             [~,p,d] = obj.calculateError;
-            
-
             
             %if primal residual is massively larger than dual
             if ( p > obj.params.s*d*obj.params.delta )
@@ -338,101 +440,7 @@ classdef flexbox < handle
             end
             
             result = CPPsupport;
-            
-            
         end
-        
-        function doCPP(obj)
-            %create function call
-            
-            mexCallString = [];
-            for i=1:numel(obj.primals)
-                
-                ClassName = class(obj.primals{i});
-                
-                mexCallString = [mexCallString,'''primal''',',''', ClassName  ,''',','obj.primals{',num2str(i),'}.factor',',','obj.primals{',num2str(i),'}.dims',','];
-                
-                if (strcmp(ClassName,'L1dataTerm') || strcmp(ClassName,'L2dataTerm'))
-                    mexCallString = [mexCallString,'obj.primals{',num2str(i),'}.f',','];
-                elseif (strcmp(ClassName,'emptyDataTerm'))
-                    
-                end
-
-                
-                %obj.primals{i}
-            end
-            
-            for i=1:numel(obj.duals)
-                
-                ClassName = class(obj.duals{i});
-                
-                %overwrite class name:
-                s = superclasses(ClassName);
-                
-                if (sum(ismember(s, 'L1IsoProxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
-                    ClassName = 'L1dualizedOperatorIso';
-                elseif (sum(ismember(s, 'L1AnisoProxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
-                    ClassName = 'L1dualizedOperatorAniso';
-                elseif (sum(ismember(s, 'L2proxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
-                    ClassName = 'L2dualizedOperator';
-                end
-                
-                mexCallString = [mexCallString,'''dual''',',''', ClassName  ,''',','obj.duals{',num2str(i),'}.factor',',','obj.duals{',num2str(i),'}.operator',',','obj.DcP{',num2str(i),'}',','];
-                
-                if (strcmp(ClassName,'L1dualizedDataTerm'))
-                    mexCallString = [mexCallString,'obj.duals{',num2str(i),'}.f',','];
-                end
-                %obj.duals{i}
-            end
-            
-            mexCallString = ['flexboxCPP(',mexCallString,'''end''',');']
-            %result = flexboxCPP('primal','L1dataTerm',obj.primals{1}.factor,obj.primals{1}.dims,obj.primals{1}.f,'dual','L1gradientAniso',obj.duals{1}.factor,obj.duals{1}.operator,'end');
-pause
-            
-            [resultCPP] = eval(mexCallString);
-            figure(1);imagesc(resultCPP,[0,1]);colormap(gray)
-        end
-        
-        function runAlgorithm(obj,varargin)
-            vararginParser;
-            
-            if (exist('noInit','var') && noInit == 1)
-                
-            else
-                obj.init(); %init stuff
-            end
-            
-            if (obj.checkCPP())
-                disp('C++ support for functional detected');
-                disp('Shifting everything to C++ backend');
-                obj.doCPP();
-            else
-                disp('Running flexBox in MATLAB mode');
-                reverseStr = [];
-                iteration = 1;error = Inf;
-                while error>obj.params.tol && iteration < obj.params.maxIt
-                    obj.doIteration;
-
-                    if (mod(iteration,obj.params.checkError) == 0)
-                        error = obj.calculateError;
-                        reverseStr = printToCmd( reverseStr,sprintf('Iteration: #%d : Residual %f',iteration,error) );
-                    end
-
-                    if (obj.params.showPrimals > 0 && mod(iteration,obj.params.showPrimals) == 1)
-                        obj.showPrimals
-                    end
-
-                    %if (mod(iteration,1) == 0)
-                    %    obj.adaptStepsize;
-                    %end
-
-                    iteration = iteration + 1;
-                end
-                printToCmd( reverseStr,'');
-            end
-        end
-        
-        
     end
     
 end

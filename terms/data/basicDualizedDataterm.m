@@ -15,7 +15,7 @@ classdef basicDualizedDataterm < dualPart & tildeSingleOperator
             obj.numVars = 1;
             obj.length{1} = size(A,1);
             obj.operator{1} = A;
-            obj.f = f;
+            obj.f = f(:);
             obj.mySigma{1} = max(sum(abs(A),1));
             obj.myTau{1} = max(sum(abs(A),2));
         end
