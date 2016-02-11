@@ -49,11 +49,6 @@ main.addTerm(frobeniusGradient(20,size(image),'discretization','backward'),numbe
 
 main.params.showPrimals = 500;
 
-id = speye(numel(image));
-main.addTerm(L1operatorIso(1,3,{id,id,id,id,id,id}),[numberU,numberW1,numberW2]);
-
-
-
 main.runAlgorithm;
 %% get result
 result = main.getPrimal(numberU);

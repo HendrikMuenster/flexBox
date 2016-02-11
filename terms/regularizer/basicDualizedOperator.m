@@ -14,7 +14,7 @@ classdef basicDualizedOperator < dualPart & tildeMultiOperatorMultiDual
                 obj.numPrimals = numPrimals;
                 
                
-                for i=1:obj.numVars
+                for i=1:numPrimals
                     obj.myTau{i} = 0;
                 end
                 for i=1:numel(A) / numPrimals
@@ -27,15 +27,15 @@ classdef basicDualizedOperator < dualPart & tildeMultiOperatorMultiDual
                         opNum = (i-1)*numPrimals + j;
                         
                         opTmp = A{opNum};
-                        opTmp = opTmp{:};%uncell
+                        if (iscell(opTmp))
+                            opTmp = opTmp{:};%uncell
+                        end
                         
                         obj.operator{opNum} = opTmp;
                         obj.length{opNum} = size(opTmp,1);
                         
-                        
-                        
                         obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(opTmp),1));
-                        obj.myTau{j} = obj.myTau{i} + max(sum(abs(opTmp),2));
+                        obj.myTau{j} = obj.myTau{j} + max(sum(abs(opTmp),2));
                     end
                 end
             else
