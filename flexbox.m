@@ -157,20 +157,23 @@ classdef flexbox < handle
             %create function call
             
             mexCallString = [];
+            
+            %generatePrimalVars
+            for i=1:numel(obj.dims)
+                mexCallString = [mexCallString,'''primalVar''',',obj.dims{',num2str(i),'},'];
+            end
+            
             for i=1:numel(obj.primals)
                 
                 ClassName = class(obj.primals{i});
                 
-                mexCallString = [mexCallString,'''primal''',',''', ClassName  ,''',','obj.primals{',num2str(i),'}.factor',',','obj.primals{',num2str(i),'}.dims',','];
+                mexCallString = [mexCallString,'''primal'',','''', ClassName  ,''',','obj.primals{',num2str(i),'}.factor,','obj.PcP{',num2str(i),'},'];
                 
                 if (strcmp(ClassName,'L1dataTerm') || strcmp(ClassName,'L2dataTerm'))
                     mexCallString = [mexCallString,'obj.primals{',num2str(i),'}.f',','];
                 elseif (strcmp(ClassName,'emptyDataTerm'))
                     
                 end
-
-                
-                %obj.primals{i}
             end
             
             for i=1:numel(obj.duals)
@@ -188,7 +191,7 @@ classdef flexbox < handle
                     ClassName = 'L2dualizedOperator';
                 end
                 
-                mexCallString = [mexCallString,'''dual''',',''', ClassName  ,''',','obj.duals{',num2str(i),'}.factor',',','obj.duals{',num2str(i),'}.operator',',','obj.DcP{',num2str(i),'}',','];
+                mexCallString = [mexCallString,'''dual''',',''', ClassName  ,''',','obj.duals{',num2str(i),'}.factor',',','obj.duals{',num2str(i),'}.operator,','obj.DcP{',num2str(i),'},'];
                 
                 if (strcmp(ClassName,'L1dualizedDataTerm'))
                     mexCallString = [mexCallString,'obj.duals{',num2str(i),'}.f',','];
@@ -198,7 +201,7 @@ classdef flexbox < handle
             
             mexCallString = ['flexboxCPP(',mexCallString,'''end''',');']
             %result = flexboxCPP('primal','L1dataTerm',obj.primals{1}.factor,obj.primals{1}.dims,obj.primals{1}.f,'dual','L1gradientAniso',obj.duals{1}.factor,obj.duals{1}.operator,'end');
-pause
+
             
             [resultCPP] = eval(mexCallString);
             figure(1);imagesc(resultCPP,[0,1]);colormap(gray)

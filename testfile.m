@@ -23,7 +23,13 @@ main.addTerm(L2dataTerm(1,imageNoisy),numberU);
 %add regularizer: 0.08*\|\nabla u\|_1
 main.addTerm(L1gradientIso(0.08,size(image)),numberU);
 
+main.params.tol = 1e-5;
+main.params.tryCPP = 1;
+tic;
 main.runAlgorithm;
+toc;
+
+
 
 %get result
 result = main.getPrimal(numberU);
@@ -44,12 +50,14 @@ main.addTerm(L2dataTerm(1,imageNoisy),numberU);
 main.addTerm(L1secondOrderGradientIso(0.05,size(image)),[numberU,numberW1,numberW2]);
 
 %add regularizer 0.05*\|\nabla (w)\|_1
-main.addTerm(frobeniusGradient(20,size(image),'discretization','backward'),numberW1);
-main.addTerm(frobeniusGradient(20,size(image),'discretization','backward'),numberW2);
+main.addTerm(L1gradientIso(20,size(image),'discretization','backward'),numberW1);
+main.addTerm(L1gradientIso(20,size(image),'discretization','backward'),numberW2);
 
 main.params.showPrimals = 500;
-
+main.params.tryCPP = 0;
+tic
 main.runAlgorithm;
+toc
 %% get result
 result = main.getPrimal(numberU);
 result2 = main.getPrimal(numberW1);
