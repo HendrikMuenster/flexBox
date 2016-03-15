@@ -1,5 +1,5 @@
 %
-classdef basicDualizedDataterm < dualPart & tildeSingleOperator
+classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
     properties
         f;
     end

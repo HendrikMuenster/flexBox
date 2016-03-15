@@ -9,7 +9,7 @@ classdef innerProductOperator < basicDualizedOperator & innerProductProxDual
             obj = obj@basicDualizedOperator(alpha,1,A,varargin);
             
             if (numel(b) == size(A,1))
-                obj.b{1} = b;
+                obj.b{1} = b(:);
 
             else
                 error(['Input vector b should have length ',size(A,1),' which is size(A,1)']);

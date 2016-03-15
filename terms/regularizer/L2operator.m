@@ -6,6 +6,8 @@ classdef L2operator < basicDualizedOperator & L2proxDual
     methods
         function obj = L2operator(alpha,numPrimals,A,varargin)
             obj = obj@basicDualizedOperator(alpha,numPrimals,A,varargin);
+            
+            obj.CPPsupport = 1;
         end
     end
 end

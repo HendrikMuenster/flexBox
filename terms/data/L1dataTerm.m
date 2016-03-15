@@ -7,7 +7,7 @@ classdef L1dataTerm < primalPart
 
     methods
         function obj = L1dataTerm(alpha,f)
-            obj = obj@primalPart(alpha,1);%only one primal variable
+            obj = obj@primalPart(alpha);%only one primal variable
             obj.f = f(:);
 			
 			obj.CPPsupport = 1;

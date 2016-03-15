@@ -189,22 +189,37 @@ classdef flexbox < handle
                     ClassName = 'L1dualizedOperatorAniso';
                 elseif (sum(ismember(s, 'L2proxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
                     ClassName = 'L2dualizedOperator';
+                elseif (sum(ismember(s, 'L1dataTermOperator')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
+                    ClassName = 'L1dualizedDataTerm';
+                elseif (sum(ismember(s, 'L2dataTermOperator')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
+                    ClassName = 'L2dualizedDataTerm';
+                elseif (strcmp(ClassName, 'L1dataTermOperator') > 0)
+                    ClassName = 'L1dualizedDataTerm';
+                elseif (strcmp(ClassName, 'L2dataTermOperator') > 0)
+                    ClassName = 'L2dualizedDataTerm';
                 end
+                
+                
+                
                 
                 mexCallString = [mexCallString,'''dual''',',''', ClassName  ,''',','obj.duals{',num2str(i),'}.factor',',','obj.duals{',num2str(i),'}.operator,','obj.DcP{',num2str(i),'},'];
                 
-                if (strcmp(ClassName,'L1dualizedDataTerm'))
+                if (strcmp(ClassName,'L1dualizedDataTerm') || strcmp(ClassName,'L2dualizedDataTerm'))
                     mexCallString = [mexCallString,'obj.duals{',num2str(i),'}.f',','];
                 end
-                %obj.duals{i}
             end
             
             mexCallString = ['flexboxCPP(',mexCallString,'''end''',');']
             %result = flexboxCPP('primal','L1dataTerm',obj.primals{1}.factor,obj.primals{1}.dims,obj.primals{1}.f,'dual','L1gradientAniso',obj.duals{1}.factor,obj.duals{1}.operator,'end');
 
             
-            [resultCPP] = eval(mexCallString);
-            figure(1);imagesc(resultCPP,[0,1]);colormap(gray)
+            [resultCPP{1:numel(obj.x)}] = eval(mexCallString);
+            
+            for i=1:numel(resultCPP)
+                obj.x{i} = resultCPP{i};
+            end
+            
+            
         end
         
         function runAlgorithm(obj,varargin)

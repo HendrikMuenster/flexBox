@@ -1,4 +1,3 @@
-%prox for F = alpha / 2 |\nabla u|^2
 classdef L1dataTermOperator < basicDualizedDataterm
     methods
         function obj = L1dataTermOperator(alpha,A,f,varargin)

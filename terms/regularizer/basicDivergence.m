@@ -1,5 +1,5 @@
 %
-classdef basicDivergence < dualPart & tildeMultiOperatorMultiDual
+classdef basicDivergence < basicDualizedOperator & tildeMultiOperatorMultiDual
     properties
     end
     
@@ -10,24 +10,28 @@ classdef basicDivergence < dualPart & tildeMultiOperatorMultiDual
             end
             vararginParser;
             
+            %usedims should be a {0,1} array of length dims indicating whether a
+            %dimension should be used or not
+            if (~exist('usedims','var'))
+                usedims = ones(numel(dims),1);
+            end
+            
             if (exist('discretization','var') && strcmp(discretization,'backward'))
                 opTmp = generateBackwardGradientND( dims,ones(numel(dims),1) );
             else
                 opTmp = generateForwardGradientND( dims,ones(numel(dims),1) );
             end
             
-            obj = obj@dualPart(alpha);
-            obj.numVars = 1; %divergence produces scalar quantity
+            opNum = 1;
             for i=1:numel(dims)
-                obj.length{i} = prod(dims);
-                obj.operator{i} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: )';
-                obj.myTau{i} = 2;
+                if (usedims(i) == 1)
+                    operatorList{opNum} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: );
+                    opNum = opNum + 1;
+                end
             end
-            obj.mySigma{1} = 2*numel(dims);
-            
-            %tt = obj.operator{1};
-            %obj.operator{1} = obj.operator{2};
-            %obj.operator{2} = tt;
+
+			%numPrimals is numel(operatorList)
+			obj = obj@basicDualizedOperator(alpha,numel(operatorList),operatorList,varargin);
         end
     end
 end
