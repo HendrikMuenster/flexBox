@@ -1,5 +1,5 @@
 %prox for G = alpha / 2 |u_t + \nabla u\cdot v|^2, where v is the unknown
-classdef basicOpticalFlow < primalPart
+classdef basicOpticalFlow < basicDualizedDataterm
     
     properties
         uxut
@@ -24,21 +24,21 @@ classdef basicOpticalFlow < primalPart
             
             dims = size(image1);
             nPx = prod(dims);
-            obj = obj@primalPart(alpha);%two primal variables
-			obj.numPrimals = 2;
+            %obj = obj@primalPart(alpha);%two primal variables
+			%obj.numPrimals = 2;
             
             if (exist('discretization','var') && strcmp(discretization,'forward'))
                 grad = generateForwardGradientND( dims,ones(numel(dims),1) );
                 
                 grad = grad*image2(:);
                 
-                obj.ut = image2(:)-image1(:);
+                ut = image2(:)-image1(:);
             elseif (exist('discretization','var') && strcmp(discretization,'backward'))
                 grad = generateBackwardGradientND( dims,ones(numel(dims),1) );
                 
                 grad = grad*image2(:);
                 
-                obj.ut = image2(:)-image1(:);
+                ut = image2(:)-image1(:);
 			elseif (exist('discretization','var') && strcmp(discretization,'interpolated'))
 
                 [M,N] = size(image1);
@@ -67,19 +67,25 @@ classdef basicOpticalFlow < primalPart
                 uyStatic(m) = 0.0;
     
                 grad = [uyStatic(:);uxStatic(:)];
-                obj.ut = image2(:)-image1(:);
-                obj.ut(m) = 0;
+                ut = image2(:)-image1(:);
+                ut(m) = 0;
             else
                 grad = generateCentralGradientND( dims,ones(numel(dims),1) );
                 grad = grad*image2(:);
                 
-                obj.ut = image2(:)-image1(:);
+                ut = image2(:)-image1(:);
             end
             
-            obj.uy = grad(1:nPx);
-            obj.ux = grad(nPx+1:2*nPx);
+            %obj.uy = grad(1:nPx);
+            %obj.ux = grad(nPx+1:2*nPx);
             
-            obj.initStuff;
+            A{1} = spdiags(grad(nPx+1:2*nPx),0,nPx,nPx);
+            A{2} = spdiags(grad(1:nPx),0,nPx,nPx);
+            
+            obj = obj@basicDualizedDataterm(alpha,A,-ut(:),varargin);
+            
+            
+            %obj.initStuff;
         end
         
         function initStuff(obj)

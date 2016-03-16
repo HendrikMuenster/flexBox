@@ -48,7 +48,7 @@ main.addTerm(L1gradientIso(20,size(image),'discretization','backward'),numberW1)
 main.addTerm(L1gradientIso(20,size(image),'discretization','backward'),numberW2);
 
 main.params.showPrimals = 500;
-main.params.tryCPP = 1;
+%main.params.tryCPP = 1;
 tic
 main.runAlgorithm;
 toc
@@ -80,12 +80,13 @@ numberV1 = main.addPrimalVar(size(f1));
 numberV2 = main.addPrimalVar(size(f2));
 
 %add optical flow data term
-main.addTerm(L1opticalFlowTerm(1,f1,f2),[numberV1,numberV2]);
+main.addTerm(L2opticalFlowTerm(1,f1,f2),[numberV1,numberV2]);
 
 %add regularizers - one for each component
-main.addTerm(L1gradientIso(0.05,size(f1)),numberV1);
-main.addTerm(L1gradientIso(0.05,size(f1)),numberV2);
+main.addTerm(L1gradientIso(0.005,size(f1)),numberV1);
+main.addTerm(L1gradientIso(0.005,size(f1)),numberV2);
 
+main.params.tryCPP = 1;
 main.runAlgorithm;
 
 resultV1 = main.getPrimal(numberV1);

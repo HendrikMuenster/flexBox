@@ -193,10 +193,12 @@ classdef flexbox < handle
                     ClassName = 'L1dualizedDataTerm';
                 elseif (sum(ismember(s, 'L2dataTermOperator')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
                     ClassName = 'L2dualizedDataTerm';
-                elseif (strcmp(ClassName, 'L1dataTermOperator') > 0)
+                elseif ( sum(ismember(s, 'L1DataProxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
                     ClassName = 'L1dualizedDataTerm';
-                elseif (strcmp(ClassName, 'L2dataTermOperator') > 0)
+                elseif ( sum(ismember(s, 'L2DataProxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
                     ClassName = 'L2dualizedDataTerm';
+                elseif (strcmp(ClassName, 'KLdataTermOperator') > 0)
+                    ClassName = 'KLdualizedDataTerm';
                 end
                 
                 
@@ -204,7 +206,7 @@ classdef flexbox < handle
                 
                 mexCallString = [mexCallString,'''dual''',',''', ClassName  ,''',','obj.duals{',num2str(i),'}.factor',',','obj.duals{',num2str(i),'}.operator,','obj.DcP{',num2str(i),'},'];
                 
-                if (strcmp(ClassName,'L1dualizedDataTerm') || strcmp(ClassName,'L2dualizedDataTerm'))
+                if ( sum(ismember(s, 'basicDualizedDataterm')) )
                     mexCallString = [mexCallString,'obj.duals{',num2str(i),'}.f',','];
                 end
             end
@@ -236,11 +238,10 @@ classdef flexbox < handle
             end
             
             if (obj.checkCPP())
-                disp('C++ support for functional detected');
-                disp('Shifting everything to C++ backend');
+                disp('C++ support detected. Running in C++ mode');
                 obj.doCPP();
             else
-                disp('Running flexBox in MATLAB mode');
+                disp('Running in MATLAB mode');
                 reverseStr = [];
                 iteration = 1;error = Inf;
                 while error>obj.params.tol && iteration < obj.params.maxIt

@@ -12,12 +12,12 @@ classdef L1IsoProxDualShift < handle
             %calc norm
             norm = 0;
             for i=1:obj.numVars
-                norm = norm + (main.yTilde{dualNumbers(i)}/obj.factor + obj.b{i}).^2;
+                norm = norm + (main.yTilde{dualNumbers(i)}/obj.factor - obj.b{i}).^2;
             end
-            norm = max(1,sqrt(norm)./obj.factor);
+            norm = max(1,sqrt(norm));
             
             for i=1:obj.numVars
-                main.y{dualNumbers(i)} = obj.factor *(main.yTilde{dualNumbers(i)}/obj.factor + obj.b{i}) ./ norm - obj.factor*obj.r;
+                main.y{dualNumbers(i)} = obj.factor *(main.yTilde{dualNumbers(i)}/obj.factor - obj.b{i}) ./ norm + obj.factor*obj.r{i};
             end
         end
         

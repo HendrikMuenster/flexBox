@@ -1,14 +1,9 @@
-classdef L2dataTermOperator < basicDualizedDataterm
+classdef L2dataTermOperator < basicDualizedDataterm & L2DataProxDual
     methods
         function obj = L2dataTermOperator(alpha,A,f,varargin)
             obj = obj@basicDualizedDataterm(alpha,A,f,varargin);
             
             obj.CPPsupport = 1;
         end
-        
-        function applyProx(obj,main,dualNumber,~)
-            main.y{dualNumber} = (obj.factor/(main.params.sigma{dualNumber}+obj.factor)) * (main.yTilde{dualNumber} - main.params.sigma{dualNumber}*obj.f(:));
-        end
-        
     end
 end
