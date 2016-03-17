@@ -6,6 +6,8 @@ classdef frobeniusGradient < basicGradient & FrobeniusProxDual
     methods
         function obj = frobeniusGradient(alpha,dims,varargin)
             obj = obj@basicGradient(alpha,dims,varargin);
+            
+            obj.CPPsupport = 1;
         end
     end
 end

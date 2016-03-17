@@ -1,4 +1,4 @@
-classdef flexbox < handle
+classdef flexBox < handle
     
     properties
         primals
@@ -25,7 +25,7 @@ classdef flexbox < handle
     end
     
     methods
-        function obj = flexbox
+        function obj = flexBox
             % Constructor
             obj.params.tol = 1e-5; 
             obj.params.maxIt = 10000;   
@@ -189,6 +189,8 @@ classdef flexbox < handle
                     ClassName = 'L1dualizedOperatorAniso';
                 elseif (sum(ismember(s, 'L2proxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
                     ClassName = 'L2dualizedOperator';
+                elseif (sum(ismember(s, 'FrobeniusProxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
+                    ClassName = 'FrobeniusDualizedOperator';
                 elseif (sum(ismember(s, 'L1dataTermOperator')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
                     ClassName = 'L1dualizedDataTerm';
                 elseif (sum(ismember(s, 'L2dataTermOperator')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
@@ -211,7 +213,7 @@ classdef flexbox < handle
                 end
             end
             
-            mexCallString = ['flexboxCPP(',mexCallString,'''end''',');']
+            mexCallString = ['flexBoxCPP(',mexCallString,'''end''',');'];
             %result = flexboxCPP('primal','L1dataTerm',obj.primals{1}.factor,obj.primals{1}.dims,obj.primals{1}.f,'dual','L1gradientAniso',obj.duals{1}.factor,obj.duals{1}.operator,'end');
 
             
@@ -437,9 +439,10 @@ classdef flexbox < handle
         function result = checkCPP(obj)
             if (~obj.params.tryCPP)
                 CPPsupport = 0;
+            elseif (obj.params.tryCPP && exist('flexBoxCPP','file') ~= 3)
+                CPPsupport = 0;
+                disp(['CPP module is not compiled!']);
             else
-                disp('Checking classes for C++ support');
-                
                 CPPsupport = 1;
                 for i=1:numel(obj.primals)
                     if (~obj.primals{i}.CPPsupport)

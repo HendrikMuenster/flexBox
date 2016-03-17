@@ -80,11 +80,11 @@ numberV1 = main.addPrimalVar(size(f1));
 numberV2 = main.addPrimalVar(size(f2));
 
 %add optical flow data term
-main.addTerm(L2opticalFlowTerm(1,f1,f2),[numberV1,numberV2]);
+main.addTerm(L1opticalFlowTerm(1,f1,f2),[numberV1,numberV2]);
 
 %add regularizers - one for each component
-main.addTerm(L1gradientIso(0.005,size(f1)),numberV1);
-main.addTerm(L1gradientIso(0.005,size(f1)),numberV2);
+main.addTerm(L1gradientIso(0.1,size(f1)),numberV1);
+main.addTerm(L1gradientIso(0.1,size(f1)),numberV2);
 
 main.params.tryCPP = 1;
 main.runAlgorithm;
