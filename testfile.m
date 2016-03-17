@@ -12,7 +12,7 @@ imageNoisy = image + randn(size(image)) * 0.05;
 figure(1);imagesc(image);axis image;colormap(gray)
 figure(2);imagesc(imageNoisy);axis image;colormap(gray)
 %% denoising
-main = flexbox;
+main = flexBox;
 
 %add primal var u
 numberU = main.addPrimalVar(size(image));
@@ -30,7 +30,7 @@ result = main.getPrimal(numberU);
 
 figure(3);imagesc(result);axis image;colormap(gray);
 %% denoising with tgv
-main = flexbox;
+main = flexBox;
 
 %add primal vars u,w
 numberU = main.addPrimalVar(size(image));
@@ -43,21 +43,15 @@ main.addTerm(L2dataTerm(1,imageNoisy),numberU);
 %add regularizer 0.05*\|\nabla (u)-w\|_1
 main.addTerm(L1secondOrderGradientIso(0.05,size(image)),[numberU,numberW1,numberW2]);
 
-%add regularizer 0.05*\|\nabla (w)\|_1
-main.addTerm(L1gradientIso(20,size(image),'discretization','backward'),numberW1);
-main.addTerm(L1gradientIso(20,size(image),'discretization','backward'),numberW2);
+%add regularizer 1*\|\nabla (w)\|_1
+main.addTerm(L1gradientIso(1,size(image),'discretization','backward'),numberW1);
+main.addTerm(L1gradientIso(1,size(image),'discretization','backward'),numberW2);
 
-main.params.showPrimals = 500;
-%main.params.tryCPP = 1;
-tic
 main.runAlgorithm;
-toc
-%% get result
+% get result
 result = main.getPrimal(numberU);
-result2 = main.getPrimal(numberW1);
 
 figure(3);imagesc(result);axis image;colormap(gray)
-figure(4);imagesc(result2);axis image;colormap(gray)
 
 %% optical flow
 f1 = imread('examples/a.png');
@@ -73,7 +67,7 @@ end
 f1 = im2double(f1);
 f2 = im2double(f2);
 
-main = flexbox;
+main = flexBox;
 
 %add primal vars v_1,v_2
 numberV1 = main.addPrimalVar(size(f1));
@@ -86,9 +80,9 @@ main.addTerm(L1opticalFlowTerm(1,f1,f2),[numberV1,numberV2]);
 main.addTerm(L1gradientIso(0.1,size(f1)),numberV1);
 main.addTerm(L1gradientIso(0.1,size(f1)),numberV2);
 
-main.params.tryCPP = 1;
 main.runAlgorithm;
 
+% get result
 resultV1 = main.getPrimal(numberV1);
 resultV2 = main.getPrimal(numberV2);
 
@@ -106,10 +100,10 @@ image = im2double(image);
 
 numberOfLabels = 3;
 dims = size(image);
-labels = rand(numberOfLabels,1);
+labels = [0.1,0.5,0.75];
 
 
-main = flexbox;
+main = flexBox;
 
 for i=1:numberOfLabels
     main.addPrimalVar(size(image));
@@ -119,7 +113,7 @@ end
 main.addTerm(labelingTerm(1,image,labels),1:numberOfLabels);
 
 for i=1:numberOfLabels
-    main.addTerm(L1gradientIso(0.5,size(image)),i);
+    main.addTerm(L1gradientIso(0.01,size(image)),i);
 end
 
 main.runAlgorithm;
@@ -128,7 +122,7 @@ for i=1:numberOfLabels
     labelMatrix(:,:,i) = main.getPrimal(i);
 end
 
-%%
+%
 
 figure(1);imagesc(image);axis image;colormap(gray);colorbar;
 for i=1:numberOfLabels
@@ -137,7 +131,5 @@ for i=1:numberOfLabels
 end
 
 [~,indexMap] = max(completeLabels,[],3);
-
-
 
 figure(2+numberOfLabels);imagesc(indexMap);axis image;colormap(gray);colorbar;
