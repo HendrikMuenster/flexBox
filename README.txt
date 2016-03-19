@@ -18,3 +18,6 @@
 
 % If you use this toolbox please use the following citation
 
+
+
+% Examples can be found in the 'examples' folder
