@@ -17,7 +17,15 @@
 
 
 % If you use this toolbox please use the following citation
-
+@Article{dirks2015flexbox,
+  Title         = {A Flexible Primal-Dual Toolbox},
+  Author        = {Dirks, Hendrik},
+  Journal       = {ArXiv e-prints},
+  Year          = {2016},
+  Month         = mar,
+  Keywords      = {Mathematics - Optimization and Control, Computer Science - Computer Vision and Pattern Recognition, Computer Science - Mathematical Software, I.4, G.1.6, G.4},
+  Primaryclass  = {math.OC}
+}
 
 
 % Examples can be found in the 'examples' folder
