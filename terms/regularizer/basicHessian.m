@@ -19,7 +19,9 @@ classdef basicHessian < dualPart & tildeMultiOperatorMultiDual
             obj.myTau{1} = 8*numel(dims);
             
             for i=1:numel(dims)
-                op{i} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: );
+                if (dims(i) ~= 1)
+                    op{i} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: );
+                end
                 %obj.operator{i} = op'*op;
             end
                 

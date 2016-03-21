@@ -27,7 +27,7 @@ classdef basicGradientDifference < dualPart & tildeMultiOperatorMultiDual
             
             opNum = 1;
             for i=1:numel(usedims)
-                if (usedims(i) == 1)
+                if (usedims(i) == 1 && dims(i) ~= 1)
                     obj.length{opNum} = prod(dims);
                     obj.length{opNum+1} = prod(dims);
                     obj.operator{opNum} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: );

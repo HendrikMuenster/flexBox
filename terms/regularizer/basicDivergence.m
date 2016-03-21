@@ -24,7 +24,7 @@ classdef basicDivergence < basicDualizedOperator & tildeMultiOperatorMultiDual
             
             opNum = 1;
             for i=1:numel(dims)
-                if (usedims(i) == 1)
+                if (usedims(i) == 1 && dims(i) ~= 1)
                     operatorList{opNum} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: );
                     opNum = opNum + 1;
                 end

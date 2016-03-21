@@ -70,6 +70,7 @@ classdef flexBox < handle
             %number = addPrimalVar(dims)
             %adds a primal var of dimensions #dims to FlexBox and returns
             %the internal #number
+            
             numberElements = prod(dims);
             
             obj.x{end+1} = zeros(numberElements,1);

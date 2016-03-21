@@ -5,6 +5,7 @@ classdef basicGradient < basicDualizedOperator & tildeMultiOperatorMultiDual
             if (nargin > 2 && numel(varargin) == 1)
                 varargin = varargin{1};
             end
+            
             vararginParser;
 			
             %usedims should be a {0,1} array of length dims indicating whether a
@@ -21,7 +22,8 @@ classdef basicGradient < basicDualizedOperator & tildeMultiOperatorMultiDual
             
             opNum = 1;
             for i=1:numel(usedims)
-                if (usedims(i) == 1)
+                %if dims(i) equals 1 then matrix is empty
+                if (usedims(i) == 1 && dims(i) ~= 1)
                     operatorList{opNum} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: );
                     opNum = opNum + 1;
                 end
