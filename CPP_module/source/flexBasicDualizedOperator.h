@@ -12,6 +12,7 @@ private:
 public:
 	flexBasicDualizedOperator(T _alpha, int numberPrimals, flexVector<flexMatrix<T>> _operatorList) : flexTildeMultiOperatorMultiDual(_alpha, numberPrimals, _operatorList.size() / numberPrimals)
 	{
+			
 		operatorList = _operatorList;
 
 		//create sigma and tau

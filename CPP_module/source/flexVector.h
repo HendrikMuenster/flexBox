@@ -35,7 +35,9 @@ public:
 
 	static T* allocate(const int size)
 	{
-		return static_cast<T*>(malloc(sizeof(T) * size));
+		//return static_cast<T*>(malloc(sizeof(T) * size));
+		return static_cast<T*>(malloc(sizeof(T)* size));
+
 	}
 
 	static void copyRange(T* begin, T* end, T* dest)
@@ -50,7 +52,11 @@ public:
 	static void deleteRange(T* begin, T* end)
 	{
 		if (IsPrimitiveType<T>::VALUE == 1)
+		{
+			//printf("Primitive \n");
 			return;
+		}
+			
 
 		while (begin != end)
 		{
@@ -64,7 +70,12 @@ public:
 		T* newData = allocate(newCapacity);
 		copyRange(_data, _data + _size, newData);
 		deleteRange(_data, _data + _size);
-		free(_data);
+
+		//if (IsPrimitiveType<T>::VALUE != 1)
+		//{
+			free(_data);
+		//}
+		
 		_data = newData;
 		_capacity = newCapacity;
 	}
@@ -118,7 +129,7 @@ public:
 
 	void resize(const size_type newSize, const T& fillWith)
 	{
-		if (newSize <= _size)
+		/*if (newSize <= _size)
 		{
 			deleteRange(_data + newSize, _data + _size);
 			_size = newSize;
@@ -129,23 +140,32 @@ public:
 			constructRange(_data + _size, _data + newSize, fillWith);
 			_size = newSize;
 			return;
-		}
+		}*/
 		size_type newCapacity = newSize;
 		if (newCapacity < _size * 2)
 		{
 			newCapacity = _size * 2;
 		}
+		if (newCapacity < 2)
+		{
+			newCapacity = 2;
+		}
+
 		reallocate(newCapacity);
 		constructRange(_data + _size, _data + newSize, fillWith);
 		for (size_type i = _size; i < newSize; i++)
 		{
-			new((void*)(_data + i)) T(fillWith);
+			::new((void*)(_data + i)) T(fillWith);
 		}
 		_size = newSize;
 	}
 
-	flexVector() : _size(0), _capacity(0), _data(0)
+	flexVector(void) : _size(), _capacity(), _data()
 	{
+		_size = 0;
+		_capacity = 1;
+		_data = allocate(_capacity);
+
 		//printf("Void constructor \n");
 	}
 
@@ -171,7 +191,15 @@ public:
 	{
 		//printf("Standard constructor \n");
 
-		_capacity = size;
+		if (size < 2)
+		{
+			_capacity = 2;
+		}
+		else
+		{
+			_capacity = size;
+		}
+		
 		_size = size;
 		_data = allocate(_capacity);
 
@@ -180,8 +208,10 @@ public:
 
 	~flexVector()
 	{
-		//if (!IsPrimitiveType<T>::VALUE) {
-		//	deleteRange(_data, _data + _size);
+		//printf("Destructor \n");
+		//if (!IsPrimitiveType<T>::VALUE)
+		//{
+			deleteRange(_data, _data + _size);
 		//}
 		
 		free(_data);
@@ -221,7 +251,7 @@ public:
 		printf("Vector contains: \n");
 		for (size_type i = 0; i < _size; ++i)
 		{
-			printf("_data[%d]: %f\n", i, _data[i]);
+			printf("_data[%d]: %f\n", i, static_cast<float>(_data[i]));
 		}
 	}
 
@@ -397,6 +427,52 @@ public:
 		}
 
 		return *this;
+	}
+
+	//sets all elements in vector to scalar input
+	void scalarEquals(T input)
+	{
+		#pragma omp parallel for
+		for (size_type i = 0; i < _size; ++i)
+		{
+			_data[i] = input;
+		}
+	}
+
+	//divides all elements in vector scalar input
+	void scalarDivide(T input)
+	{
+		scalarMult(static_cast<T>(1) / input);
+	}
+
+	//calculates the maximum of every element and scalar input
+	void scalarMult(T input)
+	{
+		#pragma omp parallel for
+		for (size_type i = 0; i < _size; ++i)
+		{
+			_data[i] *= input;
+		}
+	}
+
+	//calculates the maximum of every element and scalar input
+	void scalarMax(T input)
+	{
+		#pragma omp parallel for
+		for (size_type i = 0; i < _size; ++i)
+		{
+			_data[i] = max(_data[i],input);
+		}
+	}
+
+	//divides all elements in vector by corresponding element in input
+	void vectorDivide(const flexVector< T > &input)
+	{
+		#pragma omp parallel for
+		for (size_type i = 0; i < _size; ++i)
+		{
+			_data[i] = _data[i]/input[i];
+		}
 	}
 
 	flexVector<T> &operator+=(const T &input)

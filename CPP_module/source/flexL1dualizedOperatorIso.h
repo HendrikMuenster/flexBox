@@ -7,15 +7,35 @@
 template < typename T >
 class flexL1dualizedOperatorIso : public flexBasicDualizedOperator<T>
 {
+	private:
+		flexVector<T> normTmp, normTmp2;
+		int numElements;
+		bool initiated;
+
 	public:
-		flexL1dualizedOperatorIso(T _alpha, int numberPrimals, flexVector<flexMatrix<T>> _operatorList) : flexBasicDualizedOperator(_alpha, numberPrimals, _operatorList){};
+		flexL1dualizedOperatorIso(T _alpha, int numberPrimals, flexVector<flexMatrix<T>> _operatorList) : flexBasicDualizedOperator(_alpha, numberPrimals, _operatorList)
+		{
+			initiated = false;
+		};
+
+		void initiate(int elements)
+		{
+			int numElements = elements;
+
+			normTmp.resize(numElements, static_cast<T>(0));
+			normTmp2.resize(numElements, static_cast<T>(0));
+
+			initiated = true;
+		}
 
 		void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
 		{
-			int numElements = data.y[dualNumbers[0]].size();
-
-			flexVector<T> normTmp(numElements, static_cast<T>(0));
-			flexVector<T> normTmp2(numElements, static_cast<T>(0));
+			if (!initiated)
+			{
+				initiate(data.y[dualNumbers[0]].size());
+			}
+			
+			normTmp2.scalarEquals(static_cast<T>(0));
 
 			//for all dual variables
 			for (int i = 0; i < dualNumbers.size(); ++i)
@@ -26,14 +46,15 @@ class flexL1dualizedOperatorIso : public flexBasicDualizedOperator<T>
 				normTmp2 += normTmp;
 			}
 
-			for (int i = 0; i < numElements; ++i)
-			{
-				normTmp2[i] = max(static_cast<T>(1), sqrt(normTmp2[i]) / alpha);
+			normTmp2.sqrt();
+			normTmp2.scalarDivide(alpha);
+			normTmp2.scalarMax(static_cast<T>(1));
 
-				for (int j = 0; j < dualNumbers.size(); ++j)
-				{
-					data.y[dualNumbers[j]][i] = data.yTilde[dualNumbers[j]][i] / normTmp2[i];
-				}
+			for (int j = 0; j < dualNumbers.size(); ++j)
+			{
+				data.y[dualNumbers[j]] = data.yTilde[dualNumbers[j]];
+
+				data.y[dualNumbers[j]].vectorDivide(normTmp2);
 			}
 
 		};

@@ -55,6 +55,7 @@
 using namespace std;
 
 void copyMatlabToFlexmatrix(const mxArray *input, flexMatrix<float> &output);
+void copyMatlabToFlexmatrixNew(const mxArray *input, flexMatrix<float> &output);
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 //L1TVOpticalFlow(image1,image2,tol,lambda,maxIterations,norm,inputV,inputY,stepsize,discretization,numberOfWarps)
@@ -182,7 +183,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 				flexMatrix<float> A(mxGetM(pointerA), mxGetN(pointerA));
 
-				copyMatlabToFlexmatrix(pointerA, A);
+				copyMatlabToFlexmatrixNew(pointerA, A);
 
 				operatorList.push_back(A);
 			}
@@ -603,6 +604,56 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 
 	mexPrintf("Multi Time %f\n", elapsed_secs);*/
+}
+
+void copyMatlabToFlexmatrixNew(const mxArray *input, flexMatrix<float> &output)
+{
+	double  *pr, *pi;
+	mwIndex  *ir, *jc;
+	mwSize      col, total = 0;
+	mwIndex   starting_row_index, stopping_row_index, current_row_index;
+	mwSize      n;
+
+	flexVector<int> indexI(0, 0.0f);
+	flexVector<int> indexJ(0, 0.0f);
+	flexVector<float> indexVal(0, 0.0f);
+
+	/* Get the starting positions of all four data arrays. */
+	pr = mxGetPr(input);
+	pi = mxGetPi(input);
+	ir = mxGetIr(input);
+	jc = mxGetJc(input);
+
+	/* Display the nonzero elements of the sparse array. */
+	n = mxGetN(input);
+	for (col = 0; col<n; col++)
+	{
+		starting_row_index = jc[col];
+		stopping_row_index = jc[col + 1];
+		if (starting_row_index == stopping_row_index)
+			continue;
+		else
+		{
+			for (current_row_index = starting_row_index; current_row_index < stopping_row_index; current_row_index++)
+			{
+				//mexPrintf("\t(%"FMT_SIZE_T"u,%"FMT_SIZE_T"u) = %g\n", ir[current_row_index] + 1, col + 1, pr[total]);
+				// matalab uses +1 notation for col and row
+				//int indexI = ir[current_row_index];
+				//int indexJ = col;
+				//float value = pr[total];
+
+				indexI.push_back(ir[current_row_index]);
+				indexJ.push_back(col);
+				indexVal.push_back(pr[total]);
+
+				//output.insertElement(indexI, indexJ, value);
+
+				total++;
+			}
+		}
+	}
+
+	output.blockInsert(indexI, indexJ, indexVal);
 }
 
 void copyMatlabToFlexmatrix(const mxArray *input, flexMatrix<float> &output)

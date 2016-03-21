@@ -49,7 +49,7 @@ class flexBox
 			theta = static_cast<T>(1);
 
 
-			maxIterations = static_cast<int>(2000);
+			maxIterations = static_cast<int>(10000);
 			numberPrimalVars = static_cast<int>(0);
 			checkError = static_cast<int>(100);
 
@@ -280,7 +280,7 @@ class flexBox
 			{
 				doIteration();
 				//printf("Value f at 5 is %f\n",data.x[0][5]);
-				if (iteration % 100 == 1)
+				if (iteration % 1000 == 1)
 				{
 					if (isMATLAB == true)
 					{
