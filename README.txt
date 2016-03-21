@@ -15,7 +15,6 @@
 %
 % If you plan to distribute the software (commercially or not). Please contact me for more information.
 
-
 % If you use this toolbox please use the following citation
 @Article{dirks2015flexbox,
   Title         = {A Flexible Primal-Dual Toolbox},
@@ -25,7 +24,8 @@
   Month         = mar,
   Keywords      = {Mathematics - Optimization and Control, Computer Science - Computer Vision and Pattern Recognition, Computer Science - Mathematical Software, I.4, G.1.6, G.4},
   Primaryclass  = {math.OC}
-}
+}
+% A preprint of the article can be found at http://arxiv.org/abs/1603.05835
 
 
 % Examples can be found in the 'examples' folder
