@@ -1,5 +1,5 @@
 %prox for F = alpha / 2 |\nabla u|^2
-classdef L1shearAniso < basicShear & L1anisoProxDual
+classdef L1shearAniso < basicShear & L1AnisoProxDual
     properties
     end
     

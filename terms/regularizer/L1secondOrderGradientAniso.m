@@ -1,5 +1,5 @@
 %
-classdef L1secondOrderGradientAniso < basicSecondOrderGradient & L1anisoProxDual
+classdef L1secondOrderGradientAniso < basicSecondOrderGradient & L1AnisoProxDual
     properties
     end
     

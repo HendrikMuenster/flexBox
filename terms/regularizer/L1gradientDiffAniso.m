@@ -1,5 +1,5 @@
 %
-classdef L1gradientDiffAniso < basicGradientDifference & L1anisoProxDual
+classdef L1gradientDiffAniso < basicGradientDifference & L1AnisoProxDual
     properties
     end
     
