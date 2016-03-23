@@ -18,8 +18,8 @@ class flexTermDual
 		T alpha;
 		flexVector<T> myTau;
 		flexVector<T> mySigma;
-		flexVector<flexMatrix<T>> operatorList;
-		flexVector<flexMatrix<T>> operatorListT;
+		flexVector<flexMatrix<T> > operatorList;
+		flexVector<flexMatrix<T> > operatorListT;
 
 		flexTermDual(T _alpha, int _numberPrimals, int _numberVars)
 		{

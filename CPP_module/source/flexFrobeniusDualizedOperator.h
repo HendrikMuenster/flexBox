@@ -3,12 +3,12 @@
 
 #include "flexTermDual.h"
 #include "flexBasicDualizedOperator.h"
-
+#include "math.h"
 template < typename T >
 class flexFrobeniusDualizedOperator : public flexBasicDualizedOperator<T>
 {
 public:
-	flexFrobeniusDualizedOperator(T _alpha, int numberPrimals, flexVector<flexMatrix<T>> _operatorList) : flexBasicDualizedOperator(_alpha, numberPrimals, _operatorList) {};
+	flexFrobeniusDualizedOperator(T _alpha, int numberPrimals, flexVector<flexMatrix<T> > _operatorList) : flexBasicDualizedOperator<T>(_alpha, numberPrimals, _operatorList) {};
 
 	void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
 	{
@@ -26,7 +26,7 @@ public:
 			normTmp2 += normTmp.sum();
 		}
 
-		normTmp2 = max(static_cast<T>(1), std::sqrt(normTmp2) / alpha);
+		normTmp2 = std::max(static_cast<T>(1), std::sqrt(normTmp2) / this->alpha);
 
 		for (int i = 0; i < numElements; ++i)
 		{

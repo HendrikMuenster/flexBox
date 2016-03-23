@@ -10,14 +10,14 @@ private:
 	flexVector<T> f, fAlphaTau;
 
 public:
-	flexL1DataTerm(T _alpha, flexVector<T> _f) : flexTermPrimal(1, _alpha)
+	flexL1DataTerm(T _alpha, flexVector<T> _f) : flexTermPrimal<T>(1, _alpha)
 	{
 		f = _f;
 	};
 
 	void applyProx(flexBoxData<T> &data, flexVector<T> tau, flexVector<int> primalNumbers)
 	{
-		T factor = alpha*tau[primalNumbers[0]];
+		T factor = this->alpha*tau[primalNumbers[0]];
 
 		//T *varPointer = &data.xTilde[primalNumbers[0]];
 

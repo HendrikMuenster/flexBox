@@ -10,7 +10,7 @@ class flexL2DataTerm : public flexTermPrimal<T>
 		flexVector<T> f, fAlphaTau;
 
 	public:
-		flexL2DataTerm(T _alpha, flexVector<T> _f) : flexTermPrimal(1, _alpha)
+		flexL2DataTerm(T _alpha, flexVector<T> _f) : flexTermPrimal<T>(1, _alpha)
 		{
 			f = _f;
 			fAlphaTau = f;
@@ -18,10 +18,10 @@ class flexL2DataTerm : public flexTermPrimal<T>
 
 		void applyProx(flexBoxData<T> &data, flexVector<T> tau, flexVector<int> primalNumbers)
 		{
-			T factor = static_cast<T>(1) / (static_cast<T>(1) + alpha*tau[primalNumbers[0]]);
+			T factor = static_cast<T>(1) / (static_cast<T>(1) + this->alpha*tau[primalNumbers[0]]);
 
 			fAlphaTau = f;
-			fAlphaTau *= (alpha * tau[primalNumbers[0]]);
+			fAlphaTau *= (this->alpha * tau[primalNumbers[0]]);
 
 			data.x[primalNumbers[0]] = data.xTilde[primalNumbers[0]];
 			data.x[primalNumbers[0]]+=(fAlphaTau);

@@ -11,15 +11,15 @@ private:
 	bool initiated;
 	
 public:
-	flexL1dualizedDataTerm(T _alpha, flexVector<flexMatrix<T>> _operatorList, flexVector<T> _f) : flexDualizedDataTerm(_alpha, _operatorList, _f)
+	flexL1dualizedDataTerm(T _alpha, flexVector<flexMatrix<T> > _operatorList, flexVector<T> _f) : flexDualizedDataTerm<T>(_alpha, _operatorList, _f)
 	{
 		initiated = false;
 	};
 
 	void initiate(T sigma)
 	{
-		fAlphaSigma = f;
-		fAlphaSigma.scalarMult(sigma*alpha);
+		this->fAlphaSigma = this->f;
+		this->fAlphaSigma.scalarMult(sigma*this->alpha);
 
 		initiated = true;
 	}
@@ -35,9 +35,9 @@ public:
 
 		data.y[dualNumbers[0]] = data.yTilde[dualNumbers[0]];
 
-		data.y[dualNumbers[0]] -= fAlphaSigma;
+		data.y[dualNumbers[0]] -= this->fAlphaSigma;
 
-		data.y[dualNumbers[0]].project_minMax(alpha);
+		data.y[dualNumbers[0]].project_minMax(this->alpha);
 	};
 };
 

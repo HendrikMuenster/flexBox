@@ -28,7 +28,7 @@ class flexVector
 {
 
 public:
-	typedef typename int size_type;
+	typedef int size_type;
 	int _size;
 	int _capacity;
 	T* _data;
@@ -461,7 +461,7 @@ public:
 		#pragma omp parallel for
 		for (size_type i = 0; i < _size; ++i)
 		{
-			_data[i] = max(_data[i],input);
+			_data[i] = std::max(_data[i],input);
 		}
 	}
 

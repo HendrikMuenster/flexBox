@@ -13,7 +13,7 @@ class flexL1dualizedOperatorIso : public flexBasicDualizedOperator<T>
 		bool initiated;
 
 	public:
-		flexL1dualizedOperatorIso(T _alpha, int numberPrimals, flexVector<flexMatrix<T>> _operatorList) : flexBasicDualizedOperator(_alpha, numberPrimals, _operatorList)
+		flexL1dualizedOperatorIso(T _alpha, int numberPrimals, flexVector<flexMatrix<T> > _operatorList) : flexBasicDualizedOperator<T>(_alpha, numberPrimals, _operatorList)
 		{
 			initiated = false;
 		};
@@ -47,7 +47,7 @@ class flexL1dualizedOperatorIso : public flexBasicDualizedOperator<T>
 			}
 
 			normTmp2.sqrt();
-			normTmp2.scalarDivide(alpha);
+			normTmp2.scalarDivide(this->alpha);
 			normTmp2.scalarMax(static_cast<T>(1));
 
 			for (int j = 0; j < dualNumbers.size(); ++j)

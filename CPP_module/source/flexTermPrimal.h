@@ -17,8 +17,8 @@ class flexTermPrimal
 
 		flexTermPrimal(int _numberVars, T _alpha)
 		{
-			numberVars = _numberVars;
-			alpha = _alpha;
+			this->numberVars = _numberVars;
+			this->alpha = _alpha;
 		};
 
 		int getNumberVars()
@@ -28,7 +28,7 @@ class flexTermPrimal
 
 		flexVector<int> getDims()
 		{
-			return dims;
+			return this->dims;
 		}
 
 		virtual void applyProx(flexBoxData<T> &data, flexVector<T> tau, flexVector<int> primalNumbers) = 0;
