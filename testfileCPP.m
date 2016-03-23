@@ -2,7 +2,7 @@ clear all;close all;clc;
 %% read data
 addpath(genpath(cd));
 
-image = im2double((imread('examples/test.png')));
+image = im2double((imread('examples/data/test.png')));
 if (size(image,3) > 1)
     image = rgb2gray(image);
 end
