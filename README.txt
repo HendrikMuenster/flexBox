@@ -29,3 +29,5 @@
 
 
 % Examples can be found in the 'examples' folder
+
+% In case you experience any problems, please create an issue at https://github.com/HendrikMuenster/flexBox/issues
