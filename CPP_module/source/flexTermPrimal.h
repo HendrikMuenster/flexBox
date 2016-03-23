@@ -26,10 +26,10 @@ class flexTermPrimal
 			return numberVars;
 		}
 
-		/*flexVector<int> getDims()
+		flexVector<int> getDims()
 		{
-			return dims;
-		}*/
+			return this->dims;
+		}
 
 		virtual void applyProx(flexBoxData<T> &data, flexVector<T> tau, flexVector<int> primalNumbers) = 0;
 };
