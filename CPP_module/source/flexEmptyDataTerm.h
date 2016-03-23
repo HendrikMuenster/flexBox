@@ -9,7 +9,7 @@ class flexEmptyDataTerm : public flexTermPrimal<T>
 private:
 
 public:
-	flexEmptyDataTerm() : flexTermPrimal(1, 1.0)
+	flexEmptyDataTerm() : flexTermPrimal<T>(1, 1.0)
 	{
 	};
 

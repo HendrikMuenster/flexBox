@@ -12,17 +12,17 @@ private:
 	T factor;
 
 public:
-	flexL2dualizedDataTerm(T _alpha, flexVector<flexMatrix<T>> _operatorList, flexVector<T> _f) : flexDualizedDataTerm(_alpha, _operatorList, _f) 
+	flexL2dualizedDataTerm(T _alpha, flexVector<flexMatrix<T> > _operatorList, flexVector<T> _f) : flexDualizedDataTerm<T>(_alpha, _operatorList, _f) 
 	{
 		initiated = false;
 	};
 
 	void initiate(T sigma)
 	{
-		factor = alpha / (alpha + sigma); 
+		factor = this->alpha / (this->alpha + sigma); 
 		
-		fAlphaSigma = f;
-		fAlphaSigma *= sigma;
+		this->fAlphaSigma = this->f;
+		this->fAlphaSigma *= sigma;
 
 		initiated = true;
 	}
@@ -37,7 +37,7 @@ public:
 		}
 		
 		data.y[dualNumbers[0]] = data.yTilde[dualNumbers[0]];
-		data.y[dualNumbers[0]] -= fAlphaSigma;
+		data.y[dualNumbers[0]] -= this->fAlphaSigma;
 		data.y[dualNumbers[0]] *= factor;
 	};
 };

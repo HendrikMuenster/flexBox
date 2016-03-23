@@ -140,7 +140,7 @@ public:
 
 		//initialize vecvector
 		flexVector<int> emptyBucket(0, 0);
-		flexVector < flexVector<int>> buckets(numRows, emptyBucket);
+		flexVector < flexVector<int> > buckets(numRows, emptyBucket);
 
 		//add elements to buckets
 		for (int indexInput = 0; indexInput < numberListElements; indexInput++)

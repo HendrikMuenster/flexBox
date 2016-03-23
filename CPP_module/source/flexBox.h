@@ -31,13 +31,13 @@ class flexBox
 		flexBoxData<T> data;
 
 		//List of dimensions
-		flexVector<flexVector<int>> dims;
+		flexVector<flexVector<int> > dims;
 		//List of primal variables corresponding to primal terms
-		flexVector<flexVector<int>> pcp;
+		flexVector<flexVector<int> > pcp;
 		//List of primal variables corresponding to dual terms
-		flexVector<flexVector<int>> dcp;
+		flexVector<flexVector<int> > dcp;
 		//List of dual variables corresponding to dual terms
-		flexVector<flexVector<int>> dcd;
+		flexVector<flexVector<int> > dcd;
 
 	public:
 

@@ -11,7 +11,7 @@ private:
 
 
 public:
-	flexTildeMultiOperatorMultiDual(T _alpha, int numberPrimals, int _numberVars) : flexTermDual(_alpha, numberPrimals, _numberVars){};
+	flexTildeMultiOperatorMultiDual(T _alpha, int numberPrimals, int _numberVars) : flexTermDual<T>(_alpha, numberPrimals, _numberVars){};
 
 	void yTilde(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
 	{
@@ -31,7 +31,7 @@ public:
 				flexVector<T> xBarTmp(data.xBar[primalNumbers[j]]);
 				xBarTmp *= sigma[dualNumbers[i]];
 
-				operatorList[operatorNumber].timesPlus(xBarTmp,data.yTilde[dualNumbers[i]]);
+				this->operatorList[operatorNumber].timesPlus(xBarTmp,data.yTilde[dualNumbers[i]]);
 
 				//data.xBar[primalNumbers[j]].print();
 				//xBarTmp.print();
@@ -52,7 +52,7 @@ public:
 				flexVector<T> yTmp(data.y[dualNumbers[i]]);
 				yTmp *= tau[primalNumbers[j]];
 
-				operatorListT[operatorNumber].timesMinus(yTmp,data.xTilde[primalNumbers[j]]);
+				this->operatorListT[operatorNumber].timesMinus(yTmp,data.xTilde[primalNumbers[j]]);
 			}
 		}
 	}
@@ -69,7 +69,7 @@ public:
 				flexVector<T> xTmp(data.x[primalNumbers[j]]);
 				xTmp -= data.xOld[primalNumbers[j]];
 
-				operatorList[operatorNumber].timesPlus(xTmp, data.yError[dualNumbers[i]]);
+				this->operatorList[operatorNumber].timesPlus(xTmp, data.yError[dualNumbers[i]]);
 			}
 		}
 	}
@@ -86,7 +86,7 @@ public:
 				flexVector<T> yTmp(data.y[dualNumbers[i]]);
 				yTmp -= data.yOld[dualNumbers[i]];
 
-				operatorListT[operatorNumber].timesMinus(yTmp, data.xError[primalNumbers[j]]);
+				this->operatorListT[operatorNumber].timesMinus(yTmp, data.xError[primalNumbers[j]]);
 			}
 		}
 	}

@@ -13,18 +13,18 @@ private:
 public: // basicDualizedDataterm(alpha,A,f,varargin)
 	flexVector<T> f, fAlphaSigma;
 
-	flexDualizedDataTerm(T _alpha, flexVector<flexMatrix<T>> _operatorList, flexVector<T> _f) : flexTildeMultiOperatorMultiDual(_alpha, 1, 1)
+	flexDualizedDataTerm(T _alpha, flexVector<flexMatrix<T> > _operatorList, flexVector<T> _f) : flexTildeMultiOperatorMultiDual<T>(_alpha, 1, 1)
 	{
 		f = _f;
 		fAlphaSigma = _f;
 
 		int numberPrimals = _operatorList.size();
 
-		operatorList = _operatorList;
+		this->operatorList = _operatorList;
 
 		//create sigma and tau
-		myTau.resize(numberPrimals, 0.0);
-		mySigma.resize(_operatorList.size() / numberPrimals, 0.0);
+		this->myTau.resize(numberPrimals, 0.0);
+		this->mySigma.resize(_operatorList.size() / numberPrimals, 0.0);
 
 		for (int i = 0; i < _operatorList.size() / numberPrimals; ++i)
 		{
@@ -32,11 +32,11 @@ public: // basicDualizedDataterm(alpha,A,f,varargin)
 			{
 				int opNum = i*numberPrimals + j;
 
-				operatorListT.push_back(operatorList[opNum]);
-				operatorListT[opNum].transpose();
+				this->operatorListT.push_back(this->operatorList[opNum]);
+				this->operatorListT[opNum].transpose();
 
-				mySigma[i] += operatorList[opNum].getMaxRowSumAbs();
-				myTau[j] += operatorListT[opNum].getMaxRowSumAbs();
+				this->mySigma[i] += this->operatorList[opNum].getMaxRowSumAbs();
+				this->myTau[j] += this->operatorListT[opNum].getMaxRowSumAbs();
 			}
 		}
 

@@ -37,9 +37,9 @@
 #include "flexBox.h"
 
 //primal
-#include "flexL1DataTerm.h"
-#include "flexL2DataTerm.h"
-#include "flexEmptyDataterm.h"
+#include "flexL1dataTerm.h"
+#include "flexL2dataTerm.h"
+#include "flexEmptyDataTerm.h"
 
 //dual
 #include "flexL1dualizedOperatorAniso.h"
@@ -48,7 +48,7 @@
 #include "flexFrobeniusDualizedOperator.h"
 
 
-#include "flexL1dualizedDataTerm.h"
+#include "flexL1DualizedDataTerm.h"
 #include "flexL2dualizedDataTerm.h"
 #include "flexKLdualizedDataTerm.h"
 
@@ -63,9 +63,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	char *func_type, *class_name;
 
 	//List of primal terms
-	flexVector<flexTermPrimal<float>> termsPrimal;
+	//flexVector<flexTermPrimal<float>* > termsPrimal;
 	//List of dual terms
-	flexVector<flexTermDual<float>> termsDual;
+	//flexVector<flexTermDual<float>* > termsDual;
 
 	// Initialize main flexBox object
 	flexBox<float> mainObject;
@@ -173,7 +173,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			int nfields = mxGetNumberOfElements(prhs[entry + 3]);
 			//printf("Number of Operators is %d\n", nfields);
 
-			flexVector<flexMatrix<float>> operatorList;
+			flexVector<flexMatrix<float> > operatorList;
 			for (int i = 0; i < nfields; ++i)
 			{
 				const mxArray *pointerA = mxGetCell(prhs[entry + 3], i);
@@ -379,7 +379,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	mainObject.addPrimal(dataTerm);
 
-	flexVector<flexMatrix<float>> _operatorList(2);
+	flexVector<flexMatrix<float> > _operatorList(2);
 	_operatorList[0] = Dx;
 	_operatorList[1] = Dy;
 
