@@ -1,4 +1,4 @@
-%prox for F = alpha / 2 |\nabla u|^2
+%
 classdef tildeMultiOperatorSingleDual < handle
     methods
         function yTilde(obj,main,dualNumbers,primalNumber)

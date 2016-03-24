@@ -2,23 +2,43 @@
 classdef identityOperator < basicOperator
     properties
         nPx;
+        minus;
     end
     
     methods
         function obj = identityOperator(nPx,varargin)
             obj.nPx = nPx;
+            obj.minus = 0;
         end
         
         function result = mtimes(obj,vector)
-            result = vector;
+            if (obj.minus)
+                result = -vector;
+            else
+                result = vector;
+            end
         end
         
         function result = abs(obj)
-            result = returnMatrix(obj);
+            if (obj.minus)
+                result = -returnMatrix(obj);
+            else
+                result = returnMatrix(obj);
+            end
+            
         end
         
-        function mat = returnMatrix(obj)
-            mat = speye(obj.nPx);
+        function result = returnMatrix(obj)
+            if (obj.minus)
+                result = -speye(obj.nPx);
+            else
+                result = speye(obj.nPx);
+            end
+        end
+        
+        function result = uminus(obj)
+            result = obj;
+            result.minus = ~result.minus;
         end
         
 %         function res = ctranspose(obj)

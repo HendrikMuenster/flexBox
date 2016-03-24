@@ -16,13 +16,14 @@ classdef basicSecondOrderGradient < basicDualizedOperator & tildeMultiOperatorMu
                 opTmp = generateForwardGradientND( dims,ones(numel(dims),1) );
             end
 
-            %K = [Dx,-I;Dy,-I]
-            operatorList{1} = opTmp( 1 : prod(dims),: );
-            operatorList{2} = -speye(prod(dims));
-            operatorList{3} = sparse(prod(dims),prod(dims));
-            operatorList{4} = opTmp( prod(dims) + 1 : 2 * prod(dims),: );
-            operatorList{5} = sparse(prod(dims),prod(dims));
-            operatorList{6} = -speye(prod(dims));
+            nPx = prod(dims);
+            %K = [Dx,-I,0;Dy,0,-I]
+            operatorList{1} = opTmp( 1 : nPx,: );
+            operatorList{2} = -identityOperator(nPx);
+            operatorList{3} = zeroOperator(nPx);
+            operatorList{4} = opTmp( nPx + 1 : 2 * nPx,: );
+            operatorList{5} = zeroOperator(nPx);
+            operatorList{6} = -identityOperator(nPx);
             
             %numPrimals is 3
 			obj = obj@basicDualizedOperator(alpha,3,operatorList,varargin);
