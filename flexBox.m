@@ -36,11 +36,11 @@ classdef flexBox < handle
             
             obj.params.showPrimals = 0;
             
-            %adaptiveStepsize
-            obj.params.adaptivity = 0.5;
-            obj.params.delta = 1.5;
-            obj.params.eta = 0.95;
-            obj.params.s = 255;
+%             %adaptiveStepsize
+%             obj.params.adaptivity = 0.5;
+%             obj.params.delta = 1.5;
+%             obj.params.eta = 0.95;
+%             obj.params.s = 255;
             
             %try to use CPP
             obj.params.tryCPP = 0;
@@ -204,8 +204,14 @@ classdef flexBox < handle
                     ClassName = 'KLdualizedDataTerm';
                 end
                 
-                
-                
+                %check operators for non-matrix type and convert them
+                for opNum = 1:numel(obj.duals{i}.operator)
+                    
+                    if (isa(obj.duals{i}.operator{opNum},'zeroOperator') || isa(obj.duals{i}.operator{opNum},'identityOperator') || isa(obj.duals{i}.operator{opNum},'diagonalOperator'))
+                        %if not matrix call the returnMatrix method
+                        obj.duals{i}.operator{opNum} = obj.duals{i}.operator{opNum}.returnMatrix();
+                    end
+                end
                 
                 mexCallString = [mexCallString,'''dual''',',''', ClassName  ,''',','obj.duals{',num2str(i),'}.factor',',','obj.duals{',num2str(i),'}.operator,','obj.DcP{',num2str(i),'},'];
                 
@@ -314,34 +320,34 @@ classdef flexBox < handle
             end
         end
         
-        function adaptStepsize(obj)
-            [~,p,d] = obj.calculateError;
-            
-            %if primal residual is massively larger than dual
-            if ( p > obj.params.s*d*obj.params.delta )
-                for i=1:numel(obj.x)
-                    obj.params.tau{i} = obj.params.tau{i} / (1-obj.params.adaptivity);%increase primal steplength
-                end
-                for i=1:numel(obj.y)
-                    obj.params.sigma{i} = obj.params.sigma{i} * (1-obj.params.adaptivity);%decrease dual steplength
-                end
-                obj.params.adaptivity = obj.params.adaptivity * obj.params.eta;%decrease level of adaptivity
-            %if dual residual is massively larger than primal
-            elseif (p < obj.params.s*d/obj.params.delta)
-                for i=1:numel(obj.x)
-                    obj.params.tau{i} = obj.params.tau{i} * (1-obj.params.adaptivity);%decrease primal steplength
-                end
-                for i=1:numel(obj.y)
-                    obj.params.sigma{i} = obj.params.sigma{i} / (1-obj.params.adaptivity);%increase dual steplength
-                end
-                obj.params.adaptivity = obj.params.adaptivity * obj.params.eta;%decrease level of adaptivity
-            end
-
-%             p
-%             d
-%             obj.params.tau
-%             obj.params.sigma
-        end
+%         function adaptStepsize(obj)
+%             [~,p,d] = obj.calculateError;
+%             
+%             %if primal residual is massively larger than dual
+%             if ( p > obj.params.s*d*obj.params.delta )
+%                 for i=1:numel(obj.x)
+%                     obj.params.tau{i} = obj.params.tau{i} / (1-obj.params.adaptivity);%increase primal steplength
+%                 end
+%                 for i=1:numel(obj.y)
+%                     obj.params.sigma{i} = obj.params.sigma{i} * (1-obj.params.adaptivity);%decrease dual steplength
+%                 end
+%                 obj.params.adaptivity = obj.params.adaptivity * obj.params.eta;%decrease level of adaptivity
+%             %if dual residual is massively larger than primal
+%             elseif (p < obj.params.s*d/obj.params.delta)
+%                 for i=1:numel(obj.x)
+%                     obj.params.tau{i} = obj.params.tau{i} * (1-obj.params.adaptivity);%decrease primal steplength
+%                 end
+%                 for i=1:numel(obj.y)
+%                     obj.params.sigma{i} = obj.params.sigma{i} / (1-obj.params.adaptivity);%increase dual steplength
+%                 end
+%                 obj.params.adaptivity = obj.params.adaptivity * obj.params.eta;%decrease level of adaptivity
+%             end
+% 
+% %             p
+% %             d
+% %             obj.params.tau
+% %             obj.params.sigma
+%         end
         
         function init(obj)
             %check for primal variables that do not correspond to any term
