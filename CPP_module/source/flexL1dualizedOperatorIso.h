@@ -13,7 +13,7 @@ class flexL1dualizedOperatorIso : public flexBasicDualizedOperator<T>
 		bool initiated;
 
 	public:
-		flexL1dualizedOperatorIso(T _alpha, int numberPrimals, flexVector<flexMatrix<T> > _operatorList) : flexBasicDualizedOperator<T>(_alpha, numberPrimals, _operatorList)
+		flexL1dualizedOperatorIso(T _alpha, int numberPrimals, flexVector<flexLinearOperator<T>* > _operatorList) : flexBasicDualizedOperator<T>(_alpha, numberPrimals, _operatorList)
 		{
 			initiated = false;
 		};
@@ -37,24 +37,33 @@ class flexL1dualizedOperatorIso : public flexBasicDualizedOperator<T>
 			
 			normTmp2.scalarEquals(static_cast<T>(0));
 
+			int elements = normTmp.size();
+
 			//for all dual variables
 			for (int i = 0; i < dualNumbers.size(); ++i)
 			{
+				//printf("Dual %d norm\n", dualNumbers[i]);
+
 				normTmp = data.yTilde[dualNumbers[i]];
 				normTmp.pow2();
-
 				normTmp2 += normTmp;
 			}
 
-			normTmp2.sqrt();
-			normTmp2.scalarDivide(this->alpha);
-			normTmp2.scalarMax(static_cast<T>(1));
+			T numberOne = static_cast<T>(1);
 
-			for (int j = 0; j < dualNumbers.size(); ++j)
+			#pragma omp parallel for
+			for (int j = 0; j < elements; ++j)
 			{
-				data.y[dualNumbers[j]] = data.yTilde[dualNumbers[j]];
+				normTmp2[j] = myMax(numberOne, sqrt(normTmp2[j]) / this->alpha);
+			}
 
-				data.y[dualNumbers[j]].vectorDivide(normTmp2);
+			for (int i = 0; i < dualNumbers.size(); ++i)
+			{
+				//printf("Dual %d proj\n", dualNumbers[i]);
+
+				data.y[dualNumbers[i]] = data.yTilde[dualNumbers[i]];
+
+				data.y[dualNumbers[i]].vectorDivide(normTmp2);
 			}
 
 		};

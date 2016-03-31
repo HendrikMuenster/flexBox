@@ -8,7 +8,7 @@ template < typename T >
 class flexFrobeniusDualizedOperator : public flexBasicDualizedOperator<T>
 {
 public:
-	flexFrobeniusDualizedOperator(T _alpha, int numberPrimals, flexVector<flexMatrix<T> > _operatorList) : flexBasicDualizedOperator<T>(_alpha, numberPrimals, _operatorList) {};
+	flexFrobeniusDualizedOperator(T _alpha, int numberPrimals, flexVector<flexLinearOperator<T>* > _operatorList) : flexBasicDualizedOperator<T>(_alpha, numberPrimals, _operatorList) {};
 
 	void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
 	{

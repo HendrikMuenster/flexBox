@@ -1,6 +1,6 @@
 %corresponds to two primal variables (u,v) and represents the curl operator operator 
 %K(u,v) = [u_y^T - v_x^T]
-classdef basicCurl < basicDualizedOperator & tildeMultiOperatorMultiDual
+classdef basicCurl < basicDualizedOperator
     properties
     end
     

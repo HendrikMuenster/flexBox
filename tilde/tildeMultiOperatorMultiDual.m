@@ -18,7 +18,7 @@ classdef tildeMultiOperatorMultiDual < handle
             for i=1:numel(dualNumbers)
                 for j=1:numel(primalNumbers)
                     operatorNumber = numel(primalNumbers)*(i-1) + j;
-                    main.xTilde{primalNumbers(j)} = main.xTilde{primalNumbers(j)} - main.params.tau{primalNumbers(j)}*(obj.operator{operatorNumber}' * main.y{dualNumbers(i)});
+                    main.xTilde{primalNumbers(j)} = main.xTilde{primalNumbers(j)} - main.params.tau{primalNumbers(j)}*(obj.operatorT{operatorNumber} * main.y{dualNumbers(i)});
                 end
             end
         end
@@ -36,7 +36,7 @@ classdef tildeMultiOperatorMultiDual < handle
             for i=1:numel(dualNumbers)
                 for j=1:numel(primalNumbers)
                     operatorNumber = numel(primalNumbers)*(i-1) + j;
-                    main.xError{primalNumbers(j)} = main.xError{primalNumbers(j)} - obj.operator{operatorNumber}' * (main.y{dualNumbers(i)} - main.yOld{dualNumbers(i)});
+                    main.xError{primalNumbers(j)} = main.xError{primalNumbers(j)} - obj.operatorT{operatorNumber} * (main.y{dualNumbers(i)} - main.yOld{dualNumbers(i)});
                 end
             end
         end

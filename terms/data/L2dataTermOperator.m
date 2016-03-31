@@ -1,3 +1,4 @@
+%term for \alpha/2 |Au-f|_2^2
 classdef L2dataTermOperator < basicDualizedDataterm & L2DataProxDual
     methods
         function obj = L2dataTermOperator(alpha,A,f,varargin)

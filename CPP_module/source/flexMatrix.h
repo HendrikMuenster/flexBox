@@ -2,65 +2,55 @@
 #define flexMatrix_H
 
 #include "flexVector.h"
+#include "flexLinearOperator.h"
 
 template < typename T >
-class flexMatrix
+class flexMatrix : public flexLinearOperator<T>
 {
 private:
 	flexVector<int> rowToIndexList;
 	flexVector<int> indexList;
 	flexVector<T> valueList;
 
-	int numCols;
-	int numRows;
-
 public:
-	flexMatrix(void) : indexList(), valueList(), rowToIndexList()
+	flexMatrix(void) : indexList(), valueList(), rowToIndexList(), flexLinearOperator(0, 0){};
+
+	flexMatrix(int  _numRows, int  _numCols) : rowToIndexList(_numRows + 1, static_cast<int>(0)), indexList(0, 0), valueList(0, 0), flexLinearOperator(_numRows, _numCols){};
+
+	flexMatrix<T>* copy()
 	{
-		numCols = 0;
-		numRows = 0;
+		flexMatrix<T>* A = new flexMatrix(this->getNumRows(),this->getNumCols());
+		
+		A->rowToIndexList = rowToIndexList;
+		A->indexList = indexList;
+		A->valueList = valueList;
+
+		return A;
 	}
 
-	flexMatrix(const int  _numRows, const int  _numCols) : rowToIndexList(_numRows + 1, static_cast<int>(0)), indexList(0, 0), valueList(0, 0)
-	{
-		numCols = _numCols;
-		numRows = _numRows;
-
-		//rowToIndexList.print();
-	};
-
-	int getNumCols()
-	{
-		return numCols;
-	}
-
-	int getNumRows()
-	{
-		return numRows;
-	}
 
 	void times(const flexVector<T> &input, flexVector<T> &output)
 	{
 		#pragma omp parallel for
-		for (int i = 0; i < numRows; i++)
+		for (int i = 0; i < this->getNumRows(); ++i)
 		{
-			output[i] = rowMulti(i,input);
+			T rowsum = static_cast<T>(0);
+			// initialize result
+			int indexNext = rowToIndexList[i + 1];
+			for (int index = rowToIndexList[i]; index < indexNext; ++index)
+			{
+				rowsum += input[indexList[index]] * valueList[index];
+			}
+			output[i] = rowsum;
 		}
 	}
 
-	/*void timesPlus(const flexVector<T> &input, flexVector<T> &output)
-	{
-		#pragma omp parallel for
-		for (int i = 0; i < numRows; i++)
-		{
-			output[i] += rowMulti(i, input);
-		}
-	}*/
-
 	void timesPlus(const flexVector<T> &input, flexVector<T> &output)
 	{
+		//this->printMatrix();
+
 		#pragma omp parallel for
-		for (int i = 0; i < numRows; i++)
+		for (int i = 0; i < this->getNumRows(); ++i)
 		{
 			T rowsum = static_cast<T>(0);
 			// initialize result
@@ -76,7 +66,7 @@ public:
 	void timesMinus(const flexVector<T> &input, flexVector<T> &output)
 	{
 		#pragma omp parallel for
-		for (int i = 0; i < numRows; i++)
+		for (int i = 0; i < this->getNumRows(); i++)
 		{
 			T rowsum = static_cast<T>(0);
 			// initialize result
@@ -89,18 +79,7 @@ public:
 		}
 	}
 
-
-
-	/*void timesMinus(const flexVector<T> &input, flexVector<T> &output)
-	{
-#pragma omp parallel for
-		for (int i = 0; i < numRows; i++)
-		{
-			output[i] -= rowMulti(i, input);
-		}
-	}*/
-
-	T rowMulti(const int i, const flexVector<T> &input)
+	T rowMulti(int i, const flexVector<T> &input)
 	{
 		// initialize result
 		T result = static_cast<T>(0);
@@ -114,24 +93,8 @@ public:
 		return result;
 	}
 
-	/*T rowMulti(const flexVector<T> &input, const flexVector<int> &inputI, const flexVector<T> &inputV)
-	{
-		// initialize result
-		T result = static_cast<T>(0);
-
-		//int elements = inputI._size;
-
-		if (inputI._size > 0)
-		{
-			for (int j = 0; j < inputI._size; j++)
-			{
-				result += input[inputI[j]] * inputV[j];
-			}
-		}
-		return result;
-	}*/
-
-	void blockInsert(flexVector<int> indexI, flexVector<int> indexJ, flexVector<T> indexVal)
+	//this is the fast way to fill flexMatrix
+	void blockInsert(flexVector<int> indexI,const  flexVector<int> indexJ,const flexVector<T> indexVal)
 	{
 		//clear matrix
 		clear();
@@ -140,7 +103,7 @@ public:
 
 		//initialize vecvector
 		flexVector<int> emptyBucket(0, 0);
-		flexVector < flexVector<int> > buckets(numRows, emptyBucket);
+		flexVector < flexVector<int> > buckets(this->getNumRows(), emptyBucket);
 
 		//add elements to buckets
 		for (int indexInput = 0; indexInput < numberListElements; indexInput++)
@@ -150,7 +113,7 @@ public:
 		}
 
 		//go trough all rows:
-		for (int indexRow = 0; indexRow < numRows; indexRow++)
+		for (int indexRow = 0; indexRow < this->getNumRows(); indexRow++)
 		{
 			int numElements = 0;
 
@@ -170,7 +133,7 @@ public:
 
 	}
 
-	//inserts new matrix element val at position [i][j] this is SLOW!
+	//inserts new matrix element val at position [i][j]. This is SLOW!
 	void insertElement(int i, int j, T val)
 	{
 		//get start position of next row
@@ -200,9 +163,6 @@ public:
 		{
 			++rowToIndexList[index];
 		}
-
-		//rowToIndexList.print();
-		//indexList.print();
 	}
 
 	//clear current matrix
@@ -212,7 +172,7 @@ public:
 		valueList.clear();
 
 		//set all rowToIndexList to 0
-		for (int i = 0; i < numRows+1; i++)
+		for (int i = 0; i < this->getNumRows() + 1; i++)
 		{
 			rowToIndexList[i] = 0;
 		}
@@ -222,7 +182,7 @@ public:
 	{
 		T maxSum = static_cast<T>(0);
 
-		for (int i = 0; i < numRows; ++i)
+		for (int i = 0; i < this->getNumRows(); ++i)
 		{
 			T tmpSum = static_cast<T>(0);
 			for (int index = rowToIndexList[i]; index < rowToIndexList[i + 1]; ++index)
@@ -252,7 +212,7 @@ public:
 	}
 	void printMatrix()
 	{
-		for (int i = 0; i < numRows; i++)
+		for (int i = 0; i < this->getNumRows(); i++)
 		{
 			//printf("Row: %d|", i);
 			printRow(i);
@@ -267,7 +227,7 @@ public:
 		flexVector<int> tmpindexJ(0, 0);
 		flexVector<T> tmpindexVal(0, static_cast<T>(0));
 
-		for (int i = 0; i < numRows; i++)
+		for (int i = 0; i < this->getNumRows(); i++)
 		{
 			for (int index = rowToIndexList[i]; index < rowToIndexList[i + 1]; ++index)
 			{
@@ -277,58 +237,13 @@ public:
 			}
 		}
 
-		clear();
+		this->clear();
 
-		blockInsert(tmpindexI, tmpindexJ, tmpindexVal);
+		this->blockInsert(tmpindexI, tmpindexJ, tmpindexVal);
 
-		int numRowsTmp = numRows;
-		numRows = numCols;
-		numCols = numRowsTmp;
-
-		
-		/*flexVector<flexVector<int>> indexListTmp = indexList;
-		flexVector<flexVector<T>> valueListTmp = valueList;
-
-		indexList = indexListT;
-		valueList = valueListT;
-
-		indexListT = indexListTmp;
-		valueListTmp = valueListTmp;
-
-
-		return;
-
-		flexVector<flexVector<int>> indexListOld;
-		flexVector<flexVector<T>> valueListOld;
-		indexListOld = indexList;
-		valueListOld = valueList;
-
-		//clear old content
-		clear();
-
-		int numRowsTmp = numRows;
-		numRows = numCols;
-		numCols = numRowsTmp;
-
-		indexList.resize(numRows);
-		valueList.resize(numRows);
-
-
-		//iterate through old rows
-		for (int i = 0; i < indexListOld.size(); i++)
-		{
-			for (int j = 0; j < indexListOld[i].size(); ++j)
-			{
-				//insert element at [j,i]
-				insertElement(indexListOld[i][j], i, valueListOld[i][j]);
-				//cout << indList->size() << endl;
-
-				//indexList[indList->at(j)].push_back(i);
-				//valueList[indList->at(j)].push_back(valList->at(j));
-			}
-		}
-
-		//cout << "Fin";*/
+		int numRowsTmp = this->getNumRows();
+		this->setNumRows(this->getNumCols());
+		this->setNumCols(numRowsTmp);
 	}
 };
 

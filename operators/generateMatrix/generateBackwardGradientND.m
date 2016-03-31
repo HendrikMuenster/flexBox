@@ -22,19 +22,22 @@
 % 
 % The gradient in dimension i can be built by applying kronecker products on the sequence
 % eye(dims(n)),...,eye(dims(i+1)),Dx(dims(i)),eye(dims(i-1)),...,eye(dims(1))
-function [ gradientComplete] = generateBackwardGradientND( dims,stepsize )
+function [ gradientComplete] = generateBackwardGradientND( dims,stepsize,varargin )
     gradientComplete = [];
     
-    for i=1:numel(stepsize)
+    if (nargin > 2)
+        %if third agument exists, then this specifies a specific dimension
+        i = varargin{1};
+        
         gradMat = 1/stepsize(i) .* spdiags([-ones(dims(i), 1) ones(dims(i), 1)], -1:0, dims(i), dims(i));
         gradMat(1,:) = 0;
-        
+
         if (i==1)
             grad = gradMat;
         else
             grad = speye(dims(1));
         end
-        
+
         for j=2:numel(stepsize)
             if (j==i)
                 grad = kron(gradMat,grad);
@@ -43,5 +46,25 @@ function [ gradientComplete] = generateBackwardGradientND( dims,stepsize )
             end
         end
         gradientComplete = [gradientComplete;grad];
+    else
+        for i=1:numel(stepsize)
+            gradMat = 1/stepsize(i) .* spdiags([-ones(dims(i), 1) ones(dims(i), 1)], -1:0, dims(i), dims(i));
+            gradMat(1,:) = 0;
+
+            if (i==1)
+                grad = gradMat;
+            else
+                grad = speye(dims(1));
+            end
+
+            for j=2:numel(stepsize)
+                if (j==i)
+                    grad = kron(gradMat,grad);
+                else
+                    grad = kron(speye(dims(j)),grad);
+                end
+            end
+            gradientComplete = [gradientComplete;grad];
+        end
     end
 end

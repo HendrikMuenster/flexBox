@@ -3,7 +3,7 @@
 
 #include "flexBoxData.h"
 #include "flexVector.h"
-#include "flexMatrix.h"
+#include "flexLinearOperator.h"
 
 //template < typename T > class flexBoxData;
 
@@ -18,8 +18,8 @@ class flexTermDual
 		T alpha;
 		flexVector<T> myTau;
 		flexVector<T> mySigma;
-		flexVector<flexMatrix<T> > operatorList;
-		flexVector<flexMatrix<T> > operatorListT;
+		flexVector<flexLinearOperator<T>* > operatorList;
+		flexVector<flexLinearOperator<T>* > operatorListT;
 
 		flexTermDual(T _alpha, int _numberPrimals, int _numberVars)
 		{
@@ -35,7 +35,7 @@ class flexTermDual
 
 		int dualVarLength(int num)
 		{
-			return operatorList[num].getNumRows();
+			return operatorList[num]->getNumRows();
 		}
 		
 		virtual void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers) = 0;

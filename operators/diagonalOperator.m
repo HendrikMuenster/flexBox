@@ -1,16 +1,16 @@
 %represents a diagonal matrix
 classdef diagonalOperator < basicOperator
     properties
-        diagVector
+        diagonalElements
     end
     
     methods
-        function obj = diagonalOperator(diagVector,varargin)
-            obj.diagVector = diagVector;
+        function obj = diagonalOperator(diagonalElements,varargin)
+            obj.diagonalElements = diagonalElements;
         end
         
         function result = mtimes(obj,vector)
-            result = obj.diagVector .* vector;
+            result = obj.diagonalElements .* vector;
         end
         
         function result = abs(obj)
@@ -18,7 +18,7 @@ classdef diagonalOperator < basicOperator
         end
         
         function mat = returnMatrix(obj)
-            mat = spdiags(obj.diagVector,0,numel(obj.diagVector),numel(obj.diagVector));
+            mat = spdiags(obj.diagonalElements,0,numel(obj.diagonalElements),numel(obj.diagonalElements));
         end
         
 %         function res = ctranspose(obj)

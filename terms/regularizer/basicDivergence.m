@@ -1,5 +1,5 @@
 %
-classdef basicDivergence < basicDualizedOperator & tildeMultiOperatorMultiDual
+classdef basicDivergence < basicDualizedOperator
     properties
     end
     

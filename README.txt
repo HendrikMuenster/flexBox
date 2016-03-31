@@ -8,8 +8,8 @@
 % Contact: hendrik.dirks@wwu.de
 %
 %
-% Version 1.0
-% Date: 2016-03-18
+% Version 1.01
+% Date: 2016-03-31
 
 % FlexBox is copyright ©2016 by Hendrik Dirks and is distributed under the terms of the GNU General Public License (GPL) version 3 (or later).
 %
@@ -31,3 +31,8 @@
 % Examples can be found in the 'examples' folder
 
 % In case you experience any problems, please create an issue at https://github.com/HendrikMuenster/flexBox/issues
+
+
+% List of changes:
+31.03.2016 (Version 1.01)
+- generalized the concept of matrices to linear operators and created classes for gradient, diagonal, identity and zero operator for MATLAB and C++ version to improve speed and flexibility

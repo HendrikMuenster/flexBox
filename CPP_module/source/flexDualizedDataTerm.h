@@ -13,7 +13,7 @@ private:
 public: // basicDualizedDataterm(alpha,A,f,varargin)
 	flexVector<T> f, fAlphaSigma;
 
-	flexDualizedDataTerm(T _alpha, flexVector<flexMatrix<T> > _operatorList, flexVector<T> _f) : flexTildeMultiOperatorMultiDual<T>(_alpha, 1, 1)
+	flexDualizedDataTerm(T _alpha, flexVector<flexLinearOperator<T>* > _operatorList, flexVector<T> _f) : flexTildeMultiOperatorMultiDual<T>(_alpha, 1, 1)
 	{
 		f = _f;
 		fAlphaSigma = _f;
@@ -32,11 +32,11 @@ public: // basicDualizedDataterm(alpha,A,f,varargin)
 			{
 				int opNum = i*numberPrimals + j;
 
-				this->operatorListT.push_back(this->operatorList[opNum]);
-				this->operatorListT[opNum].transpose();
+				this->operatorListT.push_back(this->operatorList[opNum]->copy());
+				this->operatorListT[opNum]->transpose();
 
-				this->mySigma[i] += this->operatorList[opNum].getMaxRowSumAbs();
-				this->myTau[j] += this->operatorListT[opNum].getMaxRowSumAbs();
+				this->mySigma[i] += this->operatorList[opNum]->getMaxRowSumAbs();
+				this->myTau[j] += this->operatorListT[opNum]->getMaxRowSumAbs();
 			}
 		}
 

@@ -10,7 +10,7 @@ class flexKLdualizedDataTerm : public flexDualizedDataTerm<T>
 private:
 
 public:
-	flexKLdualizedDataTerm(T _alpha, flexVector<flexMatrix<T> > _operatorList, flexVector<T> _f) : flexDualizedDataTerm<T>(_alpha, _operatorList, _f) {};
+	flexKLdualizedDataTerm(T _alpha, flexVector<flexLinearOperator<T>* > _operatorList, flexVector<T> _f) : flexDualizedDataTerm<T>(_alpha, _operatorList, _f) {};
 
 	void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
 	{

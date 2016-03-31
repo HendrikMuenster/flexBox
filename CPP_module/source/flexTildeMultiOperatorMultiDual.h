@@ -25,17 +25,14 @@ public:
 		{
 			for (int j = 0; j < primalNumbers.size(); ++j)
 			{
-				//Check here
 				int operatorNumber = primalNumbers.size() * i + j;
 
+				//printf("Dual %d, primal %d, operator %d\n", dualNumbers[i], primalNumbers[j], operatorNumber);
+
 				flexVector<T> xBarTmp(data.xBar[primalNumbers[j]]);
-				xBarTmp *= sigma[dualNumbers[i]];
+				xBarTmp.scalarMult(sigma[dualNumbers[i]]);
 
-				this->operatorList[operatorNumber].timesPlus(xBarTmp,data.yTilde[dualNumbers[i]]);
-
-				//data.xBar[primalNumbers[j]].print();
-				//xBarTmp.print();
-				//data.yTilde[dualNumbers[i]].print();
+				this->operatorList[operatorNumber]->timesPlus(xBarTmp,data.yTilde[dualNumbers[i]]);
 			}
 		}
 	}
@@ -46,13 +43,12 @@ public:
 		{
 			for (int j = 0; j < primalNumbers.size(); ++j)
 			{
-				//Check here
 				int operatorNumber = primalNumbers.size() * i + j;
 
 				flexVector<T> yTmp(data.y[dualNumbers[i]]);
-				yTmp *= tau[primalNumbers[j]];
+				yTmp.scalarMult(tau[primalNumbers[j]]);
 
-				this->operatorListT[operatorNumber].timesMinus(yTmp,data.xTilde[primalNumbers[j]]);
+				this->operatorListT[operatorNumber]->timesMinus(yTmp,data.xTilde[primalNumbers[j]]);
 			}
 		}
 	}
@@ -69,7 +65,7 @@ public:
 				flexVector<T> xTmp(data.x[primalNumbers[j]]);
 				xTmp -= data.xOld[primalNumbers[j]];
 
-				this->operatorList[operatorNumber].timesPlus(xTmp, data.yError[dualNumbers[i]]);
+				this->operatorList[operatorNumber]->timesMinus(xTmp, data.yError[dualNumbers[i]]);
 			}
 		}
 	}
@@ -86,7 +82,7 @@ public:
 				flexVector<T> yTmp(data.y[dualNumbers[i]]);
 				yTmp -= data.yOld[dualNumbers[i]];
 
-				this->operatorListT[operatorNumber].timesMinus(yTmp, data.xError[primalNumbers[j]]);
+				this->operatorListT[operatorNumber]->timesMinus(yTmp, data.xError[primalNumbers[j]]);
 			}
 		}
 	}

@@ -12,7 +12,7 @@ private:
 	T factor;
 
 public:
-	flexL2dualizedDataTerm(T _alpha, flexVector<flexMatrix<T> > _operatorList, flexVector<T> _f) : flexDualizedDataTerm<T>(_alpha, _operatorList, _f) 
+	flexL2dualizedDataTerm(T _alpha, flexVector<flexLinearOperator<T>* > _operatorList, flexVector<T> _f) : flexDualizedDataTerm<T>(_alpha, _operatorList, _f)
 	{
 		initiated = false;
 	};
@@ -35,10 +35,13 @@ public:
 		{
 			initiate(sigma[dualNumbers[0]]);
 		}
+
+		//printf("Dual %d direct\n", dualNumbers[0]);
 		
 		data.y[dualNumbers[0]] = data.yTilde[dualNumbers[0]];
-		data.y[dualNumbers[0]] -= this->fAlphaSigma;
-		data.y[dualNumbers[0]] *= factor;
+
+		data.y[dualNumbers[0]].vectorSubstract(this->fAlphaSigma);
+		data.y[dualNumbers[0]].scalarMult(factor);
 	};
 };
 

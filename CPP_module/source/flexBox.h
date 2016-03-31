@@ -67,6 +67,11 @@ class flexBox
 		}
 
 
+		flexVector<T> getDual(int i)
+		{
+			return data.y[i];
+		}
+
 
 		void init()
 		{
@@ -96,12 +101,12 @@ class flexBox
 
 			for (int i = 0; i < tau.size(); ++i)
 			{
-				tau[i] = 1 / tau[i];
+				tau[i] = static_cast<T>(1) / tau[i];
 			}
 
 			for (int i = 0; i < sigma.size(); ++i)
 			{
-				sigma[i] = 1 / sigma[i];
+				sigma[i] = static_cast<T>(1) / sigma[i];
 			}
 		}
 
@@ -177,8 +182,6 @@ class flexBox
 				termsDual[i]->applyProx(data,sigma, dcd[i], dcp[i]);
 			}
 
-			//data.yTilde[0].print();
-
 			for (int i = 0; i < data.xTilde.size(); ++i)
 			{
 				data.xTilde[i] = data.x[i];
@@ -194,10 +197,6 @@ class flexBox
 				termsPrimal[i]->applyProx(data, tau, pcp[i]);
 			}
 
-			/*data.xBar = data.x;
-			data.xBar += data.x;
-			data.xBar -= data.xOld;*/
-
 			for (int i = 0; i < data.xTilde.size(); ++i)
 			{
 				//musst be implemented in the manner below, times theta missing
@@ -206,9 +205,6 @@ class flexBox
 				data.xBar[i] += data.x[i];
 				data.xBar[i] -= data.xOld[i];
 			}
-
-			//data.xBar[0].print();
-			//data.x[0].print();
 
 		}
 
@@ -250,17 +246,17 @@ class flexBox
 			{
 				data.xError[i].abs(); //take absolute value of entries
 
-				primalResidual += data.xError[i].sum() / data.xError[i].size(); //sum values up and add to primal residual
+				primalResidual += data.xError[i].sum() / static_cast<T>(data.xError[i].size()); //sum values up and add to primal residual
 			}
-			primalResidual = primalResidual / data.xOld.size();
+			primalResidual = primalResidual / static_cast<T>(data.xOld.size());
 
 			for (int i = 0; i < data.yOld.size(); ++i)
 			{
 				data.yError[i].abs(); //take absolute value of entries
 
-				dualResidual += data.yError[i].sum() / data.yError[i].size(); //sum values up and add to dual residual
+				dualResidual += data.yError[i].sum() / static_cast<T>(data.yError[i].size()); //sum values up and add to dual residual
 			}
-			dualResidual = dualResidual / data.yOld.size();
+			dualResidual = dualResidual / static_cast<T>(data.yOld.size());
 
 			error = primalResidual + dualResidual;
 
@@ -273,16 +269,14 @@ class flexBox
 
 			T error = static_cast<int>(1);
 			int iteration = 1;
-
-
-
+			
 			while (error > tol && iteration < maxIterations)
 			{
 				doIteration();
-				//printf("Value f at 5 is %f\n",data.x[0][5]);
+				
 				if (iteration % 1000 == 1)
 				{
-					if (isMATLAB == true)
+					if (this->isMATLAB)
 					{
 						mexPrintf("Iteration #%d | Error:%f\n", iteration, error);
 						mexEvalString("pause(.0001);");

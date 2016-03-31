@@ -1,9 +1,9 @@
-%prox for G = alpha  |u-f|
+%empty term
 classdef emptyDataTerm < primalPart & IdentityProxPrimal
 
     methods
         function obj = emptyDataTerm()
-            obj = obj@primalPart(1);%only one primal variable
+            obj = obj@primalPart(1);
             
             obj.CPPsupport = 1;
         end

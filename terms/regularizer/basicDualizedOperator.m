@@ -32,6 +32,7 @@ classdef basicDualizedOperator < dualPart & tildeMultiOperatorMultiDual
                         end
                         
                         obj.operator{opNum} = opTmp;
+                        obj.operatorT{opNum} = opTmp';
                         obj.length{opNum} = size(opTmp,1);
                         
                         obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(opTmp),1));
@@ -42,6 +43,7 @@ classdef basicDualizedOperator < dualPart & tildeMultiOperatorMultiDual
                 obj.numVars = 1;
                 obj.length{1} = size(A,1);
                 obj.operator{1} = A;
+                obj.operatorT{1} = A';
 
                 obj.mySigma{1} = max(sum(abs(A),1));
                 obj.myTau{1} = max(sum(abs(A),2));

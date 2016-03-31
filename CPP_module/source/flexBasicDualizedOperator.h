@@ -10,7 +10,7 @@ class flexBasicDualizedOperator : public flexTildeMultiOperatorMultiDual<T>
 private:
 
 public:
-	flexBasicDualizedOperator(T _alpha, int numberPrimals, flexVector<flexMatrix<T> > _operatorList) : flexTildeMultiOperatorMultiDual<T>(_alpha, numberPrimals, _operatorList.size() / numberPrimals)
+	flexBasicDualizedOperator(T _alpha, int numberPrimals, flexVector<flexLinearOperator<T>* > _operatorList) : flexTildeMultiOperatorMultiDual<T>(_alpha, numberPrimals, _operatorList.size() / numberPrimals)
 	{
 			
 		this->operatorList = _operatorList;
@@ -25,11 +25,11 @@ public:
 			{
 				int opNum = i*numberPrimals + j;
 
-				this->operatorListT.push_back(this->operatorList[opNum]);
-				this->operatorListT[opNum].transpose();
+				this->operatorListT.push_back(this->operatorList[opNum]->copy());
+				this->operatorListT[opNum]->transpose();
 
-				this->mySigma[i] += this->operatorList[opNum].getMaxRowSumAbs();
-				this->myTau[j] += this->operatorListT[opNum].getMaxRowSumAbs();
+				this->mySigma[i] += this->operatorList[opNum]->getMaxRowSumAbs();
+				this->myTau[j] += this->operatorListT[opNum]->getMaxRowSumAbs();
 			}
 		}
 	};

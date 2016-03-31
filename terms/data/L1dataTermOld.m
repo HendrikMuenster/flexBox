@@ -12,10 +12,6 @@ classdef L1dataTermOld < primalPart
 			
 			obj.CPPsupport = 1;
         end
-        
-        function init(obj,myNumber,main)
-
-        end
            
         function applyProx(obj,main,primalNumber)
             lambda = main.params.tau{primalNumber} * obj.factor;

@@ -1,4 +1,4 @@
-classdef basicLaplace < dualPart & tildeMultiOperatorMultiDual
+classdef basicLaplace < basicDualizedOperator
     properties
     end
     
@@ -10,22 +10,18 @@ classdef basicLaplace < dualPart & tildeMultiOperatorMultiDual
             vararginParser;
             
             opTmp = generateForwardGradientND( dims,ones(numel(dims),1) );
-            
-            obj = obj@dualPart(alpha);
-            obj.numVars = 1; %divergence produces scalar quantity
-            obj.length{1} = prod(dims);
-            obj.mySigma{1} = 3*numel(dims);
-            obj.myTau{1} = 4*numel(dims);
-            
+
             for i=1:numel(dims)
                 op = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: );
-                obj.operator{i} = op'*op;
+                operatorListTmp{i} = op'*op;
             end
             
+            operatorList{1} = sparse(prod(dims),prod(dims));
             for i=2:numel(dims)
-                obj.operator{1} = obj.operator{1} + obj.operator{i};
-                obj.operator{i} = []; %save memory
+                operatorList{1} = operatorList{1} + operatorListTmp{i};
             end
+            
+            obj = obj@basicDualizedOperator(alpha,1,operatorList,varargin);
         end
     end
 end

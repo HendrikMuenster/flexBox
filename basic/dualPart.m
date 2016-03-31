@@ -1,7 +1,7 @@
 classdef dualPart < functionalPart
-    
     properties
         operator
+        operatorT
         numVars
         length
         myTau

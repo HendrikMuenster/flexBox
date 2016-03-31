@@ -21,7 +21,7 @@ classdef flexBox < handle
         xError
         yError
         
-        adaptive
+        %adaptive
     end
     
     methods
@@ -205,12 +205,14 @@ classdef flexBox < handle
                 end
                 
                 %check operators for non-matrix type and convert them
+                %operatorTypes = {};
                 for opNum = 1:numel(obj.duals{i}.operator)
                     
-                    if (isa(obj.duals{i}.operator{opNum},'zeroOperator') || isa(obj.duals{i}.operator{opNum},'identityOperator') || isa(obj.duals{i}.operator{opNum},'diagonalOperator'))
-                        %if not matrix call the returnMatrix method
-                        obj.duals{i}.operator{opNum} = obj.duals{i}.operator{opNum}.returnMatrix();
-                    end
+                    %if (isa(obj.duals{i}.operator{opNum},'zeroOperator') || isa(obj.duals{i}.operator{opNum},'identityOperator') || isa(obj.duals{i}.operator{opNum},'diagonalOperator'))
+%                     if (isa(obj.duals{i}.operator{opNum},'gradientOperator'))
+%                         %if not matrix call the returnMatrix method
+%                         obj.duals{i}.operator{opNum} = obj.duals{i}.operator{opNum}.returnMatrix();
+%                     end
                 end
                 
                 mexCallString = [mexCallString,'''dual''',',''', ClassName  ,''',','obj.duals{',num2str(i),'}.factor',',','obj.duals{',num2str(i),'}.operator,','obj.DcP{',num2str(i),'},'];
@@ -221,8 +223,6 @@ classdef flexBox < handle
             end
             
             mexCallString = ['flexBoxCPP(',mexCallString,'''end''',');'];
-            %result = flexboxCPP('primal','L1dataTerm',obj.primals{1}.factor,obj.primals{1}.dims,obj.primals{1}.f,'dual','L1gradientAniso',obj.duals{1}.factor,obj.duals{1}.operator,'end');
-
             
             [resultCPP{1:numel(obj.x)}] = eval(mexCallString);
             

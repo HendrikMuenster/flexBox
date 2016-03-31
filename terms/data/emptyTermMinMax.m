@@ -1,4 +1,4 @@
-%prox for G = alpha  |u-f|
+%term respresenting an indicator function on the interval [minVal,maxVal]
 classdef emptyTermMinMax < primalPart & MinMaxProxPrimal
 
     methods

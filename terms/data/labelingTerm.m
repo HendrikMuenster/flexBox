@@ -1,4 +1,4 @@
-%prox for G = alpha  |u-f|
+%labeling term
 classdef labelingTerm < primalPart
     
     properties

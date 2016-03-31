@@ -219,7 +219,8 @@ public:
 
 	size_type size()
 	{
-		return _size;
+		size_type copySize = _size;
+		return copySize;
 	}
 
 	T sum()
@@ -374,6 +375,46 @@ public:
 		return *this;
 	}
 
+	T max()
+	{
+		if (_size > 1)
+		{
+			T maxValue = _data[0];
+
+			for (size_type i = 1; i < _size; ++i)
+			{
+				if (_data[i] > maxValue)
+				{
+					maxValue = _data[i];
+				}
+			}
+
+			return maxValue;
+		}
+
+		return static_cast<T>(0);
+	}
+
+	T min()
+	{
+		if (_size > 1)
+		{
+			T minValue = _data[0];
+
+			for (size_type i = 1; i < _size; ++i)
+			{
+				if (_data[i] > minValue)
+				{
+					minValue = _data[i];
+				}
+			}
+		}
+		else
+		{
+			return static_cast<T>(0);
+		}
+	}
+
 	flexVector<T> &operator+=(const flexVector< T > &input)
 	{
 		#pragma omp parallel for
@@ -445,7 +486,7 @@ public:
 		scalarMult(static_cast<T>(1) / input);
 	}
 
-	//calculates the maximum of every element and scalar input
+	//multiplies every element with scalar input
 	void scalarMult(T input)
 	{
 		#pragma omp parallel for
@@ -472,6 +513,16 @@ public:
 		for (size_type i = 0; i < _size; ++i)
 		{
 			_data[i] = _data[i]/input[i];
+		}
+	}
+
+	//substract element in input from corresponding element in vector
+	void vectorSubstract(const flexVector< T > &input)
+	{
+		#pragma omp parallel for
+		for (size_type i = 0; i < _size; ++i)
+		{
+			_data[i] = _data[i] - input[i];
 		}
 	}
 

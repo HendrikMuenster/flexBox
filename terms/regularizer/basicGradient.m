@@ -1,5 +1,5 @@
 %
-classdef basicGradient < basicDualizedOperator & tildeMultiOperatorMultiDual
+classdef basicGradient < basicDualizedOperator
     methods
         function obj = basicGradient(alpha,dims,varargin)
             if (nargin > 2 && numel(varargin) == 1)
@@ -7,24 +7,17 @@ classdef basicGradient < basicDualizedOperator & tildeMultiOperatorMultiDual
             end
             
             vararginParser;
-			
+            
+            initVar('discretization','forward');
             %usedims should be a {0,1} array of length dims indicating whether a
             %dimension should be used or not
-            if (~exist('usedims','var'))
-                usedims = ones(numel(dims),1);
-            end
-            
-            if (exist('discretization','var') && strcmp(discretization,'backward'))
-                opTmp = generateBackwardGradientND( dims,ones(numel(dims),1) );
-            else
-                opTmp = generateForwardGradientND( dims,ones(numel(dims),1) );
-            end
+            initVar('usedims',ones(numel(dims),1));
             
             opNum = 1;
             for i=1:numel(usedims)
                 %if dims(i) equals 1 then matrix is empty
                 if (usedims(i) == 1 && dims(i) ~= 1)
-                    operatorList{opNum} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: );
+                    operatorList{opNum} = gradientOperator(dims,i,'discretization',discretization);
                     opNum = opNum + 1;
                 end
             end
