@@ -11,7 +11,7 @@ private:
 	flexVector<T> diagonalElements;
 public:
 
-	flexDiagonalOperator(flexVector<T> _diagonalElements) : flexLinearOperator(_diagonalElements.size(), _diagonalElements.size())
+	flexDiagonalOperator(flexVector<T> _diagonalElements) : flexLinearOperator<T>(_diagonalElements.size(), _diagonalElements.size())
 	{
 		this->diagonalElements = _diagonalElements;
 	};

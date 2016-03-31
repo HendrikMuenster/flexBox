@@ -32,6 +32,7 @@
 
 #include <cstddef>
 #include <ctime>
+#include <cmath>
 
 #include "tools.h"
 

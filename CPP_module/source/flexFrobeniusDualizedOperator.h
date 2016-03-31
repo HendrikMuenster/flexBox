@@ -26,7 +26,7 @@ public:
 			normTmp2 += normTmp.sum();
 		}
 
-		normTmp2 = std::max(static_cast<T>(1), std::sqrt(normTmp2) / this->alpha);
+		normTmp2 = myMax(static_cast<T>(1), sqrt(normTmp2) / this->alpha);
 
 		for (int i = 0; i < numElements; ++i)
 		{

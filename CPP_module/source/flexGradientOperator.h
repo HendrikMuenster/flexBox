@@ -49,7 +49,7 @@ public:
 	//type:
 	// 0 = forward
 	// 1 = backward
-	flexGradientOperator(flexVector<int> _inputDimension, int _gradDirection, int _type) : flexLinearOperator(_inputDimension.product(), _inputDimension.product())
+	flexGradientOperator(flexVector<int> _inputDimension, int _gradDirection, int _type) : flexLinearOperator<T>(_inputDimension.product(), _inputDimension.product())
 	{
 		this->inputDimension = _inputDimension;
 		this->gradDirection = _gradDirection;

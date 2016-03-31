@@ -8,7 +8,7 @@ template < typename T >
 class flexZeroOperator : public flexLinearOperator<T>
 {
 public:
-	flexZeroOperator(int _numRows, int _numCols) : flexLinearOperator(_numRows, _numCols){};
+	flexZeroOperator(int _numRows, int _numCols) : flexLinearOperator<T>(_numRows, _numCols){};
 
 	flexZeroOperator<T>* copy()
 	{

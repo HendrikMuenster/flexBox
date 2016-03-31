@@ -11,7 +11,7 @@ private:
 	bool minus;
 public:
 
-	flexIdentityOperator(int _numRows, int _numCols,bool _minus) : flexLinearOperator(_numRows, _numCols)
+	flexIdentityOperator(int _numRows, int _numCols,bool _minus) : flexLinearOperator<T>(_numRows, _numCols)
 	{
 		minus = _minus;
 	};
