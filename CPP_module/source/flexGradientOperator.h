@@ -49,7 +49,7 @@ public:
 	//type:
 	// 0 = forward
 	// 1 = backward
-	flexGradientOperator(flexVector<int> _inputDimension, int _gradDirection, int _type) : flexLinearOperator<T>(_inputDimension.product(), _inputDimension.product())
+	flexGradientOperator(flexVector<int> _inputDimension, int _gradDirection, int _type) : flexLinearOperator(_inputDimension.product(), _inputDimension.product())
 	{
 		this->inputDimension = _inputDimension;
 		this->gradDirection = _gradDirection;
@@ -137,7 +137,7 @@ public:
 
 	}
 
-	void calculateDifference(const flexVector<T> &input, flexVector<T> &output, flexVector<int> vec1, const flexVector<int> vec2, const flexVector<int> vec3)
+	void calculateDifference(const flexVector<T> &input, flexVector<T> &output,const flexVector<int> &vec1, const flexVector<int> &vec2, const flexVector<int> &vec3) const
 	{
 		int numElements = vec1.size();
 		#pragma omp parallel for
@@ -333,6 +333,12 @@ public:
 		}
 	}
 
+	T getMaxRowSumAbs() const
+	{
+		//row sum of absolute values is at maximum 2
+		return static_cast<T>(2);
+	}
+
 	T getMaxRowSumAbs()
 	{
 		//row sum of absolute values is at maximum 2
@@ -358,7 +364,17 @@ public:
 		return (int)(i + j*this->inputDimension[0]);
 	}
 
+	const int index2DtoLinear(int i, int j) const
+	{
+		return (int)(i + j*this->inputDimension[0]);
+	}
+
 	int index3DtoLinear(int i, int j, int k)
+	{
+		return (int)(i + j*this->inputDimension[0] + k*this->inputDimension[0] * this->inputDimension[1]);
+	}
+
+	const int index3DtoLinear(int i, int j, int k) const
 	{
 		return (int)(i + j*this->inputDimension[0] + k*this->inputDimension[0] * this->inputDimension[1]);
 	}

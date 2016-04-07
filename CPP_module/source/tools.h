@@ -40,6 +40,8 @@ float myMax(float a, float b)
 	return a < b ? b : a;
 }
 
+
+
 float myPow2(float x)
 {
 	return x * x;

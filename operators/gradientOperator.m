@@ -48,6 +48,14 @@ classdef gradientOperator < basicOperator
                 res.type = 'forward';
             end
         end
+        
+        function result = size(obj,dim)
+            result = size(obj.matrix,dim);
+        end
+        
+        function result = getMaxRowSumAbs(obj)
+            result = 2;
+        end
     end
     
 end

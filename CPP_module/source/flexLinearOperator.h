@@ -16,12 +16,12 @@ public:
 		numCols = _numCols;
 	}
 
-	int getNumCols()
+	int getNumCols() const
 	{
 		return numCols;
 	}
 
-	int getNumRows()
+	int getNumRows() const
 	{
 		return numRows;
 	}

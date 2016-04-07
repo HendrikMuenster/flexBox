@@ -13,9 +13,9 @@ private:
 	flexVector<T> valueList;
 
 public:
-	flexMatrix(void) : indexList(), valueList(), rowToIndexList(), flexLinearOperator<T>(0, 0){};
+	flexMatrix(void) : indexList(), valueList(), rowToIndexList(), flexLinearOperator(0, 0){};
 
-	flexMatrix(int  _numRows, int  _numCols) : rowToIndexList(_numRows + 1, static_cast<int>(0)), indexList(0, 0), valueList(0, 0), flexLinearOperator<T>(_numRows, _numCols){};
+	flexMatrix(int  _numRows, int  _numCols) : rowToIndexList(_numRows + 1, static_cast<int>(0)), indexList(0, 0), valueList(0, 0), flexLinearOperator(_numRows, _numCols){};
 
 	flexMatrix<T>* copy()
 	{
@@ -94,7 +94,7 @@ public:
 	}
 
 	//this is the fast way to fill flexMatrix
-	void blockInsert(flexVector<int> indexI,const  flexVector<int> indexJ,const flexVector<T> indexVal)
+	void blockInsert(flexVector<int> &indexI,const  flexVector<int> &indexJ,const flexVector<T> &indexVal)
 	{
 		//clear matrix
 		clear();
@@ -159,7 +159,7 @@ public:
 		valueList[startIndexNextRow] = val;
 
 		//increase all elemets above i in rowToIndexList
-		for (int index = i + 1; index < this->getNumRows()+1; index++)
+		for (int index = i + 1; index < numRows+1; index++)
 		{
 			++rowToIndexList[index];
 		}

@@ -8,7 +8,7 @@
 % Contact: hendrik.dirks@wwu.de
 %
 %
-% Version 1.01
+% Version 1.02
 % Date: 2016-03-31
 
 % FlexBox is copyright ©2016 by Hendrik Dirks and is distributed under the terms of the GNU General Public License (GPL) version 3 (or later).
@@ -34,5 +34,9 @@
 
 
 % List of changes:
+07.04.2016 (Version 1.02)
+- Added FFT-based convolution operator, downsampling and concatenation operator
+- Added examples for deblurring and operator concatenation
+- Speed improvements for C++ version
 31.03.2016 (Version 1.01)
 - generalized the concept of matrices to linear operators and created classes for gradient, diagonal, identity and zero operator for MATLAB and C++ version to improve speed and flexibility

@@ -10,7 +10,7 @@ class flexFrobeniusDualizedOperator : public flexBasicDualizedOperator<T>
 public:
 	flexFrobeniusDualizedOperator(T _alpha, int numberPrimals, flexVector<flexLinearOperator<T>* > _operatorList) : flexBasicDualizedOperator<T>(_alpha, numberPrimals, _operatorList) {};
 
-	void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
+	void applyProx(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers)
 	{
 		int numElements = data.y[dualNumbers[0]].size();
 
@@ -26,7 +26,7 @@ public:
 			normTmp2 += normTmp.sum();
 		}
 
-		normTmp2 = myMax(static_cast<T>(1), sqrt(normTmp2) / this->alpha);
+		normTmp2 = std::max(static_cast<T>(1), std::sqrt(normTmp2) / this->alpha);
 
 		for (int i = 0; i < numElements; ++i)
 		{

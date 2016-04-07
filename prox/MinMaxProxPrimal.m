@@ -12,7 +12,7 @@ classdef MinMaxProxPrimal < handle
         end
 
         function applyProx(obj,main,primalNumbers)
-            for i=1:obj.numVars
+            for i=1:numel(primalNumbers)
                 main.x{primalNumbers(i)} = min(obj.maxVal,max(obj.minVal,main.xTilde{primalNumbers(i)}));
             end
         end

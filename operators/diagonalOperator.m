@@ -21,10 +21,18 @@ classdef diagonalOperator < basicOperator
             mat = spdiags(obj.diagonalElements,0,numel(obj.diagonalElements),numel(obj.diagonalElements));
         end
         
+        function result = size(obj,dim)
+            result = numel(obj.diagonalElements);
+        end
+        
 %         function res = ctranspose(obj)
 %             res = obj;
 %             res.transposed = ~obj.transposed;
 %         end
+
+        function result = getMaxRowSumAbs(obj)
+            result = max(abs(obj.diagonalElements));
+        end
     end
     
 end

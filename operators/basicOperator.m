@@ -7,6 +7,8 @@ classdef basicOperator
     methods (Abstract)
         mtimes(obj,vector)
         returnMatrix(obj)
+        size(obj,dim)
+        getMaxRowSumAbs(obj)
     end
     
 end

@@ -222,14 +222,20 @@ classdef flexBox < handle
                 end
             end
             
+            %append x and y at the end
+            mexCallString = [mexCallString,'''x'',','obj.x',',','''y'',','obj.y',','];
+            
             mexCallString = ['flexBoxCPP(',mexCallString,'''end''',');'];
             
-            [resultCPP{1:numel(obj.x)}] = eval(mexCallString);
+            [resultCPP{1:numel(obj.x)+numel(obj.y)}] = eval(mexCallString);
             
-            for i=1:numel(resultCPP)
+            for i=1:numel(obj.x)
                 obj.x{i} = resultCPP{i};
             end
             
+            for i=1:numel(obj.y)
+                obj.y{i} = resultCPP{numel(obj.x)+i};
+            end
             
         end
         
@@ -363,6 +369,8 @@ classdef flexBox < handle
                     obj.addTerm(emptyDataTerm(),i);
                 end
             end
+            
+            %
             
             %init with zero
             for i=1:numel(obj.x)

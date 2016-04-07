@@ -21,10 +21,19 @@ classdef zeroOperator < basicOperator
             mat = sparse(obj.nPx,obj.nPx);
         end
         
+        
+        function result = size(obj,dim)
+            result = obj.nPx;
+        end
+        
 %         function res = ctranspose(obj)
 %             res = obj;
 %             res.transposed = ~obj.transposed;
 %         end
+
+        function result = getMaxRowSumAbs(obj)
+            result = 0;
+        end
     end
     
 end

@@ -12,7 +12,7 @@ private:
 public:
 	flexKLdualizedDataTerm(T _alpha, flexVector<flexLinearOperator<T>* > _operatorList, flexVector<T> _f) : flexDualizedDataTerm<T>(_alpha, _operatorList, _f) {};
 
-	void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
+	void applyProx(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers)
 	{
 		//implements MATLAB code:
 		//main.y{dualNumber} = 0.5*(1 + main.yTilde{dualNumber} - sqrt( (main.yTilde{dualNumber}-1).^2 + 4*main.params.sigma{dualNumber}*obj.f(:) ));

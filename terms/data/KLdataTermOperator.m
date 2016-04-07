@@ -11,7 +11,7 @@ classdef KLdataTermOperator < basicDualizedDataterm
         end
         
         function applyProx(obj,main,dualNumber,~)
-            main.y{dualNumber} = 0.5*(1 + main.yTilde{dualNumber} - sqrt( (main.yTilde{dualNumber}-1).^2 + 4*main.params.sigma{dualNumber}*obj.f(:) ));
+            main.y{dualNumber} = min(1,0.5*(1 + main.yTilde{dualNumber} - sqrt( (main.yTilde{dualNumber}-1).^2 + 4*main.params.sigma{dualNumber}*obj.f(:) )));
         end
         
     end

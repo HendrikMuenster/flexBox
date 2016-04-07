@@ -15,6 +15,11 @@ struct IsPrimitiveType<float> {
 	enum { VALUE = 1 };
 };
 
+template<>
+struct IsPrimitiveType<double> {
+	enum { VALUE = 1 };
+};
+
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -217,13 +222,13 @@ public:
 		free(_data);
 	}
 
-	size_type size()
+	size_type size() const
 	{
 		size_type copySize = _size;
 		return copySize;
 	}
 
-	T sum()
+	T sum() const
 	{
 		T result = static_cast<T>(0);
 
@@ -235,7 +240,7 @@ public:
 		return result;
 	}
 
-	T product()
+	T product() const
 	{
 		T result = static_cast<T>(1);
 
@@ -247,7 +252,7 @@ public:
 		return result;
 	}
 
-	void print()
+	void print() const
 	{
 		printf("Vector contains: \n");
 		for (size_type i = 0; i < _size; ++i)
@@ -395,7 +400,7 @@ public:
 		return static_cast<T>(0);
 	}
 
-	T min()
+	T min() const
 	{
 		if (_size > 1)
 		{
@@ -403,7 +408,7 @@ public:
 
 			for (size_type i = 1; i < _size; ++i)
 			{
-				if (_data[i] > minValue)
+				if (_data[i] < minValue)
 				{
 					minValue = _data[i];
 				}

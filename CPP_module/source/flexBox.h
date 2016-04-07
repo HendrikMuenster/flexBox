@@ -56,9 +56,14 @@ class flexBox
 			isMATLAB = false;
 		};
 
-		int getNumPrimalVars()
+		int getNumPrimalVars() const 
 		{
 			return data.x.size();
+		}
+
+		int getNumDualVars() const
+		{
+			return data.y.size();
 		}
 
 		flexVector<T> getPrimal(int i)
@@ -66,11 +71,22 @@ class flexBox
 			return data.x[i];
 		}
 
+		void setPrimal(int i, flexVector<T> input)
+		{
+			data.x[i] = input;
+		}
+
+		void setDual(int i, flexVector<T> input)
+		{
+			data.y[i] = input;
+		}
 
 		flexVector<T> getDual(int i)
 		{
 			return data.y[i];
 		}
+
+
 
 
 		void init()

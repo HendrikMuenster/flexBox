@@ -28,7 +28,7 @@ class flexL1dualizedOperatorIso : public flexBasicDualizedOperator<T>
 			initiated = true;
 		}
 
-		void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
+		void applyProx(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers)
 		{
 			if (!initiated)
 			{
@@ -42,8 +42,6 @@ class flexL1dualizedOperatorIso : public flexBasicDualizedOperator<T>
 			//for all dual variables
 			for (int i = 0; i < dualNumbers.size(); ++i)
 			{
-				//printf("Dual %d norm\n", dualNumbers[i]);
-
 				normTmp = data.yTilde[dualNumbers[i]];
 				normTmp.pow2();
 				normTmp2 += normTmp;
@@ -54,7 +52,7 @@ class flexL1dualizedOperatorIso : public flexBasicDualizedOperator<T>
 			#pragma omp parallel for
 			for (int j = 0; j < elements; ++j)
 			{
-				normTmp2[j] = myMax(numberOne, sqrt(normTmp2[j]) / this->alpha);
+				normTmp2[j] = myMax(numberOne, std::sqrt(normTmp2[j]) / this->alpha);
 			}
 
 			for (int i = 0; i < dualNumbers.size(); ++i)

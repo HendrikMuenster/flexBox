@@ -13,7 +13,7 @@ private:
 public:
 	flexTildeMultiOperatorMultiDual(T _alpha, int numberPrimals, int _numberVars) : flexTermDual<T>(_alpha, numberPrimals, _numberVars){};
 
-	void yTilde(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
+	void yTilde(flexBoxData<T> &data,const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers)
 	{
 		//set yTilde = y;
 		for (int i = 0; i < dualNumbers.size(); ++i)
@@ -37,7 +37,7 @@ public:
 		}
 	}
 
-	void xTilde(flexBoxData<T> &data, flexVector<T> tau, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
+	void xTilde(flexBoxData<T> &data, const flexVector<T> &tau, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers)
 	{
 		for (int i = 0; i < dualNumbers.size(); ++i)
 		{
@@ -53,7 +53,7 @@ public:
 		}
 	}
 
-	void yError(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
+	void yError(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers)
 	{
 		for (int i = 0; i < dualNumbers.size(); ++i)
 		{
@@ -70,7 +70,7 @@ public:
 		}
 	}
 
-	void xError(flexBoxData<T> &data, flexVector<T> tau, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
+	void xError(flexBoxData<T> &data, const flexVector<T> &tau, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers)
 	{
 		for (int i = 0; i < dualNumbers.size(); ++i)
 		{

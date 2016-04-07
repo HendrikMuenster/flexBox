@@ -41,10 +41,18 @@ classdef identityOperator < basicOperator
             result.minus = ~result.minus;
         end
         
+        function result = size(obj,dim)
+            result = obj.nPx;
+        end
+        
 %         function res = ctranspose(obj)
 %             res = obj;
 %             res.transposed = ~obj.transposed;
 %         end
+
+        function result = getMaxRowSumAbs(obj)
+            result = 1;
+        end
     end
     
 end

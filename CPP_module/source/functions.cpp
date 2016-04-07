@@ -32,7 +32,6 @@
 
 #include <cstddef>
 #include <ctime>
-#include <cmath>
 
 #include "tools.h"
 
@@ -66,6 +65,7 @@ using namespace std;
 
 typedef float floatingType;
 
+void copyToFlexVector(flexVector<floatingType> &vector,const double *input, int numElements);
 bool checkClassType(mxArray *object, char *className);
 bool checkSparse(mxArray *object);
 void copyMatlabToFlexmatrix(const mxArray *input, flexMatrix<floatingType> *output);
@@ -331,6 +331,48 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			//increase entry counter by number of arguments
 			
 		}
+		else if (strcmp(func_type, "x") == 0)
+		{
+			int numberPrimalVars = mainObject.getNumPrimalVars();
+			
+			for (int i = 0; i < numberPrimalVars; ++i)
+			{
+				mxArray *xInput = mxGetCell(prhs[entry + 1], i);
+				double *xPointerInput = mxGetPr(xInput);
+
+				int size_input = static_cast<int>(mxGetN(xInput) * mxGetM(xInput));
+
+				flexVector<floatingType> tmpVector(size_input, 0.0);
+
+				copyToFlexVector(tmpVector, xPointerInput, size_input);
+				
+				mainObject.setPrimal(i, tmpVector);
+			}
+
+			entry += 2;
+		}
+		else if (strcmp(func_type, "y") == 0)
+		{
+			int numberDualVars = mainObject.getNumDualVars();
+
+			printf("Num dual %d\n", numberDualVars);
+
+			for (int i = 0; i < numberDualVars; ++i)
+			{
+				mxArray *yInput = mxGetCell(prhs[entry + 1], i);
+				double *yPointerInput = mxGetPr(yInput);
+
+				int size_input = static_cast<int>(mxGetN(yInput) * mxGetM(yInput));
+
+				flexVector<floatingType> tmpVector(size_input, 0.0);
+
+				copyToFlexVector(tmpVector, yPointerInput, size_input);
+
+				mainObject.setDual(i, tmpVector);
+			}
+
+			entry += 2;
+		}
 
 		if (oldEntry == entry)
 		{
@@ -340,32 +382,53 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	mainObject.runAlgorithm();
 
+	//send content of primal vars
+
 	//retrieve results from FlexBox
 	int numPrimalVars = mainObject.getNumPrimalVars();
-
-	printf("Number of primal vars is %d\n", numPrimalVars);
-
 	for (int i = 0; i < numPrimalVars; ++i)
 	{
-		int numberDims = mainObject.getDims(i).size();
+		flexVector<floatingType> flexResult = mainObject.getPrimal(i); 
 
-		int numberElements = 1;
-		size_t *resultSize = new size_t[numberDims];
-		for (int j = 0; j < numberDims; ++j)
-		{
-			resultSize[j] = mainObject.getDims(i)[j];
-			numberElements *= static_cast<int>(resultSize[j]);
-		}
+		size_t *resultSize = new size_t[2];
+		resultSize[0] = flexResult.size();
+		resultSize[1] = 1;
 
-		plhs[i] = mxCreateNumericArray(numberDims, resultSize, mxDOUBLE_CLASS, mxREAL);
+		plhs[i] = mxCreateNumericArray(2, resultSize, mxDOUBLE_CLASS, mxREAL);
 		double *ptrResult = mxGetPr(plhs[i]);
-
-		flexVector<floatingType> flexResult = mainObject.getPrimal(i);
-
-		for (int j = 0; j < numberElements; ++j)
+		for (int j = 0; j < resultSize[0]; ++j)
 		{
 			ptrResult[j] = flexResult[j];
 		}
+	}
+
+	//send content of dual vars
+	//retrieve results from FlexBox
+	int numDualVars = mainObject.getNumDualVars();
+	for (int i = 0; i < numDualVars; ++i)
+	{
+		flexVector<floatingType> flexResult = mainObject.getDual(i); 
+		
+		size_t *resultSize = new size_t[2];
+		resultSize[0] = flexResult.size();
+		resultSize[1] = 1;
+
+		plhs[numPrimalVars + i] = mxCreateNumericArray(2, resultSize, mxDOUBLE_CLASS, mxREAL);
+		double *ptrResult = mxGetPr(plhs[numPrimalVars+i]);
+
+		for (int j = 0; j < resultSize[0]; ++j)
+		{
+			ptrResult[j] = flexResult[j];
+		}
+	}
+
+}
+
+void copyToFlexVector(flexVector<floatingType> &vector,const double *input, int numElements)
+{
+	for (int j = 0; j < numElements; ++j)
+	{
+		vector[j] = input[j];
 	}
 }
 

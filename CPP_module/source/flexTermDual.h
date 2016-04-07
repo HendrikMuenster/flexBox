@@ -38,15 +38,15 @@ class flexTermDual
 			return operatorList[num]->getNumRows();
 		}
 		
-		virtual void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers) = 0;
+		virtual void applyProx(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
 
-		virtual void yTilde(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers) = 0;
+		virtual void yTilde(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
 
-		virtual void xTilde(flexBoxData<T> &data, flexVector<T> tau, flexVector<int> dualNumbers, flexVector<int> primalNumbers) = 0;
+		virtual void xTilde(flexBoxData<T> &data, const flexVector<T> &tau, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
 
-		virtual void yError(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers) = 0;
+		virtual void yError(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
 
-		virtual void xError(flexBoxData<T> &data, flexVector<T> tau, flexVector<int> dualNumbers, flexVector<int> primalNumbers) = 0;
+		virtual void xError(flexBoxData<T> &data, const flexVector<T> &tau, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
 };
 
 #endif

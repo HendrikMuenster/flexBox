@@ -42,17 +42,31 @@ classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
                         
                         obj.length{opNum} = size(opTmp,1);
                         
-                        obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(opTmp),1));
-                        obj.myTau{j} = obj.myTau{j} + max(sum(abs(opTmp),2));
+                        if (issparse(opTmp))
+                            obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(opTmp),1));
+                            obj.myTau{j} = obj.myTau{j} + max(sum(abs(opTmp),2));
+                        else
+                            %this method must be implemented by every
+                            %custom operator
+                            obj.mySigma{i} = obj.mySigma{i} + obj.operator{opNum}.getMaxRowSumAbs();
+                            obj.myTau{j} = obj.myTau{j} + obj.operatorT{opNum}.getMaxRowSumAbs();
+                        end
                     end
                 end
             else
                 obj.length{1} = size(A,1);
                 obj.operator{1} = A;
                 obj.operatorT{1} = A';
-
-                obj.mySigma{1} = max(sum(abs(A),1));
-                obj.myTau{1} = max(sum(abs(A),2));
+                
+                if (issparse(obj.operator{1}))
+                    obj.mySigma{1} = max(sum(abs(obj.operator{1}),1));
+                    obj.myTau{1} = max(sum(abs(obj.operator{1}),2));
+                else
+                    %this method must be implemented by every
+                    %custom operator
+                    obj.mySigma{1} = obj.operator{1}.getMaxRowSumAbs();
+                    obj.myTau{1} = obj.operatorT{1}.getMaxRowSumAbs();
+                end
             end
             
             obj.f = f(:);

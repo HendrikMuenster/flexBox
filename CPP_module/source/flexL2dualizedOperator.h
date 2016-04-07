@@ -10,7 +10,7 @@ class flexL2dualizedOperator : public flexBasicDualizedOperator<T>
 	public:
 		flexL2dualizedOperator(T _alpha, int numberPrimals, flexVector<flexLinearOperator<T>* > _operatorList) : flexBasicDualizedOperator<T>(_alpha, numberPrimals, _operatorList){};
 
-		void applyProx(flexBoxData<T> &data, flexVector<T> sigma, flexVector<int> dualNumbers, flexVector<int> primalNumbers)
+		void applyProx(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers)
 		{
 			for (int i = 0; i < dualNumbers.size(); ++i)
 			{
