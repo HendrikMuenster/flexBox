@@ -75,9 +75,31 @@ classdef concatOperator < basicOperator
         
         function result = getMaxRowSumAbs(obj)
             if (obj.transposed == 1)
-                result = obj.BT.getMaxRowSumAbs() * obj.AT.getMaxRowSumAbs();
+                if (issparse(obj.AT))
+                    resultA = max(sum(abs(obj.AT),1));
+                else
+                    resultA = obj.AT.getMaxRowSumAbs();
+                end
+                if (issparse(obj.BT))
+                    resultB = max(sum(abs(obj.BT),1));
+                else
+                    resultB = obj.BT.getMaxRowSumAbs();
+                end
+                
+                result = resultA * resultB;
             else
-                result = obj.A.getMaxRowSumAbs() * obj.B.getMaxRowSumAbs();
+                if (issparse(obj.A))
+                    resultA = max(sum(abs(obj.A),1));
+                else
+                    resultA = obj.A.getMaxRowSumAbs();
+                end
+                if (issparse(obj.B))
+                    resultB = max(sum(abs(obj.B),1));
+                else
+                    resultB = obj.B.getMaxRowSumAbs();
+                end
+                
+                result = resultA * resultB;
             end
         end
     end
