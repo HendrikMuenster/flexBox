@@ -9,7 +9,7 @@
 %
 %
 % Version 1.02
-% Date: 2016-03-31
+% Date: 2016-04-07
 
 % FlexBox is copyright ©2016 by Hendrik Dirks and is distributed under the terms of the GNU General Public License (GPL) version 3 (or later).
 %
