@@ -19,9 +19,9 @@ classdef concatOperator < basicOperator
         
         function result = mtimes(obj,vector)
             if (obj.transposed)
-                result = obj.BT * (obj.AT * vector);
+                result = obj.BT * (obj.AT * vector(:));
             else
-                result = obj.A * (obj.B * vector);
+                result = obj.A * (obj.B * vector(:));
             end
         end
         

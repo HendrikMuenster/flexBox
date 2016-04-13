@@ -1,179 +1,90 @@
 function A  = warpingOperator(dimsU,flow,varargin)
 
-listI = [];
-listJ = [];
-listVal = [];
-
-%%
 [meshX,meshY] = meshgrid(1:dimsU(2),1:dimsU(1));
 
 indexList = sub2ind(dimsU, meshY, meshX);
 
 indexList = reshape(indexList,dimsU);
 
-if (nargin > 2)
-targetValue = interp2(varargin{2},meshX+flow(:,:,1),meshY + flow(:,:,2));
-end
-%%
-for i=1:dimsU(1)
-    for j=1:dimsU(2)
-        skip = 0;
+targetPoint2Mat = meshX + flow(:,:,1);
+targetPoint1Mat = meshY + flow(:,:,2);
 
-        targetPoint1 = i + flow(i,j,2);
-        targetPoint2 = j + flow(i,j,1);
+x1 = floor(targetPoint1Mat) - 1;
+x2 = x1 + 1;
+x3 = x2 + 1;
+x4 = x3 + 1;
 
-        x(1) = floor(targetPoint1) - 1;
-        x(2) = x(1) + 1;
-        x(3) = x(2) + 1;
-        x(4) = x(3) + 1;
+y1 = floor(targetPoint2Mat) - 1;
+y2 = y1 + 1;
+y3 = y2 + 1;
+y4 = y3 + 1;
 
-        y(1) = floor(targetPoint2) - 1;
-        y(2) = y(1) + 1;
-        y(3) = y(2) + 1;
-        y(4) = y(3) + 1;
+v2 = targetPoint1Mat - x2;
+v1 = targetPoint2Mat - y2;
 
-        v2 = targetPoint1 - x(2);
-        v1 = targetPoint2 - y(2);
-        
+indicator = ones(dimsU);
+indicator(x1 < 1) = 0;
+indicator(y1 < 1) = 0;
+indicator(x4 > dimsU(1)) = 0;
+indicator(y4 > dimsU(2)) = 0;
 
-        numRows = indexList(i,j);
+indicator = indicator > 0;
 
-        if (x(2) < 1 || y(2) < 1 || x(3) > dimsU(1) || y(3) > dimsU(2))
-            skip = 1;
-        elseif (x(1) < 1 || y(1) < 1 || x(4) > dimsU(1) || y(4) > dimsU(2))
-            %use linear interpolation if possible
+v1 = v1(indicator);
+v2 = v2(indicator);
 
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(2),y(2));
-            listVal(end+1) = (1-v1) * (1-v2);
+listJ2 = [indexList(sub2ind(dimsU, x1(indicator(:)), y1(indicator(:))))];
+listVal2 = (v2.^3/4 - v2.^2/2 + v2/4).*v1.^3 + (- v2.^3/2 + v2.^2 - v2/2).*v1.^2 + (v2.^3/4 - v2.^2/2 + v2/4).*v1;
 
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(3),y(2));
-            listVal(end+1) = v2 * (1-v1);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x2(indicator(:)), y1(indicator(:))))];
+listVal2 = [listVal2,(- (3.*v2.^3)/4 + (5.*v2.^2)/4 - 1/2).*v1.^3 + ((3*v2.^3)/2 - (5*v2.^2)/2 + 1).*v1.^2 + (- (3*v2.^3)/4 + (5*v2.^2)/4 - 1/2).*v1];
 
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(2),y(3));
-            listVal(end+1) = v1 * (1-v2);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x3(indicator(:)), y1(indicator(:))))];
+listVal2 = [listVal2,((3*v2.^3)/4 - v2.^2 - v2/4).*v1.^3 + (- (3*v2.^3)/2 + 2*v2.^2 + v2/2).*v1.^2 + ((3*v2.^3)/4 - v2.^2 - v2/4).*v1];
 
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(3),y(3));
-            listVal(end+1) = v1*v2;
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x4(indicator(:)), y1(indicator(:))))];
+listVal2 = [listVal2,(v2.^2/4 - v2.^3/4).*v1.^3 + (v2.^3/2 - v2.^2/2).*v1.^2 + (v2.^2/4 - v2.^3/4).*v1];
 
-            %skip the rest
-            skip = 1;
-        end
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x1(indicator(:)), y2(indicator(:))))];
+listVal2 = [listVal2,v1.^2.*((5.*v2.^3)/4 - (5.*v2.^2)/2 + (5.*v2)/4) - v1.^3.*((3.*v2.^3)/4 - (3.*v2.^2)/2 + (3.*v2)/4) - v2/2 + v2.^2 - v2.^3/2];
 
-        if (~skip)
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x2(indicator(:)), y2(indicator(:))))];
+listVal2 = [listVal2,(3.*v2.^3)/2 - (5.*v2.^2)/2 + v1.^3.*((9.*v2.^3)/4 - (15.*v2.^2)/4 + 3/2) - v1.^2.*((15*v2.^3)/4 - (25.*v2.^2)/4 + 5/2) + 1];
 
-            weight = ones(4);
-            if (nargin > 2)
-                templateResult = varargin{1};
-                interpolatedFunction = varargin{2};
-%i
-%j
-                %adjust interpolation to intensity values
-                for nx = 1:4
-                    for ny = 1:4
-                        
-                        %intensityDifference(ny,nx) = exp(-abs(templateResult(i,j) - interpolatedFunction(x(nx),y(ny)))^2 / 2);
-                        intensityDifference(ny,nx) = exp(-abs(templateResult(i,j) - targetValue(i,j))^2);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x3(indicator(:)), y2(indicator(:))))];
+listVal2 = [listVal2,v2/2 + v1.^3.*(- (9.*v2.^3)/4 + 3.*v2.^2 + (3.*v2)/4) - v1.^2.*(- (15.*v2.^3)/4 + 5.*v2.^2 + (5.*v2)/4) + 2.*v2.^2 - (3.*v2.^3)/2];
 
-                    end
-                end
-intensityDifference = 16*intensityDifference / sum(intensityDifference(:));
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x4(indicator(:)), y2(indicator(:))))];
+listVal2 = [listVal2,v2.^3/2 - v2.^2/2 - v1.^3.*(- (3.*v2.^3)/4 + (3.*v2.^2)/4) + v1.^2.*(- (5.*v2.^3)/4 + (5.*v2.^2)/4)];
 
-%                 if (i>20 && j>20)
-%                  figure(1010);imagesc(intensityDifference);colorbar;pause
-%                  end
-weight = intensityDifference;
-            end
-            
-            %x = xTmp;
-            
-            %p00
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(1),y(1));
-            listVal(end+1) = weight(1,1) * ( (v2^3/4 - v2^2/2 + v2/4)*v1^3 + (- v2^3/2 + v2^2 - v2/2)*v1^2 + (v2^3/4 - v2^2/2 + v2/4)*v1);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x1(indicator(:)), y3(indicator(:))))];
+listVal2 = [listVal2,((3.*v2.^3)/4 - (3.*v2.^2)/2 + (3.*v2)/4).*v1.^3 + (- v2.^3 + 2*v2.^2 - v2).*v1.^2 + (- v2.^3/4 + v2.^2/2 - v2/4).*v1];
 
-            %p01
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(2),y(1));
-            listVal(end+1) = weight(2,1) * ( (- (3*v2^3)/4 + (5*v2^2)/4 - 1/2)*v1^3 + ((3*v2^3)/2 - (5*v2^2)/2 + 1)*v1^2 + (- (3*v2^3)/4 + (5*v2^2)/4 - 1/2)*v1);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x2(indicator(:)), y3(indicator(:))))];
+listVal2 = [listVal2,(- (9*v2.^3)/4 + (15*v2.^2)/4 - 3/2).*v1.^3 + (3*v2.^3 - 5*v2.^2 + 2).*v1.^2 + ((3*v2.^3)/4 - (5*v2.^2)/4 + 1/2).*v1];
 
-            %p02
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(3),y(1));
-            listVal(end+1) = weight(3,1) * ( ((3*v2^3)/4 - v2^2 - v2/4)*v1^3 + (- (3*v2^3)/2 + 2*v2^2 + v2/2)*v1^2 + ((3*v2^3)/4 - v2^2 - v2/4)*v1);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x3(indicator(:)), y3(indicator(:))))];
+listVal2 = [listVal2,v1.*(- (3*v2.^3)/4 + v2.^2 + v2/4) + v1.^2.*(- 3*v2.^3 + 4*v2.^2 + v2) - v1.^3.*(- (9*v2.^3)/4 + 3*v2.^2 + (3*v2)/4)];
 
-            %p03
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(4),y(1));
-            listVal(end+1) = weight(4,1) * ( (v2^2/4 - v2^3/4)*v1^3 + (v2^3/2 - v2^2/2)*v1^2 + (v2^2/4 - v2^3/4)*v1);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x4(indicator(:)), y3(indicator(:))))];
+listVal2 = [listVal2,((3*v2.^2)/4 - (3*v2.^3)/4).*v1.^3 + (v2.^3 - v2.^2).*v1.^2 + (v2.^3/4 - v2.^2/4).*v1];
 
-            %p10
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(1),y(2));
-            listVal(end+1) = weight(1,2) * ( v1^2*((5*v2^3)/4 - (5*v2^2)/2 + (5*v2)/4) - v1^3*((3*v2^3)/4 - (3*v2^2)/2 + (3*v2)/4) - v2/2 + v2^2 - v2^3/2);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x1(indicator(:)), y4(indicator(:))))];
+listVal2 = [listVal2,(- v2.^3/4 + v2.^2/2 - v2/4).*v1.^3 + (v2.^3/4 - v2.^2/2 + v2/4).*v1.^2];
 
-            %p11
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(2),y(2));
-            listVal(end+1) = weight(2,2) * ( (3*v2^3)/2 - (5*v2^2)/2 + v1^3*((9*v2^3)/4 - (15*v2^2)/4 + 3/2) - v1^2*((15*v2^3)/4 - (25*v2^2)/4 + 5/2) + 1);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x2(indicator(:)), y4(indicator(:))))];
+listVal2 = [listVal2,((3*v2.^3)/4 - (5*v2.^2)/4 + 1/2).*v1.^3 + (- (3*v2.^3)/4 + (5*v2.^2)/4 - 1/2).*v1.^2];
 
-            %p12
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(3),y(2));
-            listVal(end+1) = weight(3,2) * ( v2/2 + v1^3*(- (9*v2^3)/4 + 3*v2^2 + (3*v2)/4) - v1^2*(- (15*v2^3)/4 + 5*v2^2 + (5*v2)/4) + 2*v2^2 - (3*v2^3)/2);
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x3(indicator(:)), y4(indicator(:))))];
+listVal2 = [listVal2,v1.^3.*(- (3*v2.^3)/4 + v2.^2 + v2/4) - v1.^2.*(- (3*v2.^3)/4 + v2.^2 + v2/4)];
 
-            %p13
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(4),y(2));
-            listVal(end+1) = weight(4,2) * ( v2^3/2 - v2^2/2 - v1^3*(- (3*v2^3)/4 + (3*v2^2)/4) + v1^2*(- (5*v2^3)/4 + (5*v2^2)/4));
+listJ2 = [listJ2,indexList(sub2ind(dimsU, x4(indicator(:)), y4(indicator(:))))];
+listVal2 = [listVal2,(v2.^3/4 - v2.^2/4).*v1.^3 + (v2.^2/4 - v2.^3/4).*v1.^2];
 
-            %p20
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(1),y(3));
-            listVal(end+1) = weight(1,3) * ( ((3*v2^3)/4 - (3*v2^2)/2 + (3*v2)/4)*v1^3 + (- v2^3 + 2*v2^2 - v2)*v1^2 + (- v2^3/4 + v2^2/2 - v2/4)*v1);
+listI2 = indexList(indicator);
+listI2 = repmat(listI2,1,16);
 
-            %p21
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(2),y(3));
-            listVal(end+1) = weight(2,3) * ( (- (9*v2^3)/4 + (15*v2^2)/4 - 3/2)*v1^3 + (3*v2^3 - 5*v2^2 + 2)*v1^2 + ((3*v2^3)/4 - (5*v2^2)/4 + 1/2)*v1);
-
-            %p22
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(3),y(3));
-            listVal(end+1) = weight(3,3) * ( v1*(- (3*v2^3)/4 + v2^2 + v2/4) + v1^2*(- 3*v2^3 + 4*v2^2 + v2) - v1^3*(- (9*v2^3)/4 + 3*v2^2 + (3*v2)/4));
-
-            %p23
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(4),y(3));
-            listVal(end+1) = weight(4,3) * ( ((3*v2^2)/4 - (3*v2^3)/4)*v1^3 + (v2^3 - v2^2)*v1^2 + (v2^3/4 - v2^2/4)*v1);
-
-            %p30
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(1),y(4));
-            listVal(end+1) = weight(1,4) * ( (- v2^3/4 + v2^2/2 - v2/4)*v1^3 + (v2^3/4 - v2^2/2 + v2/4)*v1^2);
-
-            %p31
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(2),y(4));
-            listVal(end+1) = weight(2,4) * ( ((3*v2^3)/4 - (5*v2^2)/4 + 1/2)*v1^3 + (- (3*v2^3)/4 + (5*v2^2)/4 - 1/2)*v1^2);
-
-            %p32
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(3),y(4));
-            listVal(end+1) = weight(3,4) * ( v1^3*(- (3*v2^3)/4 + v2^2 + v2/4) - v1^2*(- (3*v2^3)/4 + v2^2 + v2/4));
-
-            %p33
-            listI(end+1) = numRows;
-            listJ(end+1) = indexList(x(4),y(4));
-            listVal(end+1) = weight(4,4) * ( (v2^3/4 - v2^2/4)*v1^3 + (v2^2/4 - v2^3/4)*v1^2) ;
-        end
-    end
-end
-%%
-A = sparse(listI,listJ,listVal);
+A = sparse(listI2(:),listJ2(:),listVal2(:));
 A(1,prod(dimsU)) = 0;
 A(prod(dimsU),1) = 0;
 

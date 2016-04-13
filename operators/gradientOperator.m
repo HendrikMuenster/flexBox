@@ -19,10 +19,10 @@ classdef gradientOperator < basicOperator
             
             if (exist('discretization','var') && strcmp(discretization,'backward'))
                 obj.type = 'backward';
-                obj.matrix = generateBackwardGradientND( inputDimension,ones(numel(inputDimension),1),gradDirection );
+                obj.matrix = generateBackwardGradND( inputDimension,ones(numel(inputDimension),1),gradDirection );
             else
                 obj.type = 'forward';
-                obj.matrix = generateForwardGradientND( inputDimension,ones(numel(inputDimension),1),gradDirection );
+                obj.matrix = generateForwardGradND( inputDimension,ones(numel(inputDimension),1),gradDirection );
             end
         end
         
