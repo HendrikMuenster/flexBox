@@ -1,22 +1,24 @@
-%downsamples image of size #inputDimension to size #outputDimension
+%downsamples image of size #factor*#targetDimension to size #targetDimension
+%therefore #factor must be a positive integer value
 classdef downsamplingOperator < basicOperator
     properties
-        inputDimension
-        outputDimension
+        targetDimension
+        factor
         matrix
     end
     
     methods
         
-        function obj = downsamplingOperator(inputDimension,outputDimension,varargin)
+        function obj = downsamplingOperator(targetDimension,factor,varargin)
             if (nargin > 2 && numel(varargin) == 1)
                 varargin = varargin{1};
             end
             vararginParser;
             
-            obj.inputDimension = inputDimension;
-            obj.outputDimension = outputDimension;
-            obj.matrix = generateDownsamplingMatrix( outputDimension,inputDimension );
+            obj.targetDimension = targetDimension;
+            obj.factor = factor;
+            
+            obj.matrix = generateDownsamplingMatrixNew( targetDimension,factor*targetDimension );
         end
         
         function result = mtimes(obj,vector)
