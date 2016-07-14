@@ -30,21 +30,21 @@ function [ operator] = generateDownsamplingMatrixNew( newDims,oldDims )
 
      operator = kron(mat1,mat2);
      
-     [X,Y] = meshgrid(Xgrid,Ygrid);
-     [Xq,Yq] = meshgrid(XgridNew,YgridNew);
-     
-     operator2 = sparse(size(operator,1),size(operator,2));
-    for i=1:oldDims(1) * oldDims(2)
-
-        V = zeros(size(X));
-        V(i) = 1;
-        Vq = interp2(X,Y,V,Xq,Yq,'cubic');
-
-        operator2(:,i) = Vq(:);
-
-    end
-
-    operator = operator2;
+%      [X,Y] = meshgrid(Xgrid,Ygrid);
+%      [Xq,Yq] = meshgrid(XgridNew,YgridNew);
+%      
+%      operator2 = sparse(size(operator,1),size(operator,2));
+%     for i=1:oldDims(1) * oldDims(2)
+% 
+%         V = zeros(size(X));
+%         V(i) = 1;
+%         Vq = interp2(X,Y,V,Xq,Yq,'cubic');
+% 
+%         operator2(:,i) = Vq(:);
+% 
+%     end
+% 
+%     operator = operator2;
      
      
      

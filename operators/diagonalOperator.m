@@ -6,7 +6,7 @@ classdef diagonalOperator < basicOperator
     
     methods
         function obj = diagonalOperator(diagonalElements,varargin)
-            obj.diagonalElements = diagonalElements;
+            obj.diagonalElements = diagonalElements(:);
         end
         
         function result = mtimes(obj,vector)

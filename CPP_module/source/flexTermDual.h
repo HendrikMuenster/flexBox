@@ -1,13 +1,18 @@
 #ifndef flexTermDual_H
 #define flexTermDual_H
 
+#include "flexProxList.h"
 #include "flexBoxData.h"
-#include "flexVector.h"
+#include "vector"
 #include "flexLinearOperator.h"
+
+#if __CUDACC__
+	#include "flexMatrixGPU.h"
+#endif
 
 //template < typename T > class flexBoxData;
 
-template < typename T >
+template < typename T, typename Tvector >
 class flexTermDual
 {
 	private:
@@ -15,18 +20,43 @@ class flexTermDual
 		int numberPrimals;
 
 	public:
+		const prox p;
 		T alpha;
-		flexVector<T> myTau;
-		flexVector<T> mySigma;
-		flexVector<flexLinearOperator<T>* > operatorList;
-		flexVector<flexLinearOperator<T>* > operatorListT;
+		std::vector<T> myTau;
+		std::vector<T> mySigma;
+		std::vector<flexLinearOperator<T, Tvector>* > operatorList;
+		std::vector<flexLinearOperator<T, Tvector>* > operatorListT;
 
-		flexTermDual(T _alpha, int _numberPrimals, int _numberVars)
-		{
-			numberVars = _numberVars;
-			numberPrimals = _numberPrimals;
-			alpha = _alpha;
-		}
+		#if __CUDACC__
+			//list of pointers to operators on GPU
+			thrust::device_vector<flexLinearOperator<T, Tvector>* > thrust_operatorList;
+			thrust::device_vector<flexLinearOperator<T, Tvector>* > thrust_operatorListT;
+
+			flexLinearOperator<T, Tvector>** operatorListG;
+			flexLinearOperator<T, Tvector>** operatorListTG;
+		#endif
+
+		flexTermDual(prox _p, T _alpha, int _numberPrimals, int _numberVars) : alpha(_alpha), numberPrimals(_numberPrimals), numberVars(_numberVars), p(_p){}
+
+		virtual ~flexTermDual()
+		{ 
+			if (VERBOSE > 0) printf("Destructor virtual\n!");
+		
+			for (int i = operatorList.size() - 1; i >= 0; --i)
+			{
+#if __CUDACC__
+				//free operator memory
+				cudaFree(thrust_operatorList[i]); CUDA_CHECK;
+				cudaFree(thrust_operatorListT[i]); CUDA_CHECK;
+#endif
+				delete operatorList[i];
+				delete operatorListT[i];
+			}
+
+			operatorList.clear();
+			operatorListT.clear();
+		};
+
 
 		int getNumberVars()
 		{
@@ -35,18 +65,84 @@ class flexTermDual
 
 		int dualVarLength(int num)
 		{
-			return operatorList[num]->getNumRows();
+			return this->operatorList[num]->getNumRows();
 		}
 		
-		virtual void applyProx(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
+		virtual void applyProx(flexBoxData<T, Tvector> *data, const std::vector<T> &sigma, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers) = 0;
 
-		virtual void yTilde(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
+#if __CUDACC__
+		__device__ int getNumberPrimals()
+		{
+			return this->numberPrimals;
+		}
 
-		virtual void xTilde(flexBoxData<T> &data, const flexVector<T> &tau, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
+		__device__ int getNumberDuals()
+		{
+			return this->numberVars;
+		}
 
-		virtual void yError(flexBoxData<T> &data, const flexVector<T> &sigma, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
+		__device__ void applyProxElement(T yUpdate[CONST_ARRAY_SIZE], const T yTilde[CONST_ARRAY_SIZE], T** sigmaList, const int* dualNumbers, int numDuals, int index)
+		{
+			return (T)0;
+		}
 
-		virtual void xError(flexBoxData<T> &data, const flexVector<T> &tau, const flexVector<int> &dualNumbers, const flexVector<int> &primalNumbers) = 0;
+		void createGPUOperators()
+		{
+			//create operators on GPU
+
+			thrust_operatorList.resize(this->operatorList.size());
+			thrust_operatorListT.resize(this->operatorList.size());
+
+			for (int i = 0; i < this->operatorList.size(); ++i)
+			{
+				flexLinearOperator<T, Tvector>* operatorPointer;
+				flexLinearOperator<T, Tvector>* operatorPointerT;
+
+				//copy operators to GPU
+				switch (this->operatorList[i]->type)
+				{
+					case diagonalOp:
+					{
+						cudaMalloc((void **)&operatorPointer, sizeof(flexDiagonalOperator<T, Tvector>)); CUDA_CHECK;
+						cudaMalloc((void **)&operatorPointerT, sizeof(flexDiagonalOperator<T, Tvector>)); CUDA_CHECK;
+						cudaMemcpy(operatorPointer, this->operatorList[i], sizeof(flexDiagonalOperator<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						cudaMemcpy(operatorPointerT, this->operatorListT[i], sizeof(flexDiagonalOperator<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						break;
+					}
+					case identityOp:
+					{
+						cudaMalloc((void **)&operatorPointer, sizeof(flexIdentityOperator<T, Tvector>)); CUDA_CHECK;
+						cudaMalloc((void **)&operatorPointerT, sizeof(flexIdentityOperator<T, Tvector>)); CUDA_CHECK;
+						cudaMemcpy(operatorPointer, this->operatorList[i], sizeof(flexIdentityOperator<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						cudaMemcpy(operatorPointerT, this->operatorListT[i], sizeof(flexIdentityOperator<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						break;
+					}
+					case gradientOp:
+					{
+						cudaMalloc((void **)&operatorPointer, sizeof(flexGradientOperator<T, Tvector>)); CUDA_CHECK;
+						cudaMalloc((void **)&operatorPointerT, sizeof(flexGradientOperator<T, Tvector>)); CUDA_CHECK;
+						cudaMemcpy(operatorPointer, this->operatorList[i], sizeof(flexGradientOperator<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						cudaMemcpy(operatorPointerT, this->operatorListT[i], sizeof(flexGradientOperator<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						break;
+					}
+					case matrixGPUOp:
+					{
+						cudaMalloc((void **)&operatorPointer, sizeof(flexMatrixGPU<T, Tvector>)); CUDA_CHECK;
+						cudaMalloc((void **)&operatorPointerT, sizeof(flexMatrixGPU<T, Tvector>)); CUDA_CHECK;
+						cudaMemcpy(operatorPointer, this->operatorList[i], sizeof(flexMatrixGPU<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						cudaMemcpy(operatorPointerT, this->operatorListT[i], sizeof(flexMatrixGPU<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						break;
+					}
+				}
+
+				thrust_operatorList[i] = operatorPointer;
+				thrust_operatorListT[i] = operatorPointerT;
+			}
+
+			operatorListG = thrust::raw_pointer_cast(thrust_operatorList.data());
+			operatorListTG = thrust::raw_pointer_cast(thrust_operatorListT.data());
+		}
+#endif
 };
 
 #endif

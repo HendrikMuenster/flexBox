@@ -1,30 +1,32 @@
 #ifndef flexIdentityOperator_H
 #define flexIdentityOperator_H
 
-#include "flexVector.h"
+
+#include "vector"
+#include "tools.h"
 #include "flexLinearOperator.h"
 
-template < typename T >
-class flexIdentityOperator : public flexLinearOperator<T>
+template < typename T, typename Tvector >
+class flexIdentityOperator : public flexLinearOperator<T, Tvector>
 {
 private:
 	bool minus;
 public:
 
-	flexIdentityOperator(int _numRows, int _numCols,bool _minus) : flexLinearOperator(_numRows, _numCols)
+	flexIdentityOperator(int _numRows, int _numCols, bool _minus) : flexLinearOperator<T, Tvector>(_numRows, _numCols, identityOp)
 	{
 		minus = _minus;
 	};
 
-	flexIdentityOperator<T>* copy()
+	flexIdentityOperator<T, Tvector>* copy()
 	{
-		flexIdentityOperator<T>* A = new flexIdentityOperator(this->getNumRows(), this->getNumCols(),this->minus);
+		flexIdentityOperator<T, Tvector>* A = new flexIdentityOperator<T, Tvector>(this->getNumRows(), this->getNumCols(), this->minus);
 
 		return A;
 	}
 
 	//apply linear operator to vector
-	void times(const flexVector<T> &input, flexVector<T> &output)
+	void times(const Tvector &input, Tvector &output)
 	{
 		int numElements = output.size();
 
@@ -44,26 +46,25 @@ public:
 		}
 	}
 
-	void doTimesPlus(const flexVector<T> &input, flexVector<T> &output)
+	void doTimesPlus(const Tvector &input, Tvector &output)
 	{
-		int numElements = output.size();
-
-		for (int i = 0; i < numElements; ++i)
-		{
-			output[i] += input[i];
-		}
+#if __CUDACC__
+			thrust::transform(output.begin(), output.end(), input.begin(), output.begin(), thrust::plus<T>());
+		#else
+			std::transform(output.begin(), output.end(), input.begin(), output.begin(), std::plus<float>());
+		#endif
 	}
 
-	void doTimesMinus(const flexVector<T> &input, flexVector<T> &output)
+	void doTimesMinus(const Tvector &input, Tvector &output)
 	{
-		int numElements = output.size();
-		for (int i = 0; i < numElements; ++i)
-		{
-			output[i] -= input[i];
-		}
+#if __CUDACC__
+			thrust::transform(output.begin(), output.end(), input.begin(), output.begin(), thrust::minus<T>());
+		#else
+			std::transform(output.begin(), output.end(), input.begin(), output.begin(), std::minus<float>());
+		#endif
 	}
 
-	void timesPlus(const flexVector<T> &input, flexVector<T> &output)
+	void timesPlus(const Tvector &input, Tvector &output)
 	{
 		if (this->minus == true)
 		{
@@ -75,7 +76,7 @@ public:
 		}
 	}
 
-	void timesMinus(const flexVector<T> &input, flexVector<T> &output)
+	void timesMinus(const Tvector &input, Tvector &output)
 	{
 		if (this->minus == true)
 		{
@@ -99,6 +100,18 @@ public:
 		this->setNumRows(this->getNumCols());
 		this->setNumCols(numRowsTmp);
 	}
+
+	#if __CUDACC__
+	__device__ T timesElement(int index, const T* input)
+	{
+		return input[index];
+	}
+
+	__device__ T getRowsumElement(int index)
+	{
+		return (T)1;
+	}
+	#endif
 };
 
 #endif

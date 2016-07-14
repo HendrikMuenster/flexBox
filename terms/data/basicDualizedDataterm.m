@@ -69,7 +69,13 @@ classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
                 end
             end
             
+            numRowsOperator = size(obj.operator{1},1);
+            
             obj.f = f(:);
+            
+            if (numel(f) ~= numRowsOperator)
+                error('Input data f does not fit the number of rows in the operator(s)');
+            end
             
         end
     end

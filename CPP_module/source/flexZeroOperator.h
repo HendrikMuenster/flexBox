@@ -1,38 +1,34 @@
 #ifndef flexZeroOperator_H
 #define flexZeroOperator_H
 
-#include "flexVector.h"
+#include "vector"
 #include "flexLinearOperator.h"
 
-template < typename T >
-class flexZeroOperator : public flexLinearOperator<T>
+template < typename T, typename Tvector >
+class flexZeroOperator : public flexLinearOperator<T, Tvector>
 {
 public:
-	flexZeroOperator(int _numRows, int _numCols) : flexLinearOperator(_numRows, _numCols){};
+	flexZeroOperator(int _numRows, int _numCols) : flexLinearOperator<T, Tvector>(_numRows, _numCols, zeroOp){};
 
-	flexZeroOperator<T>* copy()
+	flexZeroOperator<T, Tvector>* copy()
 	{
-		flexZeroOperator<T>* A = new flexZeroOperator(this->getNumRows(), this->getNumCols());
+		flexZeroOperator<T, Tvector>* A = new flexZeroOperator<T, Tvector>(this->getNumRows(), this->getNumCols());
 
 		return A;
 	}
 
 
 	//apply linear operator to vector
-	void times(const flexVector<T> &input, flexVector<T> &output)
+	void times(const Tvector &input, Tvector &output)
 	{
-		#pragma omp parallel for
-		for (int i = 0; i < this->getNumRows(); ++i)
-		{
-			output[i] = static_cast<T>(0);
-		}
+		vectorScalarSet(output, (T)0);
 	}
 
-	void timesPlus(const flexVector<T> &input, flexVector<T> &output)
+	void timesPlus(const Tvector &input, Tvector &output)
 	{
 	}
 
-	void timesMinus(const flexVector<T> &input, flexVector<T> &output)
+	void timesMinus(const Tvector &input, Tvector &output)
 	{
 	}
 
@@ -48,6 +44,18 @@ public:
 		this->setNumRows(this->getNumCols());
 		this->setNumCols(numRowsTmp);
 	}
+
+#if __CUDACC__
+	__device__ T timesElement(int index, const T* input)
+	{
+		return (T)0;
+	}
+
+	__device__ T getRowsumElement(int index)
+	{
+		return (T)0;
+	}
+	#endif
 };
 
 #endif

@@ -14,15 +14,18 @@ classdef gradientOperator < basicOperator
             end
             vararginParser;
             
+            initVar('stepsize',ones(numel(inputDimension),1));
+            initVar('discretization','forward');
+
             obj.inputDimension = inputDimension;
             obj.gradDirection = gradDirection;
             
             if (exist('discretization','var') && strcmp(discretization,'backward'))
                 obj.type = 'backward';
-                obj.matrix = generateBackwardGradND( inputDimension,ones(numel(inputDimension),1),gradDirection );
+                obj.matrix = generateBackwardGradND( inputDimension,stepsize,gradDirection );
             else
                 obj.type = 'forward';
-                obj.matrix = generateForwardGradND( inputDimension,ones(numel(inputDimension),1),gradDirection );
+                obj.matrix = generateForwardGradND( inputDimension,stepsize,gradDirection );
             end
         end
         

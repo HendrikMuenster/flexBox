@@ -1,25 +1,26 @@
 #ifndef flexMatrix_H
 #define flexMatrix_H
 
-#include "flexVector.h"
 #include "flexLinearOperator.h"
 
-template < typename T >
-class flexMatrix : public flexLinearOperator<T>
+#include <vector>
+
+template < typename T, typename Tvector >
+class flexMatrix : public flexLinearOperator<T, Tvector>
 {
 private:
-	flexVector<int> rowToIndexList;
-	flexVector<int> indexList;
-	flexVector<T> valueList;
+	std::vector<int> rowToIndexList;
+	std::vector<int> indexList;
+	Tvector valueList;
 
 public:
-	flexMatrix(void) : indexList(), valueList(), rowToIndexList(), flexLinearOperator(0, 0){};
+	flexMatrix(void) : indexList(), valueList(), rowToIndexList(), flexLinearOperator<T, Tvector>(0, 0, matrixGPUOp){};
 
-	flexMatrix(int  _numRows, int  _numCols) : rowToIndexList(_numRows + 1, static_cast<int>(0)), indexList(0, 0), valueList(0, 0), flexLinearOperator(_numRows, _numCols){};
+	flexMatrix(int  _numRows, int  _numCols) : rowToIndexList(_numRows + 1, static_cast<int>(0)), indexList(0, 0), valueList(0, 0), flexLinearOperator<T, Tvector>(_numRows, _numCols, matrixGPUOp){};
 
-	flexMatrix<T>* copy()
+	flexMatrix<T, Tvector>* copy()
 	{
-		flexMatrix<T>* A = new flexMatrix(this->getNumRows(),this->getNumCols());
+		flexMatrix<T, Tvector>* A = new flexMatrix<T, Tvector>(this->getNumRows(), this->getNumCols());
 		
 		A->rowToIndexList = rowToIndexList;
 		A->indexList = indexList;
@@ -29,12 +30,12 @@ public:
 	}
 
 
-	void times(const flexVector<T> &input, flexVector<T> &output)
+	void times(const Tvector &input, Tvector &output)
 	{
 		#pragma omp parallel for
 		for (int i = 0; i < this->getNumRows(); ++i)
 		{
-			T rowsum = static_cast<T>(0);
+			T rowsum = (T)0;
 			// initialize result
 			int indexNext = rowToIndexList[i + 1];
 			for (int index = rowToIndexList[i]; index < indexNext; ++index)
@@ -45,14 +46,12 @@ public:
 		}
 	}
 
-	void timesPlus(const flexVector<T> &input, flexVector<T> &output)
+	void timesPlus(const Tvector &input, Tvector &output)
 	{
-		//this->printMatrix();
-
 		#pragma omp parallel for
 		for (int i = 0; i < this->getNumRows(); ++i)
 		{
-			T rowsum = static_cast<T>(0);
+			T rowsum = (T)0;
 			// initialize result
 			int indexNext = rowToIndexList[i + 1];
 			for (int index = rowToIndexList[i]; index < indexNext; ++index)
@@ -63,12 +62,12 @@ public:
 		}
 	}
 
-	void timesMinus(const flexVector<T> &input, flexVector<T> &output)
+	void timesMinus(const Tvector &input, Tvector &output)
 	{
 		#pragma omp parallel for
 		for (int i = 0; i < this->getNumRows(); i++)
 		{
-			T rowsum = static_cast<T>(0);
+			T rowsum = (T)0;
 			// initialize result
 			int indexNext = rowToIndexList[i + 1];
 			for (int index = rowToIndexList[i]; index < indexNext; ++index)
@@ -79,31 +78,17 @@ public:
 		}
 	}
 
-	T rowMulti(int i, const flexVector<T> &input)
-	{
-		// initialize result
-		T result = static_cast<T>(0);
-
-		int indexNext = rowToIndexList[i + 1];
-		for (int index = rowToIndexList[i]; index < indexNext; ++index)
-		{
-			result += input[indexList[index]] * valueList[index];
-		}
-
-		return result;
-	}
-
 	//this is the fast way to fill flexMatrix
-	void blockInsert(flexVector<int> &indexI,const  flexVector<int> &indexJ,const flexVector<T> &indexVal)
+	void blockInsert(std::vector<int> &indexI,const  std::vector<int> &indexJ,const Tvector &indexVal)
 	{
 		//clear matrix
-		clear();
+		//clear();
 
 		int numberListElements = indexI.size();
 
 		//initialize vecvector
-		flexVector<int> emptyBucket(0, 0);
-		flexVector < flexVector<int> > buckets(this->getNumRows(), emptyBucket);
+		std::vector<int> emptyBucket(0, 0);
+		std::vector < std::vector<int> > buckets(this->getNumRows(), emptyBucket);
 
 		//add elements to buckets
 		for (int indexInput = 0; indexInput < numberListElements; indexInput++)
@@ -133,6 +118,7 @@ public:
 
 	}
 
+	/*
 	//inserts new matrix element val at position [i][j]. This is SLOW!
 	void insertElement(int i, int j, T val)
 	{
@@ -163,7 +149,7 @@ public:
 		{
 			++rowToIndexList[index];
 		}
-	}
+	}*/
 
 	//clear current matrix
 	void clear()
@@ -201,7 +187,6 @@ public:
 
 	void printRow(int i)
 	{
-		//printf("|");
 		for (int index = rowToIndexList[i]; index < rowToIndexList[i+1]; ++index)
 		{
 			printf("(%d,%d,%f)|", i, indexList[index], valueList[index]);
@@ -214,18 +199,16 @@ public:
 	{
 		for (int i = 0; i < this->getNumRows(); i++)
 		{
-			//printf("Row: %d|", i);
 			printRow(i);
-			//printf("\n");
 		}
 	}
 
 	//transpose current matrix
 	void transpose()
 	{
-		flexVector<int> tmpindexI(0, 0);
-		flexVector<int> tmpindexJ(0, 0);
-		flexVector<T> tmpindexVal(0, static_cast<T>(0));
+		std::vector<int> tmpindexI(0, 0);
+		std::vector<int> tmpindexJ(0, 0);
+		Tvector tmpindexVal(0,(T)0);
 
 		for (int i = 0; i < this->getNumRows(); i++)
 		{
@@ -239,12 +222,20 @@ public:
 
 		this->clear();
 
-		this->blockInsert(tmpindexI, tmpindexJ, tmpindexVal);
-
 		int numRowsTmp = this->getNumRows();
 		this->setNumRows(this->getNumCols());
 		this->setNumCols(numRowsTmp);
+		this->rowToIndexList.resize(this->getNumRows() + 1);
+
+		this->blockInsert(tmpindexI, tmpindexJ, tmpindexVal);
 	}
+
+#if __CUDACC__
+	__device__ T timesElement(int index, const T* input)
+	{
+		return (T)0;
+	}
+	#endif
 };
 
 #endif

@@ -190,6 +190,8 @@ classdef flexBox < handle
                     ClassName = 'L1dualizedOperatorAniso';
                 elseif (sum(ismember(s, 'L2proxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
                     ClassName = 'L2dualizedOperator';
+                elseif (sum(ismember(s, 'L1HuberProxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
+                    ClassName = 'HuberDualizedOperator';
                 elseif (sum(ismember(s, 'FrobeniusProxDual')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))
                     ClassName = 'FrobeniusDualizedOperator';
                 elseif (sum(ismember(s, 'L1dataTermOperator')) > 0 && sum(ismember(s, 'tildeMultiOperatorMultiDual')))

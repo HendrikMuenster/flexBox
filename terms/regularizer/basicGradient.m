@@ -8,16 +8,16 @@ classdef basicGradient < basicDualizedOperator
             
             vararginParser;
             
-            initVar('discretization','forward');
             %usedims should be a {0,1} array of length dims indicating whether a
             %dimension should be used or not
             initVar('usedims',ones(numel(dims),1));
+            
             
             opNum = 1;
             for i=1:numel(usedims)
                 %if dims(i) equals 1 then matrix is empty
                 if (usedims(i) == 1 && dims(i) ~= 1)
-                    operatorList{opNum} = gradientOperator(dims,i,'discretization',discretization);
+                    operatorList{opNum} = gradientOperator(dims,i,varargin);
                     opNum = opNum + 1;
                 end
             end

@@ -1,318 +1,181 @@
+
+
+
 #ifndef flexbox_H
 #define flexbox_H
 
-#include "flexVector.h"
 #include "flexTermDual.h"
+#include "flexDualizedOperator.h"
+#include "flexDualizedDataTerm.h"
+
 #include "flexTermPrimal.h"
-#include "flexBoxData.h"
+
+#include "flexSolver.h"
+#include "flexSolverPrimalDual.h"
+
+#if __CUDACC__
+	#include "flexSolverPrimalDualCuda.h"
+	#include "flexBoxDataGPU.h"
+
+	#include <device_functions.h>
+#endif
+
+#include "flexBoxDataCPU.h"
 
 
 
-template < typename T >
+#include <vector>
+
+template < typename T, typename Tdata >
 class flexBox
 {
+	typedef flexLinearOperator < T, Tdata > linOpType;
+
 	private:
-		//Params
 		T tol;
-		T theta;
-		flexVector<T> tau;
-		flexVector<T> sigma;
 
 		//Maximum number of Iterations
 		int maxIterations;
-		int numberPrimalVars;
 		int checkError;
-
-		//List of primal terms is list of pointers to terms
-		flexVector<flexTermPrimal<T>*> termsPrimal;
-		//List of dual terms is list of pointers to terms
-		flexVector<flexTermDual<T>*> termsDual;
-
-		flexBoxData<T> data;
+		int displayStatus;
 
 		//List of dimensions
-		flexVector<flexVector<int> > dims;
-		//List of primal variables corresponding to primal terms
-		flexVector<flexVector<int> > pcp;
-		//List of primal variables corresponding to dual terms
-		flexVector<flexVector<int> > dcp;
-		//List of dual variables corresponding to dual terms
-		flexVector<flexVector<int> > dcd;
+		std::vector<std::vector<int> > dims;
 
 	public:
+
+		flexBoxData<T,Tdata>* data;
+		flexSolver<T, Tdata>* solver;
 
 		bool isMATLAB; // indicates whether flexBox is used via MALTAB
 
 		flexBox(void)
 		{
-			tol = static_cast<T>(1e-5);
-			theta = static_cast<T>(1);
-
+			this->tol = static_cast<T>(1e-5);
 
 			maxIterations = static_cast<int>(10000);
-			numberPrimalVars = static_cast<int>(0);
 			checkError = static_cast<int>(100);
+			displayStatus = static_cast<int>(1000);
+
+			#if __CUDACC__
+				data = new flexBoxDataGPU<T, Tdata>();
+				solver = new flexSolverPrimalDualCuda<T, Tdata>();
+			#else
+				data = new flexBoxDataCPU<T,Tdata>();
+				solver = new flexSolverPrimalDual<T, Tdata>();
+			#endif	
 
 			isMATLAB = false;
 		};
 
+		~flexBox()
+		{
+			delete data;
+			delete solver;
+		}
+
 		int getNumPrimalVars() const 
 		{
-			return data.x.size();
+			return data->getNumPrimalVars();
 		}
 
 		int getNumDualVars() const
 		{
-			return data.y.size();
+			return data->getNumDualVars();
 		}
 
-		flexVector<T> getPrimal(int i)
+		std::vector<T> getPrimal(int i)
 		{
-			return data.x[i];
+			return data->getPrimal(i);
 		}
 
-		void setPrimal(int i, flexVector<T> input)
+		std::vector<T> getDual(int i)
 		{
-			data.x[i] = input;
+			return data->getDual(i);
 		}
 
-		void setDual(int i, flexVector<T> input)
+		void setPrimal(int i, std::vector<T> input)
 		{
-			data.y[i] = input;
+			data->setPrimal(i, input);
 		}
 
-		flexVector<T> getDual(int i)
+		void setDual(int i, std::vector<T> input)
 		{
-			return data.y[i];
+			data->setDual(i, input);
 		}
-
-
-
 
 		void init()
 		{
-			//zero init
-			for (int i = 0; i < data.x.size(); ++i)
-			{
-				tau.push_back(static_cast<T>(0));
-			}
-
-			for (int i = 0; i < data.y.size(); ++i)
-			{
-				sigma.push_back(static_cast<T>(0));
-			}
-
-			for (int i = 0; i < termsDual.size(); ++i)
-			{
-				for (int j = 0; j < dcp[i].size(); ++j)
-				{
-					tau[dcp[i][j]] += termsDual[i]->myTau[j];
-				}
-
-				for (int j = 0; j < dcd[i].size(); ++j)
-				{
-					sigma[dcd[i][j]] += termsDual[i]->mySigma[j];
-				}
-			}
-
-			for (int i = 0; i < tau.size(); ++i)
-			{
-				tau[i] = static_cast<T>(1) / tau[i];
-			}
-
-			for (int i = 0; i < sigma.size(); ++i)
-			{
-				sigma[i] = static_cast<T>(1) / sigma[i];
-			}
+			solver->init();
 		}
 
-		flexVector<int> getDims(int i)
+		std::vector<int> getDims(int i)
 		{
-			return dims[i];
+			return dims.at(i);
 		}
 
-		int addPrimalVar(flexVector<int> _dims)
+		int addPrimalVar(std::vector<int> _dims)
 		{
-			int numberOfElements = _dims.product();
+			int numberOfElements = vectorProduct(_dims);
 
-			flexVector<T> emptyX(numberOfElements, static_cast<T>(0));
-
-			data.x.push_back(emptyX);
-			data.xOld.push_back(emptyX);
-			data.xBar.push_back(emptyX);
-			data.xTilde.push_back(emptyX);
-			data.xError.push_back(emptyX);
+			data->addPrimalVar(vectorProduct(_dims));
 
 			dims.push_back(_dims);
 
-			++numberPrimalVars;
-
-			return numberPrimalVars - 1;
+			return getNumPrimalVars() - 1;
 		}
 
-		void addPrimal(flexTermPrimal<T>* _primalPart, flexVector<int> _correspondingPrimals)
+		void addPrimal(flexTermPrimal<T,Tdata>* _primalPart, std::vector<int> _correspondingPrimals)
 		{
-			termsPrimal.push_back(_primalPart);
-
-			pcp.push_back(_correspondingPrimals);
+			solver->addPrimal(_primalPart, _correspondingPrimals);
 		}
 
-		void addDual(flexTermDual<T>* _dualPart,flexVector<int> _correspondingPrimals)
+		void addDual(flexTermDual<T, Tdata>* _dualPart, std::vector<int> _correspondingPrimals)
 		{
-			termsDual.push_back(_dualPart);
-
-			flexVector<int> tmpDCD;
-			for (int i = 0; i < _dualPart->getNumberVars(); ++i)
-			{
-				flexVector<T> emptyY(_dualPart->dualVarLength(i), static_cast<T>(0));
-
-				tmpDCD.push_back(data.y.size());
-
-				data.y.push_back(emptyY);
-				data.yOld.push_back(emptyY);
-				data.yTilde.push_back(emptyY);
-				data.yError.push_back(emptyY);
-			}
-
-			dcp.push_back(_correspondingPrimals);
-			dcd.push_back(tmpDCD);
-		}
-
-		void doIteration()
-		{
-			//data.x[0].print();
-
-			for (int i = 0; i < data.xOld.size(); ++i)
-			{
-				data.xOld[i] = data.x[i];
-			}
-
-			for (int i = 0; i < data.yOld.size(); ++i)
-			{
-				data.yOld[i] = data.y[i];
-			}
-
-			for (int i = 0; i < termsDual.size(); ++i)
-			{
-				termsDual[i]->yTilde(data,sigma, dcd[i], dcp[i]);
-				termsDual[i]->applyProx(data,sigma, dcd[i], dcp[i]);
-			}
-
-			for (int i = 0; i < data.xTilde.size(); ++i)
-			{
-				data.xTilde[i] = data.x[i];
-			}
-
-			for (int i = 0; i < termsDual.size(); ++i)
-			{
-				termsDual[i]->xTilde(data,tau , dcd[i], dcp[i]);
-			}
-
-			for (int i = 0; i < termsPrimal.size(); ++i)
-			{
-				termsPrimal[i]->applyProx(data, tau, pcp[i]);
-			}
-
-			for (int i = 0; i < data.xTilde.size(); ++i)
-			{
-				//musst be implemented in the manner below, times theta missing
-				//data.xBar[i] = data.x[i] + (data.x[i] - data.xOld[i]);
-				data.xBar[i] = data.x[i];
-				data.xBar[i] += data.x[i];
-				data.xBar[i] -= data.xOld[i];
-			}
-
-		}
-
-		T calculateError(void)
-		{
-			T error = static_cast<int>(1);
-
-			//first part of primal and dual residuals
-			for (int i = 0; i < data.xOld.size(); ++i)
-			{
-				flexVector<T> tmpVec(data.x[i]);
-				tmpVec -= data.xOld[i];
-				tmpVec /= tau[i];
-
-				data.xError[i] = tmpVec;
-			}
-
-			for (int i = 0; i < data.yOld.size(); ++i)
-			{
-				flexVector<T> tmpVec(data.y[i]);
-				tmpVec -= data.yOld[i];
-				tmpVec /= sigma[i];
-
-				data.yError[i] = tmpVec;
-			}
-
-			//operator specifiy error
-			for (int i = 0; i < termsDual.size(); ++i)
-			{
-				termsDual[i]->xError(data, tau, dcd[i], dcp[i]);
-				termsDual[i]->yError(data, sigma, dcd[i], dcp[i]);
-			}
-
-			//sum things up
-			T primalResidual = static_cast<T>(0);
-			T dualResidual = static_cast<T>(0);
-
-			for (int i = 0; i < data.xOld.size(); ++i)
-			{
-				data.xError[i].abs(); //take absolute value of entries
-
-				primalResidual += data.xError[i].sum() / static_cast<T>(data.xError[i].size()); //sum values up and add to primal residual
-			}
-			primalResidual = primalResidual / static_cast<T>(data.xOld.size());
-
-			for (int i = 0; i < data.yOld.size(); ++i)
-			{
-				data.yError[i].abs(); //take absolute value of entries
-
-				dualResidual += data.yError[i].sum() / static_cast<T>(data.yError[i].size()); //sum values up and add to dual residual
-			}
-			dualResidual = dualResidual / static_cast<T>(data.yOld.size());
-
-			error = primalResidual + dualResidual;
-
-			return error;
+			solver->addDual(data, _dualPart, _correspondingPrimals);
 		}
 
 		void runAlgorithm()
 		{
-			init();
+			solver->init(data);
 
 			T error = static_cast<int>(1);
-			int iteration = 1;
+			int iteration = 0;
 			
+			Timer timer;
+			Timer timer2;
+			bool doTime = true;
+
+			if (doTime) timer.reset();
+
 			while (error > tol && iteration < maxIterations)
 			{
-				doIteration();
+				//timer2.reset();
+				solver->doIteration(data);
+				//timer2.end(); printf("Time for iteration was: %f\n", timer2.elapsed());
 				
-				if (iteration % 1000 == 1)
+				if (iteration % displayStatus == 1)
 				{
 					if (this->isMATLAB)
 					{
 						mexPrintf("Iteration #%d | Error:%f\n", iteration, error);
 						mexEvalString("pause(.0001);");
-
 					}
 					else
 					{
 
 					}
-					
 				}
 				
-				if (iteration % checkError == 1)
+				if (iteration % checkError == 0)
 				{
-					error = calculateError();
+					error = solver->calculateError(data);
 				}
-				
-
 				++iteration;
 			}
+
+			if (doTime) timer.end();
+			if (doTime) printf("Time for %d Iterations was: %f\n", iteration, timer.elapsed());
 
 		}
 };

@@ -1,18 +1,33 @@
 #ifndef flexLinearOperator_H
 #define flexLinearOperator_H
 
-#include "flexVector.h"
+#include "vector"
+#include "tools.h"
 
-template < typename T >
+template < typename T, typename Tvector >
 class flexLinearOperator
 {
 private:
 	int numRows;
 	int numCols;
 public:
+	linOp type;
+
 	flexLinearOperator(int _numRows, int _numCols)
 	{
 		numRows = _numRows; 
+		numCols = _numCols;
+		type = linearOp;
+	}
+
+	virtual ~flexLinearOperator()
+	{
+		if (VERBOSE > 0) printf("Linear operator destructor");
+	}
+
+	flexLinearOperator(int _numRows, int _numCols, linOp _type) : type(_type)
+	{
+		numRows = _numRows;
 		numCols = _numCols;
 	}
 
@@ -36,14 +51,26 @@ public:
 		numRows = _numRows;
 	}
 
-	virtual flexLinearOperator<T>* copy() = 0;
+	virtual flexLinearOperator<T, Tvector>* copy() = 0;
 
 	//apply linear operator to vector
-	virtual void times(const flexVector<T> &input, flexVector<T> &output) = 0;
+	virtual void times(const Tvector &input, Tvector &output) = 0;
 
-	virtual void timesPlus(const flexVector<T> &input, flexVector<T> &output) = 0;
+	virtual void timesPlus(const Tvector &input, Tvector &output) = 0;
 
-	virtual void timesMinus(const flexVector<T> &input, flexVector<T> &output) = 0;
+	virtual void timesMinus(const Tvector &input, Tvector &output) = 0;
+
+	#if __CUDACC__
+	__device__ T timesElement(int index, const T* input)
+	{
+		return 5.f;
+	}
+
+	__device__ T getRowsumElement(int index)
+	{
+		return (T)0;
+	}
+	#endif
 
 	//used for preconditioning
 	virtual T getMaxRowSumAbs() = 0;

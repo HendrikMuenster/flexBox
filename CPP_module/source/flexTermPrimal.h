@@ -1,12 +1,12 @@
 #ifndef flexTermPrimal_H
 #define flexTermPrimal_H
 
+#include "flexProxList.h"
 #include "flexBoxData.h"
-#include "flexVector.h"
+#include "vector"
+#include "tools.h"
 
-template < typename T > class flexBoxData;
-
-template < typename T >
+template < typename T, typename Tdata>
 class flexTermPrimal
 {
 	private:
@@ -14,8 +14,9 @@ class flexTermPrimal
 		
 	public:
 		T alpha;
+		prox p;
 
-		flexTermPrimal(int _numberVars, T _alpha)
+		flexTermPrimal(int _numberVars, T _alpha, prox _p) : p(_p)
 		{
 			this->numberVars = _numberVars;
 			this->alpha = _alpha;
@@ -26,12 +27,40 @@ class flexTermPrimal
 			return numberVars;
 		}
 
-		flexVector<int> getDims()
+		std::vector<int> getDims()
 		{
 			return this->dims;
 		}
 
-		virtual void applyProx(flexBoxData<T> &data, flexVector<T> tau, flexVector<int> primalNumbers) = 0;
+		virtual void applyProx(flexBoxData<T, Tdata>* data, std::vector<T> tau, std::vector<int> primalNumbers)
+		{
+			switch (p)
+			{
+				case primalEmptyProx :
+				{
+					flexProxList<T, Tdata>::primalEmptyProx(data, tau, primalNumbers);
+					break;
+				}
+			}
+		}
+
+#if __CUDACC__
+		__device__ int getNumberPrimals()
+		{
+			return this->numberVars;
+		}
+
+		__device__ void applyProxElement(T** ptrXList,T* xTilde, T** tau, const int* primalNumbers, int numPrimals, int index)
+		{
+			#pragma unroll
+			for (int i = 0; i < numPrimals; ++i)
+			{
+				const int primalNum = primalNumbers[i];
+
+				ptrXList[primalNum][index] = xTilde[primalNum];
+			}
+		}
+#endif
 };
 
 #endif
