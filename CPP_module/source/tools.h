@@ -456,6 +456,21 @@ private:
 			thrust::make_zip_iterator(thrust::make_tuple(y1Tilde.end(), y2Tilde.end(), y1.end(), y2.end())),
 			L1IsoProjectionGPU2D<T>(alpha));
 	}
+	
+	template < typename T >
+	void vectorProjectHuber2D(thrust::device_vector<T> &yTmp, thrust::device_vector<T> &y1Tilde, thrust::device_vector<T> &y2Tilde, thrust::device_vector<T> &y1, thrust::device_vector<T> &y2, T alpha, T sigma)
+	{
+		/*
+		//square the first argument and add squared of second
+		std::transform(y1Tilde.begin(), y1Tilde.end(), y2Tilde.begin(), yTmp.begin(),HuberCalcTilder2D<T>(sigma,alpha) );
+
+		//calculate norm projection
+		std::transform(yTmp.begin(), yTmp.end(), yTmp.begin(), [alpha](T x) { return std::max((T)1, std::sqrt(x) / alpha); });
+
+		//project onto norm
+		std::transform(y1Tilde.begin(), y1Tilde.end(), yTmp.begin(), y1.begin(), [](T x, T y) { return x / y; });
+		std::transform(y2Tilde.begin(), y2Tilde.end(), yTmp.begin(), y2.begin(), [](T x, T y) { return x / y; });*/
+	}
 
 	/*GPU prox for L2 regularizer*/
 	template < typename T >
