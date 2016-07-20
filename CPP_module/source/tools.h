@@ -176,6 +176,30 @@ void vectorProjectL1Iso2D(std::vector<T> &yTmp, std::vector<T> &y1Tilde, std::ve
 	std::transform(y2Tilde.begin(), y2Tilde.end(), yTmp.begin(), y2.begin(), [](T x, T y) { return x / y; });
 }
 
+template < typename T >
+struct HuberCalcTilder2D
+{
+	HuberCalcTilder2D(T sigma, T alpha) : factor((T)1.0 + sigma * (T)0.01 / alpha){};
+
+	T operator()(T x, T y) const { return x/factor * x/factor + y/factor * y/factor; }
+private:
+	const T factor;
+};
+
+template < typename T >
+void vectorProjectHuber2D(std::vector<T> &yTmp, std::vector<T> &y1Tilde, std::vector<T> &y2Tilde, std::vector<T> &y1, std::vector<T> &y2, T alpha, T sigma)
+{
+	//square the first argument and add squared of second
+	std::transform(y1Tilde.begin(), y1Tilde.end(), y2Tilde.begin(), yTmp.begin(),HuberCalcTilder2D<T>(sigma,alpha) );
+
+	//calculate norm projection
+	std::transform(yTmp.begin(), yTmp.end(), yTmp.begin(), [alpha](T x) { return std::max((T)1, std::sqrt(x) / alpha); });
+
+	//project onto norm
+	std::transform(y1Tilde.begin(), y1Tilde.end(), yTmp.begin(), y1.begin(), [](T x, T y) { return x / y; });
+	std::transform(y2Tilde.begin(), y2Tilde.end(), yTmp.begin(), y2.begin(), [](T x, T y) { return x / y; });
+}
+
 /*CPU prox for L2 regularizer*/
 template < typename T >
 void vectorProjectL2(std::vector<T> &yTilde, std::vector<T> &y, T alpha, T sigma)

@@ -44,6 +44,9 @@ classdef basicOpticalFlow < basicDualizedDataterm
         function warpDataterm(obj,v1Tilde,v2Tilde,varargin)
             initVar('discretization','interpolated');
             
+            v1Tilde = reshape(v1Tilde,size(obj.thisImage1));
+            v2Tilde = reshape(v2Tilde,size(obj.thisImage1));
+            
             [ux,uy,ut] = obj.generateDatatermParts(discretization,obj.thisImage1,obj.thisImage2,v1Tilde,v2Tilde,obj.termType,obj.constancyDimension);
             
             obj.operator{1} = diagonalOperator(ux);
@@ -102,8 +105,8 @@ classdef basicOpticalFlow < basicDualizedDataterm
                 
                 [gridX,gridY] = meshgrid(1:N,1:M);
 
-                idxx = gridX + v1Tilde;
-                idyy = gridY + v2Tilde;
+                idxx = gridX + reshape(v1Tilde,[M,N]);
+                idyy = gridY + reshape(v2Tilde,[M,N]);
                 
                 markerOutOfGrid = (idxx>=size(idxx,2)) + (idxx<=1) + (idyy>=size(idyy,1)) + (idyy<=1);
                 markerOutOfGrid = markerOutOfGrid > 0;

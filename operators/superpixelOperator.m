@@ -46,8 +46,14 @@ classdef superpixelOperator < basicOperator
             res.matrix = res.matrix';
         end
         
-        function result = size(obj,dim)
-            result = size(obj.matrix,dim);
+        function result = size(obj,varargin)
+            if (nargin > 1)
+                dim = varargin{1};
+                result = size(obj.matrix,dim);
+            else
+                result = -1;
+            end
+            
         end
         
         function result = getMaxRowSumAbs(obj)

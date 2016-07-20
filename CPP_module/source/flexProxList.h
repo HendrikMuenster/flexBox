@@ -39,6 +39,18 @@ public:
 			printf("Alert! Iso prox not implemented for dim>2");
 		}
 	};
+	
+	static void dualHuberProx(flexBoxData<T, Tvector>* data, const std::vector<T> &sigma, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, T alpha)
+	{
+		if (dualNumbers.size() == 2)
+		{
+			vectorProjectHuber2D<T>(data->yTmp[dualNumbers[0]], data->yTilde[dualNumbers[0]], data->yTilde[dualNumbers[1]], data->y[dualNumbers[0]], data->y[dualNumbers[1]], alpha,sigma[dualNumbers[0]]);
+		}
+		else
+		{
+			printf("Alert! Huber prox not implemented for dim>2");
+		}
+	};
 
 	static void dualL2Prox(flexBoxData<T, Tvector>* data, const std::vector<T> &sigma, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, T alpha)
 	{

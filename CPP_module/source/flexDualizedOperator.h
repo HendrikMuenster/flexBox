@@ -54,6 +54,11 @@ public:
 				flexProxList<T, Tvector>::dualL1IsoProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
 				break;
 			}
+			case dualHuberProx:
+			{
+				flexProxList<T, Tvector>::dualHuberProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
+				break;
+			}
 			case dualL2Prox:
 			{
 				flexProxList<T, Tvector>::dualL2Prox(data, sigma, dualNumbers, primalNumbers, this->alpha);

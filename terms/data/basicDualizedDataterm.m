@@ -58,7 +58,7 @@ classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
                 obj.operator{1} = A;
                 obj.operatorT{1} = A';
                 
-                if (issparse(obj.operator{1}))
+                if (ismatrix(A) || issparse(A))
                     obj.mySigma{1} = max(sum(abs(obj.operator{1}),1));
                     obj.myTau{1} = max(sum(abs(obj.operator{1}),2));
                 else
