@@ -32,6 +32,8 @@ class flexBox
 	typedef flexLinearOperator < T, Tdata > linOpType;
 
 	private:
+
+	public:
 		T tol;
 
 		//Maximum number of Iterations
@@ -41,9 +43,7 @@ class flexBox
 
 		//List of dimensions
 		std::vector<std::vector<int> > dims;
-
-	public:
-
+		
 		flexBoxData<T,Tdata>* data;
 		flexSolver<T, Tdata>* solver;
 

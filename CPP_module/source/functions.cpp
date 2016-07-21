@@ -134,7 +134,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		//check type and name
 		func_type = mxArrayToString(prhs[entry]);
 		
-		if (strcmp(func_type, "primalVar") == 0)
+		if (strcmp(func_type, "parameter") == 0)
+		{
+			char *parameterName = mxArrayToString(prhs[entry + 1]);
+
+			if (strcmp(parameterName, "maxIt") == 0)
+			{
+				mainObject.maxIterations = (int)mxGetScalar(prhs[entry + 2]);
+			}
+
+			//jump three entries
+			entry += 3;
+		}
+		else if (strcmp(func_type, "primalVar") == 0)
 		{
 			//extract vector dims from second argument
 			std::vector<int> _dims;
