@@ -60,13 +60,17 @@ public:
 
 	virtual void timesMinus(const Tvector &input, Tvector &output) = 0;
 
+	virtual T timesElement(int index, const T* input) = 0;
+
+	virtual std::vector<T> getAbsRowSum() = 0;
+
 	#if __CUDACC__
-	__device__ T timesElement(int index, const T* input)
+	__device__ T timesElementCUDA(int index, const T* input)
 	{
 		return 5.f;
 	}
 
-	__device__ T getRowsumElement(int index)
+	__device__ T getRowsumElementCUDA(int index)
 	{
 		return (T)0;
 	}

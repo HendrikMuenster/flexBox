@@ -32,13 +32,17 @@ public:
 
 		if (this->minus == true)
 		{
+			int numElements = input.size();
+			#pragma omp parallel for
 			for (int i = 0; i < numElements; ++i)
 			{
-				output[i] -= input[i];
+				output[i] = -input[i];
 			}
 		}
 		else
 		{
+			int numElements = input.size();
+			#pragma omp parallel for
 			for (int i = 0; i < numElements; ++i)
 			{
 				output[i] = input[i];
@@ -48,20 +52,22 @@ public:
 
 	void doTimesPlus(const Tvector &input, Tvector &output)
 	{
-#if __CUDACC__
-			thrust::transform(output.begin(), output.end(), input.begin(), output.begin(), thrust::plus<T>());
-		#else
-			std::transform(output.begin(), output.end(), input.begin(), output.begin(), std::plus<float>());
-		#endif
+		int numElements = input.size();
+		#pragma omp parallel for
+		for (int i = 0; i < numElements; ++i)
+		{
+			output[i] += input[i];
+		}
 	}
 
 	void doTimesMinus(const Tvector &input, Tvector &output)
 	{
-#if __CUDACC__
-			thrust::transform(output.begin(), output.end(), input.begin(), output.begin(), thrust::minus<T>());
-		#else
-			std::transform(output.begin(), output.end(), input.begin(), output.begin(), std::minus<float>());
-		#endif
+		int numElements = input.size();
+		#pragma omp parallel for
+		for (int i = 0; i < numElements; ++i)
+		{
+			output[i] -= input[i];
+		}
 	}
 
 	void timesPlus(const Tvector &input, Tvector &output)
@@ -88,9 +94,21 @@ public:
 		}
 	}
 
+	T timesElement(int index, const T* input)
+	{
+		return input[index];
+	}
+
 	T getMaxRowSumAbs()
 	{
 		return static_cast<T>(1);
+	}
+
+	std::vector<T> getAbsRowSum()
+	{
+		std::vector<T> result(this->getNumRows(), (T)1);
+
+		return result;
 	}
 
 	//transposing the identity does nothing
@@ -102,12 +120,12 @@ public:
 	}
 
 	#if __CUDACC__
-	__device__ T timesElement(int index, const T* input)
+	__device__ T timesElementCUDA(int index, const T* input)
 	{
 		return input[index];
 	}
 
-	__device__ T getRowsumElement(int index)
+	__device__ T getRowsumElementCUDA(int index)
 	{
 		return (T)1;
 	}

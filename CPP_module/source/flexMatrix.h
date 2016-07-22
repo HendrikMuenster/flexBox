@@ -78,6 +78,19 @@ public:
 		}
 	}
 
+	T timesElement(int index, const T* input)
+	{
+		T rowsum = (T)0;
+		// initialize result
+		int indexNext = this->rowToIndexList[index + 1];
+		for (int elementIndex = this->rowToIndexList[index]; elementIndex < indexNext; ++elementIndex)
+		{
+			rowsum += input[this->indexList[elementIndex]] * this->valueList[elementIndex];
+		}
+
+		return rowsum;
+	}
+
 	//this is the fast way to fill flexMatrix
 	void blockInsert(std::vector<int> &indexI,const  std::vector<int> &indexJ,const Tvector &indexVal)
 	{
@@ -185,6 +198,27 @@ public:
 		return maxSum;
 	}
 
+
+	std::vector<T> getAbsRowSum()
+	{
+		std::vector<T> result(this->getNumRows());
+		#pragma omp parallel for
+		for (int k = 0; k < this->getNumRows(); ++k)
+		{
+			T tmpSum = static_cast<T>(0);
+			for (int index = rowToIndexList[k]; index < rowToIndexList[k + 1]; ++index)
+			{
+				tmpSum += std::abs(valueList[index]);
+			}
+
+
+			result[k] = tmpSum;
+		}
+
+		return result;
+	}
+
+
 	void printRow(int i)
 	{
 		for (int index = rowToIndexList[i]; index < rowToIndexList[i+1]; ++index)
@@ -229,13 +263,6 @@ public:
 
 		this->blockInsert(tmpindexI, tmpindexJ, tmpindexVal);
 	}
-
-#if __CUDACC__
-	__device__ T timesElement(int index, const T* input)
-	{
-		return (T)0;
-	}
-	#endif
 };
 
 #endif

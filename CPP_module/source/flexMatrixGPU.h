@@ -225,6 +225,13 @@ public:
 		return 1;
 	}
 
+	std::vector<T> getAbsRowSum()
+	{
+		std::vector<T> result(this->getNumRows(),1);
+
+		return result;
+	}
+
 	void printRow(int i)
 	{
 
@@ -337,7 +344,7 @@ public:
 	}
 
 #if __CUDACC__
-	__device__ T timesElement(int index, const T* input)
+	__device__ T timesElementCUDA(int index, const T* input)
 	{
 		T rowsum = (T)0;
 		// initialize result
@@ -350,7 +357,7 @@ public:
 		return rowsum;
 	}
 
-	__device__ T getRowsumElement(int index)
+	__device__ T getRowsumElementCUDA(int index)
 	{
 		T rowsum = (T)0;
 		// initialize result

@@ -23,7 +23,7 @@
 */
 
 //uncomment later and compiler directive
-//#define __CUDACC__ 1
+#define __CUDACC__ 0
 #define DO_CUDA_CHECK 0
 
 #include "mex.h"

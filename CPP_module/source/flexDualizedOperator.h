@@ -42,6 +42,8 @@ public:
 
 	void applyProx(flexBoxData<T, Tvector>* data, const std::vector<T> &sigma, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
+#if __CUDACC__
+#else
 		switch (this->p)
 		{
 			case dualL1AnisoProx:
@@ -51,12 +53,148 @@ public:
 			}
 			case dualL1IsoProx:
 			{
-				flexProxList<T, Tvector>::dualL1IsoProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
+				if (dualNumbers.size() == 1)
+				{
+					T* ptrY0 = data->y[dualNumbers[0]].data();
+
+					T* ptrYtilde0 = data->yTilde[dualNumbers[0]].data();
+
+					int numElements = data->yTilde[dualNumbers[0]].size();
+
+					#pragma omp parallel for
+					for (int i = 0; i < numElements; i++)
+					{
+						T yTmp = (T)1 / myMax<T>((T)1, fabs(ptrYtilde0[i]) / this->alpha);
+
+						ptrY0[i] = ptrYtilde0[i] * yTmp;
+					}
+				}
+				else if (dualNumbers.size() == 2)
+				{
+					T* ptrY0 = data->y[dualNumbers[0]].data();
+					T* ptrY1 = data->y[dualNumbers[1]].data();
+
+					T* ptrYtilde0 = data->yTilde[dualNumbers[0]].data();
+					T* ptrYtilde1 = data->yTilde[dualNumbers[1]].data();
+
+					int numElements = data->yTilde[dualNumbers[0]].size();
+
+					#pragma omp parallel for
+					for (int i = 0; i < numElements; i++)
+					{
+						T yTmp = (T)1 / myMax<T>((T)1, sqrtf(pow2(ptrYtilde0[i]) + pow2(ptrYtilde1[i])) / this->alpha);
+
+						ptrY0[i] = ptrYtilde0[i] * yTmp;
+						ptrY1[i] = ptrYtilde1[i] * yTmp;
+					}
+				}
+				else if (dualNumbers.size() == 3)
+				{
+					T* ptrY0 = data->y[dualNumbers[0]].data();
+					T* ptrY1 = data->y[dualNumbers[1]].data();
+					T* ptrY2 = data->y[dualNumbers[2]].data();
+
+					T* ptrYtilde0 = data->yTilde[dualNumbers[0]].data();
+					T* ptrYtilde1 = data->yTilde[dualNumbers[1]].data();
+					T* ptrYtilde2 = data->yTilde[dualNumbers[2]].data();
+
+					int numElements = data->yTilde[dualNumbers[0]].size();
+
+					#pragma omp parallel for
+					for (int i = 0; i < numElements; i++)
+					{
+						T yTmp = (T)1 / myMax<T>((T)1, sqrtf(pow2(ptrYtilde0[i]) + pow2(ptrYtilde1[i]) + pow2(ptrYtilde2[i])) / this->alpha);
+
+						ptrY0[i] = ptrYtilde0[i] * yTmp;
+						ptrY1[i] = ptrYtilde1[i] * yTmp;
+						ptrY2[i] = ptrYtilde2[i] * yTmp;
+					}
+				}
+				else
+				{
+					printf("Alert! Iso prox not implemented for dim>3");
+				}
+
+				//flexProxList<T, Tvector>::dualL1IsoProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
 				break;
 			}
 			case dualHuberProx:
 			{
-				flexProxList<T, Tvector>::dualHuberProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
+				if (dualNumbers.size() == 1)
+				{
+					T* ptrY0 = data->y[dualNumbers[0]].data();
+
+					T* ptrYtilde0 = data->yTilde[dualNumbers[0]].data();
+
+					T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
+
+					int numElements = data->yTilde[dualNumbers[0]].size();
+
+					#pragma omp parallel for
+					for (int i = 0; i < numElements; i++)
+					{
+						T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * (T)0.01 / this->alpha);
+
+						T yTmp = (T)1 / myMax<T>((T)1, fabs(ptrYtilde0[i] * huberFactor) / this->alpha);
+
+						ptrY0[i] = ptrYtilde0[i] * yTmp;
+					}
+				}
+				else if (dualNumbers.size() == 2)
+				{
+					T* ptrY0 = data->y[dualNumbers[0]].data();
+					T* ptrY1 = data->y[dualNumbers[1]].data();
+
+					T* ptrYtilde0 = data->yTilde[dualNumbers[0]].data();
+					T* ptrYtilde1 = data->yTilde[dualNumbers[1]].data();
+
+					T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
+
+					int numElements = data->yTilde[dualNumbers[0]].size();
+
+					#pragma omp parallel for
+					for (int i = 0; i < numElements; i++)
+					{
+						T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * (T)0.01 / this->alpha);
+
+						T yTmp = (T)1 / myMax<T>((T)1, sqrtf(pow2(ptrYtilde0[i] * huberFactor) + pow2(ptrYtilde1[i] * huberFactor)) / this->alpha);
+
+						ptrY0[i] = ptrYtilde0[i] * yTmp;
+						ptrY1[i] = ptrYtilde1[i] * yTmp;
+					}
+				}
+				else if (dualNumbers.size() == 3)
+				{
+					T* ptrY0 = data->y[dualNumbers[0]].data();
+					T* ptrY1 = data->y[dualNumbers[1]].data();
+					T* ptrY2 = data->y[dualNumbers[2]].data();
+
+					T* ptrYtilde0 = data->yTilde[dualNumbers[0]].data();
+					T* ptrYtilde1 = data->yTilde[dualNumbers[1]].data();
+					T* ptrYtilde2 = data->yTilde[dualNumbers[2]].data();
+
+					T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
+
+					int numElements = data->yTilde[dualNumbers[0]].size();
+
+					#pragma omp parallel for
+					for (int i = 0; i < numElements; i++)
+					{
+						T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * (T)0.01 / this->alpha);
+
+						T yTmp = (T)1 / myMax<T>((T)1, sqrtf(pow2(ptrYtilde0[i] * huberFactor) + pow2(ptrYtilde1[i] * huberFactor) + pow2(ptrYtilde2[i] * huberFactor)) / this->alpha);
+
+						ptrY0[i] = ptrYtilde0[i] * yTmp;
+						ptrY1[i] = ptrYtilde1[i] * yTmp;
+						ptrY2[i] = ptrYtilde2[i] * yTmp;
+					}
+				}
+				else
+				{
+					printf("Alert! Huber prox not implemented for dim>3");
+				}
+
+				//flexProxList<T, Tvector>::dualHuberProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
 				break;
 			}
 			case dualL2Prox:
@@ -70,6 +208,7 @@ public:
 				break;
 			}
 		}
+#endif
 	};
 
 #if __CUDACC__

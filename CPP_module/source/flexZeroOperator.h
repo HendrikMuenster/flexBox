@@ -32,9 +32,21 @@ public:
 	{
 	}
 
+	T timesElement(int index, const T* input)
+	{
+		return (T)0;
+	}
+
 	T getMaxRowSumAbs()
 	{
 		return static_cast<T>(1);
+	}
+
+	std::vector<T> getAbsRowSum()
+	{
+		std::vector<T> result(this->getNumRows(),(T)0);
+
+		return result;
 	}
 
 	//transposing the identity does nothing

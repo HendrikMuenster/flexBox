@@ -61,22 +61,22 @@ __global__ void updateY(int numTerms, int numDualVars, flexTermDual<T, Tvector>*
 					{
 					case diagonalOp:
 						{
-							yTildeList[dualNum] += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtXBar[primalNum]);
+							yTildeList[dualNum] += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXBar[primalNum]);
 							break;
 						}
 						case identityOp:
 						{
-							yTildeList[dualNum] += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtXBar[primalNum]);
+							yTildeList[dualNum] += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXBar[primalNum]);
 							break;
 						}
 						case gradientOp:
 						{
-							yTildeList[dualNum] += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtXBar[primalNum]);
+							yTildeList[dualNum] += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXBar[primalNum]);
 							break;
 						}
 						case matrixGPUOp:
 						{
-							yTildeList[dualNum] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtXBar[primalNum]);
+							yTildeList[dualNum] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXBar[primalNum]);
 							break;
 						}
 					}
@@ -175,26 +175,26 @@ __global__ void errorY(int numTerms, int numDualVars, flexTermDual<T, Tvector>**
 					{
 						case diagonalOp:
 						{
-							yErr += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtX[primalNum])
-								- static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtXOld[primalNum]);
+							yErr += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtX[primalNum])
+								- static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXOld[primalNum]);
 							break;
 						}
 						case identityOp:
 						{
-							yErr += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtX[primalNum])
-								- static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtXOld[primalNum]);
+							yErr += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtX[primalNum])
+								- static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXOld[primalNum]);
 							break;
 						}
 						case gradientOp:
 						{
-							yErr += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtX[primalNum])
-								- static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtXOld[primalNum]);
+							yErr += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtX[primalNum])
+								- static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXOld[primalNum]);
 							break;
 						}
 						case matrixGPUOp:
 						{
-							yErr += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtX[primalNum])
-								- static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElement(index, prtXOld[primalNum]);
+							yErr += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtX[primalNum])
+								- static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXOld[primalNum]);
 							break;
 						}
 					}
@@ -246,26 +246,26 @@ __global__ void errorX(int numTermsDual, int numDualVars, int numPrimalVars, fle
 					{
 						case diagonalOp:
 						{
-							ptrXError[primalNum][index] += -static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYOldList[dualNum]) +
-								static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYList[dualNum]);
+							ptrXError[primalNum][index] += -static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYOldList[dualNum]) +
+								static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 							break;
 						}
 						case identityOp:
 						{
-							ptrXError[primalNum][index] += -static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYOldList[dualNum]) +
-								static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYList[dualNum]);
+							ptrXError[primalNum][index] += -static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYOldList[dualNum]) +
+								static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 							break;
 						}
 						case gradientOp:
 						{
-							ptrXError[primalNum][index] += -static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYOldList[dualNum]) +
-								static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYList[dualNum]);
+							ptrXError[primalNum][index] += -static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYOldList[dualNum]) +
+								static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 							break;
 						}
 						case matrixGPUOp:
 						{
-							ptrXError[primalNum][index] += -static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYOldList[dualNum]) +
-								static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYList[dualNum]);
+							ptrXError[primalNum][index] += -static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYOldList[dualNum]) +
+								static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 							break;
 						}
 					}
@@ -337,22 +337,22 @@ __global__ void updateX(int numTermsDual, int numTermsPrimal, int numPrimalVars,
 					{
 						case diagonalOp:
 						{
-							xTildeList[primalNum] += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYList[dualNum]);
+							xTildeList[primalNum] += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 							break;
 						}
 						case identityOp:
 						{
-							xTildeList[primalNum] += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYList[dualNum]);
+							xTildeList[primalNum] += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 							break;
 						}
 						case gradientOp:
 						{
-							xTildeList[primalNum] += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYList[dualNum]);
+							xTildeList[primalNum] += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 							break;
 						}
 						case matrixGPUOp:
 						{
-							xTildeList[primalNum] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElement(index, ptrYList[dualNum]);
+							xTildeList[primalNum] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 
 							break;
 						}
@@ -448,22 +448,22 @@ __global__ void sigmaElement(int numTerms, int numDualVars, flexTermDual<T, Tvec
 					{
 						case diagonalOp:
 						{
-							sigmaList[dualNum][index] += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElement(index);
+							sigmaList[dualNum][index] += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
 						case identityOp:
 						{
-							sigmaList[dualNum][index] += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElement(index);
+							sigmaList[dualNum][index] += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
 						case gradientOp:
 						{
-							sigmaList[dualNum][index] += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElement(index);
+							sigmaList[dualNum][index] += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
 						case matrixGPUOp:
 						{
-							sigmaList[dualNum][index] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElement(index);
+							sigmaList[dualNum][index] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
 					}
@@ -520,22 +520,22 @@ __global__ void tauElement(int numTerms, int numPrimalVars, flexTermDual<T, Tvec
 					{
 						case diagonalOp:
 						{
-							tauList[primalNum][index] += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElement(index);
+							tauList[primalNum][index] += static_cast<flexDiagonalOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
 						case identityOp:
 						{
-							tauList[primalNum][index] += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElement(index);
+							tauList[primalNum][index] += static_cast<flexIdentityOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
 						case gradientOp:
 						{
-							tauList[primalNum][index] += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElement(index);
+							tauList[primalNum][index] += static_cast<flexGradientOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
 						case matrixGPUOp:
 						{
-							tauList[primalNum][index] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElement(index);
+							tauList[primalNum][index] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
 					}

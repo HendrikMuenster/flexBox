@@ -20,6 +20,8 @@ class flexBoxDataCPU : public flexBoxData<T, Tdata>
 		this->xBar.push_back(emptyX);
 		this->xTilde.push_back(emptyX);
 		this->xError.push_back(emptyX);
+
+		this->tauElt.push_back(emptyX);
 	}
 
 	void addDualVar(int numberOfElements)
@@ -31,6 +33,8 @@ class flexBoxDataCPU : public flexBoxData<T, Tdata>
 		this->yOld.push_back(emptyY);
 		this->yTilde.push_back(emptyY);
 		this->yError.push_back(emptyY);
+
+		this->sigmaElt.push_back(emptyY);
 	}
 
 	int getNumPrimalVars()

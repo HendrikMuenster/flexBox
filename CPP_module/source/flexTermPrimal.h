@@ -38,7 +38,10 @@ class flexTermPrimal
 			{
 				case primalEmptyProx :
 				{
-					flexProxList<T, Tdata>::primalEmptyProx(data, tau, primalNumbers);
+					for (int i = 0; i < primalNumbers.size(); ++i)
+					{
+						data->x[primalNumbers[i]].swap(data->xTilde[primalNumbers[i]]);
+					}
 					break;
 				}
 			}

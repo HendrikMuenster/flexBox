@@ -8,16 +8,17 @@ template < typename T, typename Tvector >
 class flexGradientOperator : public flexLinearOperator<T, Tvector>
 {
 private:
+#if __CUDACC__
+	thrust::device_vector<int> inputDimension;
+#else
 	std::vector<int> inputDimension;
+#endif
+	
+	int* inputDimensionPtr;
 	int gradDirection;
 	int type;
 	bool transposed;
 	int numberDimensions;
-
-	#if __CUDACC__
-		thrust::device_vector<int> inputDimensionG;
-		int* inputDimensionPtr;
-	#endif
 
 public:
 
@@ -26,16 +27,19 @@ public:
 	// 1 = backward
 	flexGradientOperator(std::vector<int> _inputDimension, int _gradDirection, int _type) : flexLinearOperator<T, Tvector>(vectorProduct(_inputDimension), vectorProduct(_inputDimension),gradientOp)
 	{
-		this->inputDimension = _inputDimension;
+		
 		this->gradDirection = _gradDirection;
 		this->type = _type;
 		this->transposed = false;
 		this->numberDimensions = _inputDimension.size();
 
 #if __CUDACC__
-		this->inputDimensionG.resize(_inputDimension.size());
-		thrust::copy(_inputDimension.begin(), _inputDimension.end(), this->inputDimensionG.begin());
-		inputDimensionPtr = thrust::raw_pointer_cast(this->inputDimensionG.data());
+		this->inputDimension.resize(_inputDimension.size());
+		thrust::copy(_inputDimension.begin(), _inputDimension.end(), this->inputDimension.begin());
+		inputDimensionPtr = thrust::raw_pointer_cast(this->inputDimension.data());
+#else
+		this->inputDimension = _inputDimension;
+		this->inputDimensionPtr = this->inputDimension.data();
 #endif
 	};
 
@@ -56,7 +60,7 @@ public:
 
 	void dxp2d(const Tvector &input, Tvector &output, sign s)
 	{
-		//#pragma omp parallel for
+		#pragma omp parallel for
 		for (int j = 0; j < this->inputDimension[1]; ++j)
 		{
 			for (int i = 0; i < this->inputDimension[0] - 1; ++i)
@@ -87,7 +91,7 @@ public:
 
 	void dyp2d(const Tvector &input, Tvector &output, sign s)
 	{
-		//#pragma omp parallel for
+		#pragma omp parallel for
 		for (int j = 0; j < this->inputDimension[1] - 1; ++j)
 		{
 			for (int i = 0; i < this->inputDimension[0]; ++i)
@@ -118,7 +122,7 @@ public:
 
 	void dxp2dTransposed(const Tvector &input, Tvector &output, sign s)
 	{
-		//#pragma omp parallel for
+		#pragma omp parallel for
 		for (int j = 0; j < this->inputDimension[1]; ++j)
 		{
 			for (int i = 1; i < this->inputDimension[0]-1; ++i)
@@ -174,7 +178,7 @@ public:
 
 	void dyp2dTransposed(const Tvector &input, Tvector &output, sign s)
 	{
-		//#pragma omp parallel for
+		#pragma omp parallel for
 		for (int j = 1; j < this->inputDimension[1] - 1; ++j)
 		{
 			for (int i = 0; i < this->inputDimension[0]; ++i)
@@ -231,52 +235,28 @@ public:
 
 	void timesPlus(const Tvector &input, Tvector &output)
 	{
-		#if __CUDACC__
-			dim3 block2d = dim3(32, 16, 1);
-			dim3 grid2d = dim3((this->inputDimension[0] + block2d.x - 1) / block2d.x, (this->inputDimension[1] + block2d.y - 1) / block2d.y, 1);
-
-			T* ptrOutput = thrust::raw_pointer_cast(output.data());
-			const T* ptrInput = thrust::raw_pointer_cast(input.data());
-		#endif
-
 		if (this->inputDimension.size() == 2)
 		{
 			if (this->gradDirection == 0)
 			{
 				if (this->transposed == false)
 				{
-#if __CUDACC__
-						dxp2dCUDA << <grid2d, block2d >> >(ptrOutput,ptrInput, this->inputDimension[0], this->inputDimension[1], PLUS);
-					#else
-						this->dxp2d(input,output,PLUS);
-					#endif
+                    this->dxp2d(input,output,PLUS);
 				}
 				else
 				{
-#if __CUDACC__
-						dxp2dTransposedCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], PLUS);
-					#else
-						this->dxp2dTransposed(input, output, PLUS);
-					#endif
+                    this->dxp2dTransposed(input, output, PLUS);
 				}
 			}
 			else if (this->gradDirection == 1)
 			{
 				if (this->transposed == false)
 				{
-#if __CUDACC__
-						dyp2dCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], PLUS);
-					#else
-						this->dyp2d(input, output, PLUS);
-					#endif
+					this->dyp2d(input, output, PLUS);
 				}
 				else
 				{
-#if __CUDACC__
-						dyp2dTransposedCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], PLUS);
-					#else
-						this->dyp2dTransposed(input, output, PLUS);
-					#endif
+					this->dyp2dTransposed(input, output, PLUS);
 				}
 			}
 		}
@@ -288,52 +268,28 @@ public:
 
 	void timesMinus(const Tvector &input, Tvector &output)
 	{
-#if __CUDACC__
-			dim3 block2d = dim3(32, 16, 1);
-			dim3 grid2d = dim3((this->inputDimension[0] + block2d.x - 1) / block2d.x, (this->inputDimension[1] + block2d.y - 1) / block2d.y, 1);
-
-			T* ptrOutput = thrust::raw_pointer_cast(output.data());
-			const T* ptrInput = thrust::raw_pointer_cast(input.data());
-		#endif
-
 		if (this->inputDimension.size() == 2)
 		{
 			if (this->gradDirection == 0)
 			{
 				if (this->transposed == false)
 				{
-#if __CUDACC__
-						dxp2dCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], MINUS);
-					#else
-						this->dxp2d(input, output, MINUS);
-					#endif
+					this->dxp2d(input, output, MINUS);
 				}
 				else
 				{
-#if __CUDACC__
-						dxp2dTransposedCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], MINUS);
-					#else
-						this->dxp2dTransposed(input, output, MINUS);
-					#endif
+					this->dxp2dTransposed(input, output, MINUS);
 				}
 			}
 			else if (this->gradDirection == 1)
 			{
 				if (this->transposed == false)
 				{
-#if __CUDACC__
-						dyp2dCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], MINUS);
-					#else
-						this->dyp2d(input, output, MINUS);
-					#endif
+					this->dyp2d(input, output, MINUS);
 				}
 				else
 				{
-#if __CUDACC__
-						dyp2dTransposedCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], MINUS);
-					#else
-						this->dyp2dTransposed(input, output, MINUS);
-					#endif
+					this->dyp2dTransposed(input, output, MINUS);
 				}
 			}
 		}
@@ -355,6 +311,13 @@ public:
 		return static_cast<T>(2);
 	}
 
+	std::vector<T> getAbsRowSum()
+	{
+		std::vector<T> result(this->getNumRows(),(T)2);
+
+		return result;
+	}
+
 	//transposing the identity does nothing
 	void transpose()
 	{
@@ -374,33 +337,166 @@ public:
 		return (i + j*this->inputDimension[0]);
 	}
 
-	int index3DtoLinear(int i, int j, int k)
+	T timesElement_xp(int index, const T* input, int i)
 	{
-		return (i + j*this->inputDimension[0] + k*this->inputDimension[0] * this->inputDimension[1]);
+		if (i < this->inputDimensionPtr[0] - 1)
+		{
+			return input[index + 1] - input[index];
+		}
+		else
+		{
+			return (T)0;
+		}
 	}
 
-	int linearTo2DiH(int index)
+	T timesElement_xm(int index, const T* input, int i)
 	{
-		return index % this->inputDimension[0];
+		if (i > 0 && i < this->inputDimensionPtr[0] - 1)
+		{
+			return -(input[index] - input[index - 1]);
+		}
+		else if (i == 0)
+		{
+			return -input[index];
+		}
+		else
+		{
+			return input[index - 1];
+		}
 	}
 
-	int linearTo2DjH(int index)
+	T timesElement_yp(int index, const T* input, int j)
 	{
-		return index / this->inputDimension[0];
+		if (j < this->inputDimensionPtr[1] - 1)
+		{
+			return input[index + this->inputDimensionPtr[0]] - input[index];
+		}
+		else
+		{
+			return (T)0;
+		}
 	}
 
+	T timesElement_ym(int index, const T* input, int j)
+	{
+		if (j > 0 && j < this->inputDimensionPtr[1] - 1)
+		{
+			return -(input[index] - input[index - this->inputDimensionPtr[0]]);
+		}
+		else if (j == 0)
+		{
+			return -input[index];
+		}
+		else
+		{
+			return input[index - this->inputDimensionPtr[0]];
+		}
+	}
+
+	T timesElement_zp(int index, const T* input, int k)
+	{
+		if (k < this->inputDimensionPtr[2] - 1)
+		{
+			return input[index + this->inputDimensionPtr[0] * this->inputDimensionPtr[1]] - input[index];
+		}
+		else
+		{
+			return (T)0;
+		}
+	}
+
+	T timesElement_zm(int index, const T* input, int k)
+	{
+		if (k > 0 && k < this->inputDimensionPtr[2] - 1)
+		{
+			return -(input[index] - input[index - this->inputDimensionPtr[0] * this->inputDimensionPtr[1]]);
+		}
+		else if (k == 0)
+		{
+			return -input[index];
+		}
+		else
+		{
+			return input[index - this->inputDimensionPtr[0] * this->inputDimensionPtr[1]];
+		}
+	}
+
+	int indexI(int index)
+	{
+		return index % this->inputDimensionPtr[0];
+	}
+
+	int indexJ(int index)
+	{
+		return (index / this->inputDimensionPtr[0]) % this->inputDimensionPtr[1];
+	}
+
+	int indexK(int index)
+	{
+		return ((index / this->inputDimensionPtr[0]) / this->inputDimensionPtr[1]) % this->inputDimensionPtr[2];
+	}
+
+	T timesElement(const int index, const T* input)
+	{
+		switch (this->gradDirection)
+		{
+		case 0:
+		{
+			switch (this->transposed)
+			{
+			case false:
+			{
+				return timesElement_xp(index, input, indexI(index));
+				break;
+			}
+			case true:
+			{
+				return timesElement_xm(index, input, indexI(index));
+				break;
+			}
+			}
+			break;
+		}
+		case 1:
+		{
+			switch (this->transposed)
+			{
+			case false:
+			{
+				return timesElement_yp(index, input, indexJ(index));
+				break;
+			}
+			case true:
+			{
+				return timesElement_ym(index, input, indexJ(index));
+				break;
+			}
+			}
+			break;
+		}
+		case 2:
+		{
+			switch (this->transposed)
+			{
+			case false:
+			{
+				return timesElement_zp(index, input, indexK(index));
+				break;
+			}
+			case true:
+			{
+				return timesElement_zm(index, input, indexK(index));
+				break;
+			}
+			}
+			break;
+		}
+		}
+	}
+
+
+    
 	#if __CUDACC__
-
-	__device__ __host__ int linearTo2Di(int index)
-	{
-		return index%this->inputDimensionPtr[0];
-	}
-
-	__device__ __host__ int linearTo2Dj(int index)
-	{
-		return index/this->inputDimensionPtr[0];
-	}
-
 	__device__ T timesElement_xp(int index, const T* input, int i)
 	{
 		if (i < this->inputDimensionPtr[0] - 1)
@@ -485,22 +581,22 @@ public:
 		}
 	}
 
-	__inline__ __device__ T indexI(int index)
+	__inline__ __device__ int indexI(int index)
 	{
 		return index % this->inputDimensionPtr[0];
 	}
 
-	__inline__ __device__ T indexJ(int index)
+	__inline__ __device__ int indexJ(int index)
 	{
 		return (index / this->inputDimensionPtr[0]) % this->inputDimensionPtr[1];
 	}
 
-	__inline__ __device__ T indexK(int index)
+	__inline__ __device__ int indexK(int index)
 	{
 		return ((index / this->inputDimensionPtr[0]) / this->inputDimensionPtr[1]) % this->inputDimensionPtr[2];
 	}
 
-	__device__ T timesElement(const int index, const T* input)
+	__device__ T timesElementCUDA(const int index, const T* input)
 	{
 		switch (this->gradDirection)
 		{
@@ -558,7 +654,7 @@ public:
 		}
 	}
 
-	__device__ T getRowsumElement(int index)
+	__device__ T getRowsumElementCUDA(int index)
 	{
 		int i, j, k;
 

@@ -104,6 +104,11 @@ float myPow2(float x)
 	return x * x;
 }
 
+float pow2(float x)
+{
+	return x * x;
+}
+
 template < typename T >
 void calculateXYError(const std::vector<T> &x, const std::vector<T> &xOld, std::vector<T> &xError, T tau)
 {
@@ -256,9 +261,6 @@ void vectorProjectFrobenius2D(std::vector<T> &yTmp, std::vector<T> &y1Tilde, std
 	std::transform(y1Tilde.begin(), y1Tilde.end(), y1.begin(), [norm](T x) { return x / norm; });
 	std::transform(y2Tilde.begin(), y2Tilde.end(), y2.begin(), [norm](T x) { return x / norm; });
 }
-
-
-
 
 template < typename T >
 void doOverrelaxation(std::vector<T> &x, std::vector<T> &xOld, std::vector<T> &xBar)
@@ -640,7 +642,7 @@ private:
 
 #if __CUDACC__
 
-template<typename T>
+/*template<typename T>
 __global__ void dxp2dCUDA(T* output, const T* input, int w, int h, const int signRule)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -858,7 +860,7 @@ __global__ void dyp2dTransposedCUDA(T* output, const T* input, int w, int h, con
 			}
 		}
 	}
-}
+}*/
 
 
 // cuda error checking

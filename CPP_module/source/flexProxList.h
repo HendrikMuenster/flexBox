@@ -12,14 +12,6 @@ public:
 
 	flexProxList() {};
 
-	static void primalEmptyProx(flexBoxData<T, Tvector>* data, std::vector<T> tau, std::vector<int> primalNumbers)
-	{
-		for (int i = 0; i < primalNumbers.size(); ++i)
-		{
-			data->x[primalNumbers[i]].swap(data->xTilde[primalNumbers[i]]);
-		}
-	};
-
 	static void dualL1AnisoProx(flexBoxData<T, Tvector>* data, const std::vector<T> &sigma, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, T alpha)
 	{
 		for (int j = 0; j < dualNumbers.size(); ++j)

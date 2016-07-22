@@ -9,11 +9,7 @@ class flexDiagonalOperator : public flexLinearOperator<T, Tvector>
 {
 private:
 	Tvector diagonalElements;
-
-	#if __CUDACC__
-		//save pointer to device memory
-		T* diagonalElementsPtr;
-	#endif
+	T* diagonalElementsPtr;
 public:
 
 	flexDiagonalOperator(std::vector<T> _diagonalElements) : flexLinearOperator<T, Tvector>(_diagonalElements.size(), _diagonalElements.size(), diagonalOp)
@@ -26,6 +22,7 @@ public:
 
 		#else
 			this->diagonalElements = _diagonalElements;
+			this->diagonalElementsPtr = this->diagonalElements.data();
 		#endif
 	};
 
@@ -59,6 +56,23 @@ public:
 		vectorAddVectorTimesVector(output, input, this->diagonalElements, SIGN_MINUS);
 	}
 
+	T timesElement(int index, const T* input)
+	{
+		return this->diagonalElementsPtr[index] * input[index];
+	}
+
+	std::vector<T> getAbsRowSum()
+	{
+		std::vector<T> result(this->getNumRows());
+		#pragma omp parallel for
+		for (int k = 0; k < this->getNumRows(); ++k)
+		{
+			result[k] = std::abs(this->diagonalElements[k]);
+		}
+
+		return result;
+	}
+
 	T getMaxRowSumAbs()
 	{
 		Tvector diagonalElementsCopy = this->diagonalElements;
@@ -72,12 +86,12 @@ public:
 	void transpose(){}
 
 	#if __CUDACC__
-	__device__ T timesElement(int index, const T* input)
+	__device__ T timesElementCUDA(int index, const T* input)
 	{
 		return this->diagonalElementsPtr[index] * input[index];
 	}
 
-	__device__ T getRowsumElement(int index)
+	__device__ T getRowsumElementCUDA(int index)
 	{
 		return fabs(this->diagonalElementsPtr[index]);
 	}

@@ -11,13 +11,14 @@
 #include "flexTermPrimal.h"
 
 #include "flexSolver.h"
-#include "flexSolverPrimalDual.h"
 
 #if __CUDACC__
 	#include "flexSolverPrimalDualCuda.h"
 	#include "flexBoxDataGPU.h"
 
 	#include <device_functions.h>
+#else
+	#include "flexSolverPrimalDual.h"
 #endif
 
 #include "flexBoxDataCPU.h"

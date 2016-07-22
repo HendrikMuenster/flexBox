@@ -59,16 +59,46 @@ public:
 
 	void applyProx(flexBoxData<T, Tvector>* data, const std::vector<T> &sigma, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
+#if __CUDACC__
+#else
 		switch (this->p)
 		{
 			case dualL2DataProx:
 			{
-				flexProxList<T, Tvector>::dualL2DataProx(data, sigma, dualNumbers, primalNumbers, this->alpha, this->f);
+				T* ptrY = data->y[dualNumbers[0]].data();
+				T* ptrYtilde = data->yTilde[dualNumbers[0]].data();
+				T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
+
+				T* ptrF = this->f.data();
+				
+				int numElements = data->yTilde[dualNumbers[0]].size();
+
+				#pragma omp parallel for
+				for (int i = 0; i < numElements; i++)
+				{
+					ptrY[i] = this->alpha / (ptrSigma[i] + this->alpha) * (ptrYtilde[i] - ptrSigma[i] * ptrF[i]);
+				}
+
+				//flexProxList<T, Tvector>::dualL2DataProx(data, sigma, dualNumbers, primalNumbers, this->alpha, this->f);
 				break;
 			}
 			case dualL1DataProx:
 			{
-				flexProxList<T, Tvector>::dualL1DataProx(data, sigma, dualNumbers, primalNumbers, this->alpha, this->f);
+				T* ptrY = data->y[dualNumbers[0]].data();
+				T* ptrYtilde = data->yTilde[dualNumbers[0]].data();
+				T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
+
+				T* ptrF = this->f.data();
+
+				int numElements = data->yTilde[dualNumbers[0]].size();
+
+				#pragma omp parallel for
+				for (int i = 0; i < numElements; i++)
+				{
+					ptrY[i] = myMin<T>(this->alpha, myMax<T>(-this->alpha, ptrYtilde[i] - this->alpha * ptrSigma[i] * ptrF[i]));
+				}
+
+				//flexProxList<T, Tvector>::dualL1DataProx(data, sigma, dualNumbers, primalNumbers, this->alpha, this->f);
 				break;
 			}
 			case dualKLDataProx:
@@ -77,6 +107,7 @@ public:
 				break;
 			}
 		}
+#endif
 	};
 
 #if __CUDACC__
