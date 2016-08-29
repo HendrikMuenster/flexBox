@@ -31,9 +31,6 @@ public:
 		this->operatorList = _operatorList;
 
 		//create sigma and tau
-		this->myTau.resize(numberPrimals, 0.0);
-		this->mySigma.resize(_operatorList.size() / numberPrimals, 0.0);
-
 		for (int i = 0; i < _operatorList.size() / numberPrimals; ++i)
 		{
 			for (int j = 0; j < numberPrimals; ++j)
@@ -42,9 +39,6 @@ public:
 
 				this->operatorListT.push_back(this->operatorList[opNum]->copy());
 				this->operatorListT[opNum]->transpose();
-
-				this->mySigma[i] += this->operatorList[opNum]->getMaxRowSumAbs();
-				this->myTau[j] += this->operatorListT[opNum]->getMaxRowSumAbs();
 			}
 		}
 #if __CUDACC__
@@ -57,7 +51,7 @@ public:
 		if (VERBOSE > 0) printf("Destructor of data term!");
 	}
 
-	void applyProx(flexBoxData<T, Tvector>* data, const std::vector<T> &sigma, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
+	void applyProx(flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
 #if __CUDACC__
 #else
@@ -103,7 +97,21 @@ public:
 			}
 			case dualKLDataProx:
 			{
-				flexProxList<T, Tvector>::dualKLDataProx(data, sigma, dualNumbers, primalNumbers, this->alpha, this->f);
+				T* ptrY = data->y[dualNumbers[0]].data();
+				T* ptrYtilde = data->yTilde[dualNumbers[0]].data();
+				T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
+
+				T* ptrF = this->f.data();
+
+				int numElements = data->yTilde[dualNumbers[0]].size();
+
+				#pragma omp parallel for
+				for (int i = 0; i < numElements; i++)
+				{
+					ptrY[i] = (T)0.5 * ((T)1 + ptrYtilde[i] - std::sqrt(myPow2<T>(ptrYtilde[i] - (T)1) + (T)4 * ptrSigma[i] * ptrF[i]));
+				}
+
+				//flexProxList<T, Tvector>::dualKLDataProx(data, sigma, dualNumbers, primalNumbers, this->alpha, this->f);
 				break;
 			}
 		}

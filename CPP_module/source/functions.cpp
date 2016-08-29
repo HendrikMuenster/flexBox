@@ -23,8 +23,8 @@
 */
 
 //uncomment later and compiler directive
-#define __CUDACC__ 0
-#define DO_CUDA_CHECK 0
+//#define __CUDACC__ 1
+//#define DO_CUDA_CHECK 1
 
 #include "mex.h"
 #include "math.h"
@@ -84,43 +84,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	char *func_type, *class_name;
 	int verbose = 0;
-
-	/*
-	//print matrix
-
-	mwIndex  *ir, *jc;
-
-	jc = mxGetJc(prhs[0]);
-	ir = mxGetIr(prhs[0]);
-	double * pr = mxGetPr(prhs[0]);
-
-	//matlab stores in compressed column format
-	int numCols = mxGetN(prhs[0]);
-	int* colList = new int[numCols + 1];
-	for (int i = 0; i <= numCols; ++i)
-	{
-		colList[i] = jc[i];
-	}
-
-	int nnz = colList[numCols];
-
-	int* rowList = new int[nnz];
-	float* valList = new float[nnz];
-	for (int i = 0; i < nnz; ++i)
-	{
-		rowList[i] = ir[i];
-		valList[i] = pr[i];
-	}
-
-	auto matrixTest = flexMatrixGPU<floatingType, vectorData>(mxGetM(prhs[0]), mxGetN(prhs[0]), rowList, colList, valList, false);
-
-	matrixTest.printMatrix();
-
-	matrixTest.transpose();
-
-	matrixTest.printMatrix();
-
-	return;*/
 
 	// Initialize main flexBox object
 	flexBox<floatingType,vectorData> mainObject;

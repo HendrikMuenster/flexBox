@@ -5,7 +5,6 @@
 #define kernelPrimalDual_H
 
 #include "tools.h"
-
 #include "flexBox.h"
 #include "flexTermDual.h"
 #include "flexBoxDataGPU.h"

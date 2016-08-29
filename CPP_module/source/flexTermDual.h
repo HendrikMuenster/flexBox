@@ -1,7 +1,7 @@
 #ifndef flexTermDual_H
 #define flexTermDual_H
 
-#include "flexProxList.h"
+//#include "flexProxList.h"
 #include "flexBoxData.h"
 #include "vector"
 #include "flexLinearOperator.h"
@@ -22,8 +22,6 @@ class flexTermDual
 	public:
 		const prox p;
 		T alpha;
-		std::vector<T> myTau;
-		std::vector<T> mySigma;
 		std::vector<flexLinearOperator<T, Tvector>* > operatorList;
 		std::vector<flexLinearOperator<T, Tvector>* > operatorListT;
 
@@ -68,7 +66,7 @@ class flexTermDual
 			return this->operatorList[num]->getNumRows();
 		}
 		
-		virtual void applyProx(flexBoxData<T, Tvector> *data, const std::vector<T> &sigma, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers) = 0;
+		virtual void applyProx(flexBoxData<T, Tvector> *data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers) = 0;
 
 #if __CUDACC__
 		__device__ int getNumberPrimals()

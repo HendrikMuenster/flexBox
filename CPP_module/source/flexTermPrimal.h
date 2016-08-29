@@ -1,7 +1,7 @@
 #ifndef flexTermPrimal_H
 #define flexTermPrimal_H
 
-#include "flexProxList.h"
+//#include "flexProxList.h"
 #include "flexBoxData.h"
 #include "vector"
 #include "tools.h"
@@ -32,7 +32,7 @@ class flexTermPrimal
 			return this->dims;
 		}
 
-		virtual void applyProx(flexBoxData<T, Tdata>* data, std::vector<T> tau, std::vector<int> primalNumbers)
+		virtual void applyProx(flexBoxData<T, Tdata>* data, std::vector<int> primalNumbers)
 		{
 			switch (p)
 			{

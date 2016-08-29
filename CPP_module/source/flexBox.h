@@ -172,6 +172,7 @@ class flexBox
 				{
 					error = solver->calculateError(data);
 				}
+
 				++iteration;
 			}
 

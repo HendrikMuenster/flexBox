@@ -45,9 +45,16 @@ public:
 
 	flexGradientOperator<T, Tvector>* copy()
 	{
-		flexGradientOperator<T, Tvector>* A = new flexGradientOperator<T, Tvector>(this->inputDimension, this->gradDirection, this->type);
 
-		return A;
+		std::vector<int> dimsCopy;
+		dimsCopy.resize(this->inputDimension.size());
+#if __CUDACC__
+		thrust::copy(this->inputDimension.begin(), this->inputDimension.end(), dimsCopy.begin());
+#else
+		std::copy(this->inputDimension.begin(), this->inputDimension.end(), dimsCopy.begin());
+#endif
+
+		return new flexGradientOperator<T, Tvector>(dimsCopy, this->gradDirection, this->type);
 	}
 
 	//apply linear operator to vector
@@ -497,7 +504,7 @@ public:
 
     
 	#if __CUDACC__
-	__device__ T timesElement_xp(int index, const T* input, int i)
+	__device__ T timesElement_xpCUDA(int index, const T* input, int i)
 	{
 		if (i < this->inputDimensionPtr[0] - 1)
 		{
@@ -509,7 +516,7 @@ public:
 		}
 	}
 
-	__device__ T timesElement_xm(int index, const T* input, int i)
+	__device__ T timesElement_xmCUDA(int index, const T* input, int i)
 	{
 		if (i > 0 && i < this->inputDimensionPtr[0] - 1)
 		{
@@ -525,7 +532,7 @@ public:
 		}
 	}
 
-	__device__ T timesElement_yp(int index, const T* input, int j)
+	__device__ T timesElement_ypCUDA(int index, const T* input, int j)
 	{
 		if (j < this->inputDimensionPtr[1] - 1)
 		{
@@ -537,7 +544,7 @@ public:
 		}
 	}
 
-	__device__ T timesElement_ym(int index, const T* input, int j)
+	__device__ T timesElement_ymCUDA(int index, const T* input, int j)
 	{
 		if (j > 0 && j < this->inputDimensionPtr[1] - 1)
 		{
@@ -553,7 +560,7 @@ public:
 		}
 	}
 
-	__device__ T timesElement_zp(int index, const T* input, int k)
+	__device__ T timesElement_zpCUDA(int index, const T* input, int k)
 	{
 		if (k < this->inputDimensionPtr[2] - 1)
 		{
@@ -565,7 +572,7 @@ public:
 		}
 	}
 
-	__device__ T timesElement_zm(int index, const T* input, int k)
+	__device__ T timesElement_zmCUDA(int index, const T* input, int k)
 	{
 		if (k > 0 && k < this->inputDimensionPtr[2] - 1)
 		{
@@ -581,17 +588,17 @@ public:
 		}
 	}
 
-	__inline__ __device__ int indexI(int index)
+	__inline__ __device__ int indexICUDA(int index)
 	{
 		return index % this->inputDimensionPtr[0];
 	}
 
-	__inline__ __device__ int indexJ(int index)
+	__inline__ __device__ int indexJCUDA(int index)
 	{
 		return (index / this->inputDimensionPtr[0]) % this->inputDimensionPtr[1];
 	}
 
-	__inline__ __device__ int indexK(int index)
+	__inline__ __device__ int indexKCUDA(int index)
 	{
 		return ((index / this->inputDimensionPtr[0]) / this->inputDimensionPtr[1]) % this->inputDimensionPtr[2];
 	}
@@ -606,12 +613,12 @@ public:
 				{
 					case false:
 					{
-						return timesElement_xp(index, input, indexI(index));
+						return timesElement_xpCUDA(index, input, indexICUDA(index));
 						break;
 					}
 					case true:
 					{
-						return timesElement_xm(index, input, indexI(index));
+						return timesElement_xmCUDA(index, input, indexICUDA(index));
 						break;
 					}
 				}
@@ -623,12 +630,12 @@ public:
 				{
 					case false:
 					{
-						return timesElement_yp(index, input, indexJ(index));
+						return timesElement_ypCUDA(index, input, indexJCUDA(index));
 						break;
 					}
 					case true:
 					{
-						return timesElement_ym(index, input, indexJ(index));
+						return timesElement_ymCUDA(index, input, indexJCUDA(index));
 						break;
 					}
 				}
@@ -640,12 +647,12 @@ public:
 				{
 					case false:
 					{
-						return timesElement_zp(index, input, indexK(index));
+						return timesElement_zpCUDA(index, input, indexKCUDA(index));
 						break;
 					}
 					case true:
 					{
-						return timesElement_zm(index, input, indexK(index));
+						return timesElement_zmCUDA(index, input, indexKCUDA(index));
 						break;
 					}
 				}

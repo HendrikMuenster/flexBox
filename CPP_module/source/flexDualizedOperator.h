@@ -9,12 +9,7 @@ class flexDualizedOperator : public flexTermDual<T, Tvector>
 public:
 	flexDualizedOperator(prox _p, T _alpha, int numberPrimals, std::vector<flexLinearOperator<T, Tvector>* > _operatorList) : flexTermDual<T, Tvector>(_p, _alpha, numberPrimals, _operatorList.size() / numberPrimals)
 	{
-			
 		this->operatorList = _operatorList;
-
-		//create sigma and tau
-		this->myTau.resize(numberPrimals, 0.0);
-		this->mySigma.resize(_operatorList.size() / numberPrimals, 0.0);
 
 		for (int i = 0; i < _operatorList.size() / numberPrimals; ++i)
 		{
@@ -24,9 +19,6 @@ public:
 
 				this->operatorListT.push_back(this->operatorList[opNum]->copy());
 				this->operatorListT[opNum]->transpose();
-
-				this->mySigma[i] += this->operatorList[opNum]->getMaxRowSumAbs();
-				this->myTau[j] += this->operatorListT[opNum]->getMaxRowSumAbs();
 			}
 		}
 
@@ -40,7 +32,7 @@ public:
 		if (VERBOSE > 0) printf("Destructor of operator term!");
 	}
 
-	void applyProx(flexBoxData<T, Tvector>* data, const std::vector<T> &sigma, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
+	void applyProx(flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
 #if __CUDACC__
 #else
@@ -48,7 +40,21 @@ public:
 		{
 			case dualL1AnisoProx:
 			{
-				flexProxList<T, Tvector>::dualL1AnisoProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
+				for (int k = 0; k < dualNumbers.size(); k++)
+				{
+					T* ptrY = data->y[dualNumbers[k]].data();
+					T* ptrYtilde = data->yTilde[dualNumbers[k]].data();
+
+					int numElements = data->yTilde[dualNumbers[k]].size();
+
+					#pragma omp parallel for
+					for (int i = 0; i < numElements; i++)
+					{
+						ptrY[i] = myMin<T>(this->alpha, myMax<T>(-this->alpha, ptrYtilde[i]));
+					}
+				}
+
+				//flexProxList<T, Tvector>::dualL1AnisoProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
 				break;
 			}
 			case dualL1IsoProx:
@@ -199,12 +205,58 @@ public:
 			}
 			case dualL2Prox:
 			{
-				flexProxList<T, Tvector>::dualL2Prox(data, sigma, dualNumbers, primalNumbers, this->alpha);
+				for (int k = 0; k < dualNumbers.size(); k++)
+				{
+					T* ptrY = data->y[dualNumbers[k]].data();
+					T* ptrYtilde = data->yTilde[dualNumbers[k]].data();
+
+					T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
+
+					int numElements = data->yTilde[dualNumbers[k]].size();
+
+					#pragma omp parallel for
+					for (int i = 0; i < numElements; i++)
+					{
+						ptrY[i] = this->alpha / (ptrSigma[i] + this->alpha) * ptrYtilde[i];
+					}
+				}
+
+				//flexProxList<T, Tvector>::dualL2Prox(data, sigma, dualNumbers, primalNumbers, this->alpha);
 				break;
 			}
 			case dualFrobeniusProx:
 			{
-				flexProxList<T, Tvector>::dualFrobeniusProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
+				T norm = (T)0;
+				for (int k = 0; k < dualNumbers.size(); k++)
+				{
+					T* ptrYTilde = data->yTilde[dualNumbers[k]].data();
+
+					int numElements = data->yTilde[dualNumbers[k]].size();
+
+					#pragma omp parallel for reduction(+: norm)
+					for (int i = 0; i < numElements; i++)
+					{
+						norm += ptrYTilde[i] * ptrYTilde[i];
+					}
+				}
+
+				norm = (T)1 / std::max((T)1, std::sqrt(norm) / this->alpha);
+
+				for (int k = 0; k < dualNumbers.size(); k++)
+				{
+					T* ptrY = data->y[dualNumbers[k]].data();
+					T* ptrYTilde = data->yTilde[dualNumbers[k]].data();
+
+					int numElements = data->yTilde[dualNumbers[k]].size();
+
+					#pragma omp parallel for
+					for (int i = 0; i < numElements; i++)
+					{
+						ptrY[i] = ptrYTilde[i] * norm;
+					}
+				}
+
+				//flexProxList<T, Tvector>::dualFrobeniusProx(data, sigma, dualNumbers, primalNumbers, this->alpha);
 				break;
 			}
 		}

@@ -343,6 +343,11 @@ public:
 		}
 	}
 
+	T timesElement(int index, const T* input)
+	{
+		return (T)0;
+	}
+
 #if __CUDACC__
 	__device__ T timesElementCUDA(int index, const T* input)
 	{
