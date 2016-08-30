@@ -41,6 +41,7 @@ class flexBox
 		int maxIterations;
 		int checkError;
 		int displayStatus;
+		int verbose;
 
 		//List of dimensions
 		std::vector<std::vector<int> > dims;
@@ -54,19 +55,21 @@ class flexBox
 		{
 			this->tol = static_cast<T>(1e-5);
 
-			maxIterations = static_cast<int>(10000);
-			checkError = static_cast<int>(100);
-			displayStatus = static_cast<int>(1000);
+			this->maxIterations = static_cast<int>(10000);
+			this->checkError = static_cast<int>(100);
+			this->displayStatus = static_cast<int>(1000);
+			this->verbose = static_cast<int>(0);
 
 			#if __CUDACC__
-				data = new flexBoxDataGPU<T, Tdata>();
-				solver = new flexSolverPrimalDualCuda<T, Tdata>();
+				this->data = new flexBoxDataGPU<T, Tdata>();
+				this->solver = new flexSolverPrimalDualCuda<T, Tdata>();
 			#else
-				data = new flexBoxDataCPU<T,Tdata>();
-				solver = new flexSolverPrimalDual<T, Tdata>();
+				this->data = new flexBoxDataCPU<T, Tdata>();
+				this->solver = new flexSolverPrimalDual<T, Tdata>();
 			#endif	
 
-			isMATLAB = false;
+			this->isMATLAB = false;
+
 		};
 
 		~flexBox()
@@ -159,8 +162,11 @@ class flexBox
 				{
 					if (this->isMATLAB)
 					{
-						mexPrintf("Iteration #%d | Error:%f\n", iteration, error);
-						mexEvalString("pause(.0001);");
+						if (this->verbose > 0)
+						{
+							mexPrintf("Iteration #%d | Error:%f\n", iteration, error);
+							mexEvalString("pause(.0001);");
+						}
 					}
 					else
 					{
@@ -177,7 +183,11 @@ class flexBox
 			}
 
 			if (doTime) timer.end();
-			if (doTime) printf("Time for %d Iterations was: %f\n", iteration, timer.elapsed());
+			
+			if (this->verbose > 0)
+			{
+				if (doTime) printf("Time for %d Iterations was: %f\n", iteration, timer.elapsed());
+			}
 
 		}
 };

@@ -78,10 +78,6 @@ void copyMatlabToFlexmatrix(const mxArray *input, flexMatrix<floatingType,vector
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	#if __CUDACC__
-		printf("Using CUDA\n");
-	#endif
-
 	char *func_type, *class_name;
 	int verbose = 0;
 
@@ -104,6 +100,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			if (strcmp(parameterName, "maxIt") == 0)
 			{
 				mainObject.maxIterations = (int)mxGetScalar(prhs[entry + 2]);
+			}
+			if (strcmp(parameterName, "verbose") == 0)
+			{
+				mainObject.verbose = (int)mxGetScalar(prhs[entry + 2]);
 			}
 
 			//jump three entries

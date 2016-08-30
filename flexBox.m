@@ -33,6 +33,7 @@ classdef flexBox < handle
             %obj.params.tau = 0.1;
             obj.params.checkError = 100;
             obj.params.theta = 1;
+            obj.params.verbose = 0;
             
             obj.params.showPrimals = 0;
             
@@ -160,9 +161,9 @@ classdef flexBox < handle
             mexCallString = [];
             
             %attach parameters
-            for i=1:numel(obj.dims)
-                mexCallString = [mexCallString,'''parameter'',''maxIt'',',num2str(obj.params.maxIt),','];
-            end
+            mexCallString = [mexCallString,'''parameter'',''maxIt'',',num2str(obj.params.maxIt),','];
+            mexCallString = [mexCallString,'''parameter'',''verbose'',',num2str(obj.params.verbose),','];
+            
             
             %generatePrimalVars
             for i=1:numel(obj.dims)
@@ -260,7 +261,9 @@ classdef flexBox < handle
             end
             
             if (obj.checkCPP())
+                if (obj.params.verbose > 0)
                 disp('C++ support detected. Running in C++ mode');
+                end
                 obj.doCPP();
             else
                 disp('Running in MATLAB mode');
