@@ -54,6 +54,14 @@ enum sign
 	EQUALS
 };
 
+enum sign2
+{
+	PLUS,
+	MINUS,
+	EQUALS
+};
+
+
 enum prox
 {
 	primalEmptyProx,

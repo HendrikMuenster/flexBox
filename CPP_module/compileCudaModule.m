@@ -28,7 +28,7 @@ if ismac
 elseif isunix
     mystring = ['nvcc  -std=c++11 -O3 -m64 -use_fast_math --cuda -arch=compute_50 -code=sm_50 -I"',matlabroot,'/extern/include" functions.cu --output-file "functionsCuda.cpp"'];
 elseif ispc
-    mystring = ['nvcc.exe -use_fast_math --cuda -arch=compute_50 -code=sm_50 -I"',combilerBin,'" -I"',matlabroot,'/extern/include" -I"',CUDA_INCLUDE,'" --output-file "functionsCuda.cpp"  "functions.cu"'];
+    mystring = ['nvcc.exe -use_fast_math --cuda -arch=compute_50 -code=sm_50 -ccbin "',combilerBin,'" -I"',matlabroot,'/extern/include" -I"',CUDA_INCLUDE,'" --output-file "functionsCuda.cpp"  "functions.cu"'];
 else
     disp('Cannot recognize platform')
 end
