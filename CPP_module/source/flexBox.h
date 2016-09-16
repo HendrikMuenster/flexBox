@@ -164,8 +164,11 @@ class flexBox
 					{
 						if (this->verbose > 0)
 						{
+							#if IS_MATLAB
 							mexPrintf("Iteration #%d | Error:%f\n", iteration, error);
 							mexEvalString("pause(.0001);");
+							#endif
+
 						}
 					}
 					else

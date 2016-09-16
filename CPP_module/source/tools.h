@@ -47,20 +47,12 @@ static const int SIGN_EQUALS = 2;
 #define BLOCK_SIZE (64)
 
 
-enum sign
+enum mySign
 {
 	PLUS,
 	MINUS,
 	EQUALS
 };
-
-enum sign2
-{
-	PLUS,
-	MINUS,
-	EQUALS
-};
-
 
 enum prox
 {

@@ -26,6 +26,8 @@
 //#define __CUDACC__ 1
 //#define DO_CUDA_CHECK 1
 
+#define IS_MATLAB 1
+
 #include "mex.h"
 #include "math.h"
 #include <omp.h>

@@ -3,7 +3,6 @@
 
 #include "vector"
 #include "flexLinearOperator.h"
-#include "tools.h"
 
 template < typename T, typename Tvector >
 class flexGradientOperator : public flexLinearOperator<T, Tvector>
@@ -66,7 +65,7 @@ public:
 
 
 
-	void dxp2d(const Tvector &input, Tvector &output, sign2 s)
+	void dxp2d(const Tvector &input, Tvector &output, mySign s)
 	{
 		#pragma omp parallel for
 		for (int j = 0; j < this->inputDimension[1]; ++j)
@@ -97,7 +96,7 @@ public:
 		}
 	}
 
-	void dyp2d(const Tvector &input, Tvector &output, sign s)
+	void dyp2d(const Tvector &input, Tvector &output, mySign s)
 	{
 		#pragma omp parallel for
 		for (int j = 0; j < this->inputDimension[1] - 1; ++j)
@@ -128,7 +127,7 @@ public:
 		}
 	}
 
-	void dxp2dTransposed(const Tvector &input, Tvector &output, sign s)
+	void dxp2dTransposed(const Tvector &input, Tvector &output, mySign s)
 	{
 		#pragma omp parallel for
 		for (int j = 0; j < this->inputDimension[1]; ++j)
@@ -184,7 +183,7 @@ public:
 		}
 	}
 
-	void dyp2dTransposed(const Tvector &input, Tvector &output, sign s)
+	void dyp2dTransposed(const Tvector &input, Tvector &output, mySign s)
 	{
 		#pragma omp parallel for
 		for (int j = 1; j < this->inputDimension[1] - 1; ++j)
