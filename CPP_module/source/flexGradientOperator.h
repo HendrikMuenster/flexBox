@@ -67,10 +67,13 @@ public:
 
 	void dxp2d(const Tvector &input, Tvector &output, mySign s)
 	{
+		int sizeY = this->inputDimension[1];
+		int sizeX = this->inputDimension[0] - 1;
+
 		#pragma omp parallel for
-		for (int j = 0; j < this->inputDimension[1]; ++j)
+		for (int j = 0; j < sizeY; ++j)
 		{
-			for (int i = 0; i < this->inputDimension[0] - 1; ++i)
+			for (int i = 0; i < sizeX; ++i)
 			{
 				const int tmpIndex = this->index2DtoLinear(i, j);
 
@@ -98,10 +101,13 @@ public:
 
 	void dyp2d(const Tvector &input, Tvector &output, mySign s)
 	{
+		int sizeY = this->inputDimension[1] - 1;
+		int sizeX = this->inputDimension[0];
+
 		#pragma omp parallel for
-		for (int j = 0; j < this->inputDimension[1] - 1; ++j)
+		for (int j = 0; j < sizeY; ++j)
 		{
-			for (int i = 0; i < this->inputDimension[0]; ++i)
+			for (int i = 0; i < sizeX; ++i)
 			{
 				const int tmpIndex = this->index2DtoLinear(i, j);
 
@@ -109,17 +115,17 @@ public:
 				{
 					case PLUS:
 					{
-						output[tmpIndex] += input[tmpIndex + this->inputDimension[0]] - input[tmpIndex];
+						output[tmpIndex] += input[tmpIndex + sizeX] - input[tmpIndex];
 						break;
 					}
 					case MINUS:
 					{
-						output[tmpIndex] -= input[tmpIndex + this->inputDimension[0]] - input[tmpIndex];
+						output[tmpIndex] -= input[tmpIndex + sizeX] - input[tmpIndex];
 						break;
 					}
 					case EQUALS:
 					{
-						output[tmpIndex] = input[tmpIndex + this->inputDimension[0]] - input[tmpIndex];
+						output[tmpIndex] = input[tmpIndex + sizeX] - input[tmpIndex];
 						break;
 					}
 				}
@@ -129,10 +135,13 @@ public:
 
 	void dxp2dTransposed(const Tvector &input, Tvector &output, mySign s)
 	{
+		int sizeY = this->inputDimension[1];
+		int sizeX = this->inputDimension[0] - 1;
+
 		#pragma omp parallel for
-		for (int j = 0; j < this->inputDimension[1]; ++j)
+		for (int j = 0; j < sizeY; ++j)
 		{
-			for (int i = 1; i < this->inputDimension[0]-1; ++i)
+			for (int i = 1; i < sizeX; ++i)
 			{
 				int tmpIndex = this->index2DtoLinear(i, j);
 
@@ -185,10 +194,13 @@ public:
 
 	void dyp2dTransposed(const Tvector &input, Tvector &output, mySign s)
 	{
+		int sizeY = this->inputDimension[1] - 1;
+		int sizeX = this->inputDimension[0];
+
 		#pragma omp parallel for
-		for (int j = 1; j < this->inputDimension[1] - 1; ++j)
+		for (int j = 1; j < sizeY; ++j)
 		{
-			for (int i = 0; i < this->inputDimension[0]; ++i)
+			for (int i = 0; i < sizeX; ++i)
 			{
 				int tmpIndex = this->index2DtoLinear(i, j);
 
@@ -196,17 +208,17 @@ public:
 				{
 					case PLUS:
 					{
-						output[tmpIndex] += -(input[tmpIndex] - input[tmpIndex - this->inputDimension[0]]);
+						output[tmpIndex] += -(input[tmpIndex] - input[tmpIndex - sizeX]);
 						break;
 					}
 					case MINUS:
 					{
-						output[tmpIndex] -= -(input[tmpIndex] - input[tmpIndex - this->inputDimension[0]]);
+						output[tmpIndex] -= -(input[tmpIndex] - input[tmpIndex - sizeX]);
 						break;
 					}
 					case EQUALS:
 					{
-						output[tmpIndex] = -(input[tmpIndex] - input[tmpIndex - this->inputDimension[0]]);
+						output[tmpIndex] = -(input[tmpIndex] - input[tmpIndex - sizeX]);
 						break;
 					}
 				}

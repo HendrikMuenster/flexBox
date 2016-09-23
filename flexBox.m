@@ -262,11 +262,14 @@ classdef flexBox < handle
             
             if (obj.checkCPP())
                 if (obj.params.verbose > 0)
-                disp('C++ support detected. Running in C++ mode');
+                    disp('C++ support detected. Running in C++ mode');
                 end
                 obj.doCPP();
             else
-                disp('Running in MATLAB mode');
+                if (obj.params.verbose > 0)
+                    disp('Running in MATLAB mode');
+                end
+                
                 reverseStr = [];
                 iteration = 1;error = Inf;
                 while error>obj.params.tol && iteration < obj.params.maxIt
@@ -466,7 +469,7 @@ classdef flexBox < handle
                 CPPsupport = 0;
             elseif (obj.params.tryCPP && exist('flexBoxCPP','file') ~= 3)
                 CPPsupport = 0;
-                disp(['CPP module is not compiled!']);
+                disp(['Warning: C++ module is not compiled!']);
             else
                 CPPsupport = 1;
                 for i=1:numel(obj.primals)

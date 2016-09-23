@@ -281,7 +281,8 @@ void vectorAddVectorTimesVector(std::vector<T> &result, const std::vector<T> &v1
 	{
 		case SIGN_PLUS:
 		{
-			for (int i = 0; i < result.size(); ++i)
+			int numElements = result.size();
+			for (int i = 0; i < numElements; ++i)
 			{
 				result[i] += v1[i] * v2[i];
 			}
@@ -289,7 +290,8 @@ void vectorAddVectorTimesVector(std::vector<T> &result, const std::vector<T> &v1
 		}
 		case SIGN_MINUS:
 		{
-			for (int i = 0; i < result.size(); ++i)
+			int numElements = result.size();
+			for (int i = 0; i < numElements; ++i)
 			{
 				result[i] -= v1[i] * v2[i];
 			}
@@ -297,7 +299,8 @@ void vectorAddVectorTimesVector(std::vector<T> &result, const std::vector<T> &v1
 		}
 		case SIGN_EQUALS:
 		{
-			for (int i = 0; i < result.size(); ++i)
+			int numElements = result.size();
+			for (int i = 0; i < numElements; ++i)
 			{
 				result[i] = v1[i] * v2[i];
 			}
