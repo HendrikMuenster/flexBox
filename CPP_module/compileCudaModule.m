@@ -40,11 +40,11 @@ dlmwrite('cudaCompileResult.txt',cmdout,'delimiter','')
 %%
 
 if ismac
-    mex('-largeArrayDims CXXFLAGS="$CXXFLAGS -fopenmp" LDFLAGS="$LDFLAGS -fopenmp" -I"',CUDA_INCLUDE,'" -L"',CUDA_LIB64,'" -L/lib -lcusparse -lcudart -lcufft -lrt -output ../flexBoxCPP -lstdc++ "functionsCuda.cpp"');
+    mex('-largeArrayDims CXXFLAGS="$CXXFLAGS -fopenmp -std=c++11" LDFLAGS="$LDFLAGS -fopenmp" -I"',CUDA_INCLUDE,'" -L"',CUDA_LIB64,'" -L/lib -lcusparse -lcudart -lcufft -lrt -output ../flexBoxCPP -lstdc++ "functionsCuda.cpp"');
 elseif isunix
-    eval(['mex -largeArrayDims CXXFLAGS="$CXXFLAGS -fopenmp" LDFLAGS="$LDFLAGS -fopenmp" -I"',CUDA_INCLUDE,'" -L"',CUDA_LIB64,'" -L/lib -lcusparse -lcudart -lcufft -lrt -output ../flexBoxCPP -lstdc++ "functionsCuda.cpp"']);
+    eval(['mex -largeArrayDims CXXFLAGS="$CXXFLAGS -fopenmp -std=c++11" LDFLAGS="$LDFLAGS -fopenmp" -I"',CUDA_INCLUDE,'" -L"',CUDA_LIB64,'" -L/lib -lcusparse -lcudart -lcufft -lrt -output ../flexBoxCPP -lstdc++ "functionsCuda.cpp"']);
 elseif ispc
-    eval(['mex -largeArrayDims CXXFLAGS="$CXXFLAGS -fopenmp" LDFLAGS="$LDFLAGS -fopenmp" -I"',CUDA_INCLUDE,'" -L"',CUDA_LIB64,'" -L/lib -lcusparse -lcudart -lcufft -output ../flexBoxCPP "functionsCuda.cpp"']);
+    eval(['mex -largeArrayDims CXXFLAGS="$CXXFLAGS -fopenmp -std=c++11" LDFLAGS="$LDFLAGS -fopenmp" -I"',CUDA_INCLUDE,'" -L"',CUDA_LIB64,'" -L/lib -lcusparse -lcudart -lcufft -output ../flexBoxCPP "functionsCuda.cpp"']);
 end 
 
 delete('functionsCuda.cpp');

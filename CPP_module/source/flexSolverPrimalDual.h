@@ -83,7 +83,7 @@ public:
 			#pragma omp parallel for
 			for (int j = 0; j < numElements; ++j)
 			{
-				ptrSigma[j] = (T)1 / ptrSigma[j];
+				ptrSigma[j] = (T)1 / myMax<T>(0.001, ptrSigma[j]);
 			}
 		}
 
@@ -96,7 +96,7 @@ public:
 			#pragma omp parallel for
 			for (int j = 0; j < numElements; ++j)
 			{
-				ptrTau[j] = (T)1 / ptrTau[j];
+				ptrTau[j] = (T)1 / myMax<T>(0.001, ptrTau[j]);
 			}
 		}
 	}
