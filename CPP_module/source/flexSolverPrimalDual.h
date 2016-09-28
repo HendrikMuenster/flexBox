@@ -128,7 +128,7 @@ public:
 	{
 		for (int i = 0; i < dualNumbers.size(); ++i)
 		{
-            const int dualNum = dualNumbers[i];
+			const int dualNum = dualNumbers[i];
             
             vectorScalarSet(data->yTilde[dualNum],(T)0);
             

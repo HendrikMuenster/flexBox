@@ -75,7 +75,8 @@ enum linOp
 	identityOp,
 	matrixOp,
 	matrixGPUOp,
-	zeroOp
+	zeroOp,
+	superpixelOp
 };
 
 

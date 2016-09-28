@@ -25,8 +25,10 @@ classdef superpixelOperator < basicOperator
             mask = kron(mask,ones(factor));
 
             weight = 1/factor^2;
+            
+            numCols = (prod(targetDimension)*factor^2);
 
-            obj.matrix = sparse(mask(:),1:(prod(targetDimension)*factor^2),weight);
+            obj.matrix = sparse(mask(:),(1:numCols)',weight*ones(1,numCols));
         end
         
         function result = mtimes(obj,vector)

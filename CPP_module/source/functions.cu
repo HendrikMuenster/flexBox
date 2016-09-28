@@ -47,7 +47,7 @@
 #include "flexDiagonalOperator.h"
 #include "flexMatrix.h"
 #include "flexGradientOperator.h"
-
+#include "flexSuperpixelOperator.h"
 
 #include "flexBox.h"
 
@@ -244,6 +244,27 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 					}
 					
 					operatorList.push_back(new flexDiagonalOperator<floatingType, vectorData>(tmpDiagonal));
+				}
+				else if (checkClassType(pointerA, "superpixelOperator"))
+				{
+					if (verbose > 1)
+					{
+						printf("Operator %d is type <superpixelOperator>\n", i);
+					}
+
+					float factor = mxGetScalar(mxGetProperty(pointerA, 0, "factor"));// factor that f is being upsized
+					//dimension of data f
+
+					auto targetDimensionStruct = mxGetProperty(pointerA, 0, "targetDimension");
+					double *targetDimensionInput = mxGetPr(targetDimensionStruct);
+					int targetDimensionSize = (int)(mxGetN(targetDimensionStruct) * mxGetM(targetDimensionStruct));
+					std::vector<int> targetDimension(targetDimensionSize, 0);
+					for (int i = 0; i < targetDimensionSize; ++i)
+					{
+						targetDimension[i] = (int)targetDimensionInput[i];
+					}
+
+					operatorList.push_back(new flexSuperpixelOperator<floatingType, vectorData>(targetDimension, factor));
 				}
 				else if (checkSparse(pointerA))
 				{
