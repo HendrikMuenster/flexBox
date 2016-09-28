@@ -8,32 +8,46 @@ template < typename T, typename Tvector >
 class flexSuperpixelOperator : public flexLinearOperator<T, Tvector>
 {
 private:
+#if __CUDACC__
+	thrust::device_vector<int> targetDimension;
+#else
 	std::vector<int> targetDimension;
+#endif
+	int* targetDimensionPtr;
 	T upsamplingFactor;
 	bool transposed;
 public:
 
-	flexSuperpixelOperator(std::vector<int> targetDimensionInput, T upsamplingFactorInput) : flexLinearOperator<T, Tvector>((int)(vectorProduct(targetDimensionInput)), (int)(vectorProduct(targetDimensionInput)*upsamplingFactorInput*upsamplingFactorInput), superpixelOp)
+	flexSuperpixelOperator(std::vector<int> targetDimension_, T upsamplingFactor_) : flexLinearOperator<T, Tvector>((int)(vectorProduct(targetDimension_)), (int)(vectorProduct(targetDimension_)*upsamplingFactor_*upsamplingFactor_), superpixelOp)
 	{
-		this->targetDimension.resize(targetDimensionInput.size());
+		this->targetDimension.resize(targetDimension_.size());
 		this->transposed = false;
 
 		#if __CUDACC__
-
+			thrust::copy(targetDimension_.begin(), targetDimension_.end(), this->targetDimension.begin());
+			targetDimensionPtr = thrust::raw_pointer_cast(this->targetDimension.data());
 		#else
-			this->targetDimension = targetDimensionInput;
-			this->upsamplingFactor = upsamplingFactorInput;
+			this->targetDimension = targetDimension_;
+			this->targetDimensionPtr = this->targetDimension.data();
 		#endif
+
+		this->upsamplingFactor = upsamplingFactor_;
 	};
 
 	#if __CUDACC__
+	flexSuperpixelOperator<T, Tvector>* copy()
+	{
+		std::vector<int> targetDimensionTmp(this->targetDimension.size());
+		thrust::copy(this->targetDimension.begin(), this->targetDimension.end(), targetDimensionTmp.begin());
 
-	#endif
-
+		return new flexSuperpixelOperator<T, Tvector>(targetDimensionTmp, this->upsamplingFactor);
+	}
+	#else
 	flexSuperpixelOperator<T, Tvector>* copy()
 	{
 		return new flexSuperpixelOperator<T, Tvector>(this->targetDimension, this->upsamplingFactor);
 	}
+	#endif
 
 	int indexI(int index, int sizeX)
 	{
@@ -55,10 +69,10 @@ public:
 
 		T factor = (T)1 / (this->upsamplingFactor*this->upsamplingFactor);
 
-		int iOuterEnd = (int)this->targetDimension[0];
-		int jOuterEnd = (int)this->targetDimension[1];
+		int iOuterEnd = targetDimensionPtr[0];
+		int jOuterEnd = targetDimensionPtr[1];
 
-		int sizeY = this->targetDimension[1] * this->upsamplingFactor;
+		int sizeY = targetDimensionPtr[1] * this->upsamplingFactor;
 
 		#pragma omp parallel for
 		for (int i = 0; i < iOuterEnd; ++i)
@@ -67,7 +81,7 @@ public:
 			{
 				//printf("Output: (%d,%d) : %d\n", i, j, index2DtoLinear(i, j, this->targetDimension[1]));
 
-				int outputIndex = index2DtoLinear(i, j, this->targetDimension[1]);
+				int outputIndex = index2DtoLinear(i, j, targetDimensionPtr[1]);
 
 				int iInnerStart = i*this->upsamplingFactor;
 				int iInnerEnd = (i + 1)*this->upsamplingFactor;
@@ -131,8 +145,8 @@ public:
 	{
 		T factor = (T)1 / (this->upsamplingFactor*this->upsamplingFactor);
 
-		int sizeX = this->targetDimension[0] * this->upsamplingFactor;
-		int sizeY = this->targetDimension[1] * this->upsamplingFactor;
+		int sizeX = targetDimensionPtr[0] * this->upsamplingFactor;
+		int sizeY = targetDimensionPtr[1] * this->upsamplingFactor;
 
 		#pragma omp parallel for
 		for (int i = 0; i < sizeX; ++i)
@@ -150,7 +164,7 @@ public:
 				int backJ = j / this->upsamplingFactor;
 
 				
-				int outputIndex = index2DtoLinear(backI, backJ, this->targetDimension[1]);
+				int outputIndex = index2DtoLinear(backI, backJ, targetDimensionPtr[1]);
 
 				//printf("Back: (%d,%d) %d,%d \n", backI, backJ, inputIndex, outputIndex);
 
@@ -257,6 +271,8 @@ public:
 	#if __CUDACC__
 	__device__ T timesElementCUDA(int index, const T* input)
 	{
+
+
 		return this->diagonalElementsPtr[index] * input[index];
 	}
 
