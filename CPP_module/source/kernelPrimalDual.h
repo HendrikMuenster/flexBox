@@ -13,6 +13,7 @@
 #include "flexIdentityOperator.h"
 #include "flexGradientOperator.h"
 #include "flexMatrixGPU.h"
+#include "flexSuperpixelOperator.h"
 
 #include "flexDualizedDataTerm.h"
 
@@ -76,6 +77,11 @@ __global__ void updateY(int numTerms, int numDualVars, flexTermDual<T, Tvector>*
 						case matrixGPUOp:
 						{
 							yTildeList[dualNum] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXBar[primalNum]);
+							break;
+						}
+						case superpixelOp:
+						{
+							yTildeList[dualNum] += static_cast<flexSuperpixelOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXBar[primalNum]);
 							break;
 						}
 					}
@@ -196,6 +202,12 @@ __global__ void errorY(int numTerms, int numDualVars, flexTermDual<T, Tvector>**
 								- static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXOld[primalNum]);
 							break;
 						}
+						case superpixelOp:
+						{
+							yErr += static_cast<flexSuperpixelOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtX[primalNum])
+								- static_cast<flexSuperpixelOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->timesElementCUDA(index, prtXOld[primalNum]);
+							break;
+						}
 					}
 				}
 				//save yTilde to local memory
@@ -265,6 +277,12 @@ __global__ void errorX(int numTermsDual, int numDualVars, int numPrimalVars, fle
 						{
 							ptrXError[primalNum][index] += -static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYOldList[dualNum]) +
 								static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
+							break;
+						}
+						case superpixelOp:
+						{
+							ptrXError[primalNum][index] += -static_cast<flexSuperpixelOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYOldList[dualNum]) +
+								static_cast<flexSuperpixelOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 							break;
 						}
 					}
@@ -352,7 +370,11 @@ __global__ void updateX(int numTermsDual, int numTermsPrimal, int numPrimalVars,
 						case matrixGPUOp:
 						{
 							xTildeList[primalNum] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
-
+							break;
+						}
+						case superpixelOp:
+						{
+							xTildeList[primalNum] += static_cast<flexSuperpixelOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->timesElementCUDA(index, ptrYList[dualNum]);
 							break;
 						}
 					}
@@ -465,6 +487,11 @@ __global__ void sigmaElement(int numTerms, int numDualVars, flexTermDual<T, Tvec
 							sigmaList[dualNum][index] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
+						case superpixelOp:
+						{
+							sigmaList[dualNum][index] += static_cast<flexSuperpixelOperator<T, Tvector>*>(termDual->operatorListG[operatorNumber])->getRowsumElementCUDA(index);
+							break;
+						}
 					}
 				}
 			}
@@ -535,6 +562,11 @@ __global__ void tauElement(int numTerms, int numPrimalVars, flexTermDual<T, Tvec
 						case matrixGPUOp:
 						{
 							tauList[primalNum][index] += static_cast<flexMatrixGPU<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElementCUDA(index);
+							break;
+						}
+						case superpixelOp:
+						{
+							tauList[primalNum][index] += static_cast<flexSuperpixelOperator<T, Tvector>*>(termDual->operatorListTG[operatorNumber])->getRowsumElementCUDA(index);
 							break;
 						}
 					}

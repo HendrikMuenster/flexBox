@@ -269,16 +269,75 @@ public:
 	}
 
 	#if __CUDACC__
+
+	__inline__ __device__ int indexICUDA(int index, int sizeX)
+	{
+		return index % sizeX;
+	}
+
+	__inline__ __device__ int indexJCUDA(int index, int sizeX, int sizeY)
+	{
+		return (index / sizeX) % sizeY;
+	}
+
+	__inline__ __device__ int index2DtoLinearCUDA(int i, int j, int sizeY)
+	{
+		return (i*sizeY + j);
+	}
+
 	__device__ T timesElementCUDA(int index, const T* input)
 	{
+		if (this->transposed)
+		{
+			int innerJ = indexICUDA(index, targetDimensionPtr[0] * this->upsamplingFactor);
+			int innerI = indexJCUDA(index, targetDimensionPtr[0] * this->upsamplingFactor, targetDimensionPtr[1] * this->upsamplingFactor);
 
+			int backI = innerI / this->upsamplingFactor;
+			int backJ = innerJ / this->upsamplingFactor;
 
-		return this->diagonalElementsPtr[index] * input[index];
+			int outputIndex = index2DtoLinearCUDA(backI, backJ, targetDimensionPtr[1]);
+
+			return input[outputIndex] / (this->upsamplingFactor*this->upsamplingFactor);
+		}
+		else
+		{
+			int sizeY = targetDimensionPtr[1] * this->upsamplingFactor;
+			
+			int innerJ = indexICUDA(index, targetDimensionPtr[0]);
+			int innerI = indexJCUDA(index, targetDimensionPtr[0], targetDimensionPtr[1]);
+
+			int iInnerStart = innerI*this->upsamplingFactor;
+			int iInnerEnd = (innerI + 1)*this->upsamplingFactor;
+
+			int jInnerStart = innerJ*this->upsamplingFactor;
+			int jInnerEnd = (innerJ + 1)*this->upsamplingFactor;
+
+			T tmpResult = (T)0;
+
+			for (int iInner = iInnerStart; iInner < iInnerEnd; ++iInner)
+			{
+				for (int jInner = jInnerStart; jInner < jInnerEnd; ++jInner)
+				{
+					int inputIndex = index2DtoLinearCUDA(iInner, jInner, sizeY);
+
+					tmpResult += input[inputIndex];
+				}
+			}
+
+			return tmpResult / (this->upsamplingFactor*this->upsamplingFactor);
+		}
 	}
 
 	__device__ T getRowsumElementCUDA(int index)
 	{
-		return fabs(this->diagonalElementsPtr[index]);
+		if (this->transposed)
+		{
+			return (T)1 / (T)(this->upsamplingFactor*this->upsamplingFactor);
+		}
+		else
+		{
+			return (T)1;
+		}
 	}
 	#endif
 };

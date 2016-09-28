@@ -131,6 +131,14 @@ class flexTermDual
 						cudaMemcpy(operatorPointerT, this->operatorListT[i], sizeof(flexMatrixGPU<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
 						break;
 					}
+					case superpixelOp:
+					{
+						cudaMalloc((void **)&operatorPointer, sizeof(flexSuperpixelOperator<T, Tvector>)); CUDA_CHECK;
+						cudaMalloc((void **)&operatorPointerT, sizeof(flexSuperpixelOperator<T, Tvector>)); CUDA_CHECK;
+						cudaMemcpy(operatorPointer, this->operatorList[i], sizeof(flexSuperpixelOperator<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						cudaMemcpy(operatorPointerT, this->operatorListT[i], sizeof(flexSuperpixelOperator<T, Tvector>), cudaMemcpyHostToDevice); CUDA_CHECK;
+						break;
+					}
 				}
 
 				thrust_operatorList[i] = operatorPointer;
