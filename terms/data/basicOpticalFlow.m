@@ -79,7 +79,7 @@ classdef basicOpticalFlow < basicDualizedDataterm
                     ut = I2wy - I1y - v1Tilde .* I2wyx -  v2Tilde .* I2wyy;
                 end
             end
-            
+
             ux(markerOutOfGrid) = 0;
             uy(markerOutOfGrid) = 0;
             ut(markerOutOfGrid) = 0;
@@ -100,6 +100,8 @@ classdef basicOpticalFlow < basicDualizedDataterm
                 
                 ut = image2(:)-image1(:);
 			elseif (exist('discretization','var') && strcmp(discretization,'interpolated'))
+                
+                methodInter = 'spline';
 
                 [M,N] = size(image1);
                 
@@ -125,18 +127,23 @@ classdef basicOpticalFlow < basicDualizedDataterm
                 gridYm = max(1,min(M,gridY-0.5));
                 gridYp = max(1,min(M,gridY+0.5));
                 
-                I1x = interp2(image1,gridXp,gridY,'bicubic') - interp2(image1,gridXm,gridY,'bicubic');
-                I1y = interp2(image1,gridX,gridYp,'bicubic') - interp2(image1,gridX,gridYm,'bicubic');
+                I1x = interp2(image1,gridXp,gridY,methodInter) - interp2(image1,gridXm,gridY,methodInter);
+                I1y = interp2(image1,gridX,gridYp,methodInter) - interp2(image1,gridX,gridYm,methodInter);
         
-                I2w = interp2(image2,idxx,idyy,'bicubic');
-                I2wx = interp2(image2,idxp,idyy,'bicubic') - interp2(image2,idxm,idyy,'bicubic');
-                I2wy = interp2(image2,idxx,idyp,'bicubic') - interp2(image2,idxx,idym,'bicubic');
+                I2w = interp2(image2,idxx,idyy,methodInter);
+                I2wx = interp2(image2,idxp,idyy,methodInter) - interp2(image2,idxm,idyy,methodInter);
+                I2wy = interp2(image2,idxx,idyp,methodInter) - interp2(image2,idxx,idym,methodInter);
 
                 %second order derivatives
-                I2wxx = interp2(I2wx,gridXp,gridY,'bicubic') - interp2(I2wx,gridXm,gridY,'bicubic');
-                I2wxy = interp2(I2wx,gridX,gridYp,'bicubic') - interp2(I2wx,gridX,gridYm,'bicubic');
-                I2wyx = interp2(I2wy,gridXp,gridY,'bicubic') - interp2(I2wy,gridXm,gridY,'bicubic');
-                I2wyy = interp2(I2wy,gridX,gridYp,'bicubic') - interp2(I2wy,gridX,gridYm,'bicubic');
+                I2wxx = (interp2(image2,idxp,idyy,methodInter) + interp2(image2,idxm,idyy,methodInter) - 2*interp2(image2,idxx,idyy,methodInter)) / 2;
+                I2wyy = (interp2(image2,idxx,idyp,methodInter) + interp2(image2,idxx,idym,methodInter) - 2*interp2(image2,idxx,idyy,methodInter)) / 2;
+                
+                I2wxy = (interp2(image2,idxp,idyp,methodInter) - interp2(image2,idxp,idym,methodInter) - (interp2(image2,idxm,idyp,methodInter) - interp2(image2,idxm,idym,methodInter)) ) / 2;
+                I2wyx = I2wxy;
+                %I2wxx = interp2(I2wx,gridXp,gridY,methodInter) - interp2(I2wx,gridXm,gridY,methodInter);
+                %I2wxy = interp2(I2wx,gridX,gridYp,methodInter) - interp2(I2wx,gridX,gridYm,methodInter);
+                %I2wyx = interp2(I2wy,gridXp,gridY,methodInter) - interp2(I2wy,gridXm,gridY,methodInter);
+                %I2wyy = interp2(I2wy,gridX,gridYp,methodInter) - interp2(I2wy,gridX,gridYm,methodInter);
             else
                 grad = generateCentralGradientND( dims,ones(numel(dims),1) );
                 grad = grad*image2(:);
