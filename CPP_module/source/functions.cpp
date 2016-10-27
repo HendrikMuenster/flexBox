@@ -107,6 +107,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			{
 				mainObject.verbose = (int)mxGetScalar(prhs[entry + 2]);
 			}
+            if (strcmp(parameterName, "tol") == 0)
+			{
+				mainObject.tol = (int)mxGetScalar(prhs[entry + 2]);
+			}
 
 			//jump three entries
 			entry += 3;
@@ -249,7 +253,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 				{
 					if (verbose > 1)
 					{
-						printf("Operator %d is type <superpixelOperator>\n", i);
+printf("Operator %d is type <superpixelOperator>\n", i);
 					}
 
 					float factor = mxGetScalar(mxGetProperty(pointerA, 0, "factor"));// factor that f is being upsized
@@ -273,39 +277,39 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 						printf("Operator %d is type <matrix>\n", i);
 					}
 
-					#if __CUDACC__
-						mwIndex  *ir, *jc;
+#if __CUDACC__
+					mwIndex  *ir, *jc;
 
-						jc = mxGetJc(pointerA);
-						ir = mxGetIr(pointerA);
-						double * pr = mxGetPr(pointerA);
+					jc = mxGetJc(pointerA);
+					ir = mxGetIr(pointerA);
+					double * pr = mxGetPr(pointerA);
 
-						//matlab stores in compressed column format
-						int numCols = mxGetN(pointerA);
-						int* colList = new int[numCols + 1];
-						for (int i = 0; i <= numCols; ++i)
-						{
-							colList[i] = jc[i];
-						}
+					//matlab stores in compressed column format
+					int numCols = mxGetN(pointerA);
+					int* colList = new int[numCols + 1];
+					for (int i = 0; i <= numCols; ++i)
+					{
+						colList[i] = jc[i];
+					}
 
-						int nnz = colList[numCols];
+					int nnz = colList[numCols];
 
-						int* rowList = new int[nnz];
-						float* valList = new float[nnz];
-						for (int i = 0; i < nnz; ++i)
-						{
-							rowList[i] = ir[i];
-							valList[i] = pr[i];
-						}
+					int* rowList = new int[nnz];
+					float* valList = new float[nnz];
+					for (int i = 0; i < nnz; ++i)
+					{
+						rowList[i] = ir[i];
+						valList[i] = pr[i];
+					}
 
-						//printf("%d,%d,%d\n%d,%d,%d,%d\n%f,%f,%f", colList[0], colList[1], colList[2], rowList[0], rowList[1], rowList[2], rowList[3], valList[0], valList[1], valList[2]);
+					//printf("%d,%d,%d\n%d,%d,%d,%d\n%f,%f,%f", colList[0], colList[1], colList[2], rowList[0], rowList[1], rowList[2], rowList[3], valList[0], valList[1], valList[2]);
 
-						operatorList.push_back(new flexMatrixGPU<floatingType, vectorData>((int)mxGetM(pointerA), (int)mxGetN(pointerA), rowList, colList, valList,false));
-					#else
-						flexMatrix<floatingType, vectorData>*A = new flexMatrix<floatingType, vectorData>(static_cast<int>(mxGetM(pointerA)), static_cast<int>(mxGetN(pointerA)));
-						copyMatlabToFlexmatrix(pointerA, A);
-						operatorList.push_back(A);
-					#endif
+					operatorList.push_back(new flexMatrixGPU<floatingType, vectorData>((int)mxGetM(pointerA), (int)mxGetN(pointerA), rowList, colList, valList,false));
+#else
+					flexMatrix<floatingType, vectorData>*A = new flexMatrix<floatingType, vectorData>(static_cast<int>(mxGetM(pointerA)), static_cast<int>(mxGetN(pointerA)));
+					copyMatlabToFlexmatrix(pointerA, A);
+					operatorList.push_back(A);
+#endif
 
 				}
 				else
@@ -319,7 +323,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 				printf("Creating dual term\n");
 			}
 
-			if (strcmp(class_name, "L1dualizedOperatorIso") == 0 || strcmp(class_name, "L1dualizedOperatorAniso") == 0 || strcmp(class_name, "L2dualizedOperator") == 0 || strcmp(class_name, "FrobeniusDualizedOperator") == 0 || strcmp(class_name, "HuberDualizedOperator") == 0  )
+			if (strcmp(class_name, "L1dualizedOperatorIso") == 0 || strcmp(class_name, "L1dualizedOperatorAniso") == 0 || strcmp(class_name, "L2dualizedOperator") == 0 || strcmp(class_name, "FrobeniusDualizedOperator") == 0 || strcmp(class_name, "HuberDualizedOperator") == 0)
 			{
 				prox proxName;
 
@@ -348,8 +352,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 					proxName = dualFrobeniusProx;
 				}
 
-				mainObject.addDual(new flexDualizedOperator<floatingType, vectorData>(proxName, alpha, corrPrimal.size(), operatorList), corrPrimal);
-				entry += 5;
+				if (proxName == dualHuberProx)
+				{
+					//float huberFactor = mxGetScalar(mxGetProperty(pointerA, 0, "epsi"));// factor that f is being upsized
+
+					mainObject.addDual(new flexDualizedOperator<floatingType, vectorData>(proxName, alpha, corrPrimal.size(), operatorList), corrPrimal);
+				}
+				else
+				{
+					mainObject.addDual(new flexDualizedOperator<floatingType, vectorData>(proxName, alpha, corrPrimal.size(), operatorList), corrPrimal);
+				}
+
+				entry += 6;
 			}
 			else if (strcmp(class_name, "L1dualizedDataTerm") == 0 || strcmp(class_name, "L2dualizedDataTerm") == 0 || strcmp(class_name, "KLdualizedDataTerm") == 0)
 			{
@@ -379,7 +393,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 				mainObject.addDual(new flexDualizedDataTerm<floatingType, vectorData>(proxName, alpha, operatorList, f), corrPrimal);
 
-				entry += 6;
+				entry += 7;
 			}
 
 			//increase entry counter by number of arguments
