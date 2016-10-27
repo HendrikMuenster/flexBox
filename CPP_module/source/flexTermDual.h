@@ -18,7 +18,6 @@ class flexTermDual
 	private:
 		int numberVars;
 		int numberPrimals;
-		float paramFloat1;
 
 	public:
 		const prox p;
@@ -35,8 +34,8 @@ class flexTermDual
 			flexLinearOperator<T, Tvector>** operatorListTG;
 		#endif
 
-			flexTermDual(prox _p, T _alpha, int _numberPrimals, int _numberVars, float _paramFloat1) : alpha(_alpha), numberPrimals(_numberPrimals), numberVars(_numberVars), p(_p), paramFloat1(_paramFloat1){}
-
+		flexTermDual(prox _p, T _alpha, int _numberPrimals, int _numberVars) : alpha(_alpha), numberPrimals(_numberPrimals), numberVars(_numberVars), p(_p){}
+ 
 		virtual ~flexTermDual()
 		{ 
 			if (VERBOSE > 0) printf("Destructor virtual\n!");

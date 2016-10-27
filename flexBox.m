@@ -163,6 +163,7 @@ classdef flexBox < handle
             %attach parameters
             mexCallString = [mexCallString,'''parameter'',''maxIt'',',num2str(obj.params.maxIt),','];
             mexCallString = [mexCallString,'''parameter'',''verbose'',',num2str(obj.params.verbose),','];
+            mexCallString = [mexCallString,'''parameter'',''tol'',',num2str(obj.params.tol),','];
             
             
             %generatePrimalVars

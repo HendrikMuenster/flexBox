@@ -109,7 +109,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			}
             if (strcmp(parameterName, "tol") == 0)
 			{
-				mainObject.tol = (int)mxGetScalar(prhs[entry + 2]);
+				mainObject.tol = (float)mxGetScalar(prhs[entry + 2]);
 			}
 
 			//jump three entries
@@ -351,19 +351,10 @@ printf("Operator %d is type <superpixelOperator>\n", i);
 				{
 					proxName = dualFrobeniusProx;
 				}
+                
+                mainObject.addDual(new flexDualizedOperator<floatingType, vectorData>(proxName, alpha, corrPrimal.size(), operatorList), corrPrimal);
 
-				if (proxName == dualHuberProx)
-				{
-					//float huberFactor = mxGetScalar(mxGetProperty(pointerA, 0, "epsi"));// factor that f is being upsized
-
-					mainObject.addDual(new flexDualizedOperator<floatingType, vectorData>(proxName, alpha, corrPrimal.size(), operatorList), corrPrimal);
-				}
-				else
-				{
-					mainObject.addDual(new flexDualizedOperator<floatingType, vectorData>(proxName, alpha, corrPrimal.size(), operatorList), corrPrimal);
-				}
-
-				entry += 6;
+				entry += 5;
 			}
 			else if (strcmp(class_name, "L1dualizedDataTerm") == 0 || strcmp(class_name, "L2dualizedDataTerm") == 0 || strcmp(class_name, "KLdualizedDataTerm") == 0)
 			{
@@ -393,7 +384,7 @@ printf("Operator %d is type <superpixelOperator>\n", i);
 
 				mainObject.addDual(new flexDualizedDataTerm<floatingType, vectorData>(proxName, alpha, operatorList, f), corrPrimal);
 
-				entry += 7;
+				entry += 6;
 			}
 
 			//increase entry counter by number of arguments
