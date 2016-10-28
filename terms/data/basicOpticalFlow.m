@@ -9,7 +9,7 @@ classdef basicOpticalFlow < basicDualizedDataterm
     
     methods
         function obj = basicOpticalFlow(alpha,image1,image2,varargin)
-            if (nargin > 2 && numel(varargin) == 1)
+            if (nargin > 3 && numel(varargin) == 1)
                 varargin = varargin{1};
             end
             vararginParser;
@@ -80,25 +80,50 @@ classdef basicOpticalFlow < basicDualizedDataterm
                 end
             end
 
-            ux(markerOutOfGrid) = 0;
-            uy(markerOutOfGrid) = 0;
-            ut(markerOutOfGrid) = 0;
+            if (sum(markerOutOfGrid(:)) > 0)
+                ux(markerOutOfGrid) = 0;
+                uy(markerOutOfGrid) = 0;
+                ut(markerOutOfGrid) = 0;
+            end
         end
         
         function [I1x,I1y,I2w,I2wx,I2wy,I2wxx,I2wxy,I2wyx,I2wyy,markerOutOfGrid] = generateGradients(discretization,image1,image2,v1Tilde,v2Tilde)
             
             if (exist('discretization','var') && strcmp(discretization,'forward'))
+                error('Not working')
                 grad = generateForwardGradientND( dims,ones(numel(dims),1) );
                 
                 grad = grad*image2(:);
                 
                 ut = image2(:)-image1(:);
             elseif (exist('discretization','var') && strcmp(discretization,'backward'))
+                error('Not working')
                 grad = generateBackwardGradientND( dims,ones(numel(dims),1) );
                 
                 grad = grad*image2(:);
                 
                 ut = image2(:)-image1(:);
+			elseif (exist('discretization','var') && strcmp(discretization,'regularCentral'))
+                gradientXf = gradientOperator(size(image1),1,'discretization','forward');
+                gradientXb = gradientOperator(size(image1),1,'discretization','backward');
+                gradientY = (gradientXf.matrix + gradientXb.matrix)/2;
+                
+                gradientYf = gradientOperator(size(image1),2,'discretization','forward');
+                gradientYb = gradientOperator(size(image1),2,'discretization','backward');
+				gradientX = (gradientYf.matrix + gradientYb.matrix)/2;
+
+                
+                I2wx = reshape(gradientX * image2(:),size(image2)); %todo implement warp
+                I2wy = reshape(gradientY * image2(:),size(image2)); %todo implement warp
+                I2w = image2;  %todo implement warp
+                
+                I1x = 0;
+                I1y = 0;
+                I2wxx = 0;
+                I2wxy = 0;
+                I2wyx = 0;
+                I2wyy = 0;
+                markerOutOfGrid = 0;
 			elseif (exist('discretization','var') && strcmp(discretization,'interpolated'))
                 
                 methodInter = 'spline';
@@ -145,6 +170,7 @@ classdef basicOpticalFlow < basicDualizedDataterm
                 %I2wyx = interp2(I2wy,gridXp,gridY,methodInter) - interp2(I2wy,gridXm,gridY,methodInter);
                 %I2wyy = interp2(I2wy,gridX,gridYp,methodInter) - interp2(I2wy,gridX,gridYm,methodInter);
             else
+                error('Not working')
                 grad = generateCentralGradientND( dims,ones(numel(dims),1) );
                 grad = grad*image2(:);
                 
