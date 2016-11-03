@@ -35,7 +35,7 @@ class flexTermDual
 		#endif
 
 		flexTermDual(prox _p, T _alpha, int _numberPrimals, int _numberVars) : alpha(_alpha), numberPrimals(_numberPrimals), numberVars(_numberVars), p(_p){}
-
+ 
 		virtual ~flexTermDual()
 		{ 
 			if (VERBOSE > 0) printf("Destructor virtual\n!");

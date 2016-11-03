@@ -81,6 +81,8 @@ main.addTerm(L1gradientAniso(1,size(image)),numberU);
 %tic;main.runAlgorithm;toc;
 %%
 main.params.tryCPP = 1;
+main.params.tol = 1e-7;
+main.params.verbose = 2;
 %for i=1:100
 tic;main.runAlgorithm;toc;
 %end

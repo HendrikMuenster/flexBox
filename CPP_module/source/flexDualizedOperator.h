@@ -8,7 +8,7 @@ class flexDualizedOperator : public flexTermDual<T, Tvector>
 {
 public:
 	flexDualizedOperator(prox _p, T _alpha, int numberPrimals, std::vector<flexLinearOperator<T, Tvector>* > _operatorList) : flexTermDual<T, Tvector>(_p, _alpha, numberPrimals, _operatorList.size() / numberPrimals)
-	{
+ 	{
 		this->operatorList = _operatorList;
 
 		for (int i = 0; i < _operatorList.size() / numberPrimals; ++i)

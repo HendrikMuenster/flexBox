@@ -14,8 +14,7 @@ public:
 		T* fPtr;
 	#endif
 
-		flexDualizedDataTerm(prox _p, T _alpha, std::vector<flexLinearOperator<T, Tvector>* > _operatorList, std::vector<T> _f) : flexTermDual<T, Tvector>(_p, _alpha, _operatorList.size(), 1)
-	{
+		flexDualizedDataTerm(prox _p, T _alpha, std::vector<flexLinearOperator<T, Tvector>* > _operatorList, std::vector<T> _f) : flexTermDual<T, Tvector>(_p, _alpha, _operatorList.size(), 1)	{
 		//convert input f to device vector
 		f.resize(_f.size());
 
