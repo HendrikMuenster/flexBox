@@ -6,7 +6,7 @@ classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
     
     methods
         function obj = basicDualizedDataterm(alpha,A,f,varargin)
-            if (nargin > 3 == numel(varargin) == 1)
+            if (nargin > 3 && numel(varargin) == 1)
                 varargin = varargin{1};
             end
 
@@ -42,7 +42,7 @@ classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
                         
                         obj.length{opNum} = size(opTmp,1);
                         
-                        if (issparse(opTmp))
+                        if (ismatrix(A) || issparse(opTmp))
                             obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(opTmp),1));
                             obj.myTau{j} = obj.myTau{j} + max(sum(abs(opTmp),2));
                         else

@@ -34,7 +34,6 @@ classdef concatOperator < basicOperator
         end
         
         function result = size(obj,varargin)
-            
             if (nargin < 2)
                 if (obj.transposed)
                     result = [size(obj.B,2),size(obj.A,2)];
@@ -61,7 +60,11 @@ classdef concatOperator < basicOperator
         end
         
         function result = returnMatrix(obj)
-            result = obj.A.returnMatrix() * obj.B.returnMatrix();
+            if (obj.transposed)
+                result = obj.BT.returnMatrix() * obj.AT.returnMatrix();
+            else
+                result = obj.A.returnMatrix() * obj.B.returnMatrix();
+            end
         end
         
         function res = ctranspose(obj)
