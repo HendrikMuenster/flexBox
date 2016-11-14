@@ -52,10 +52,12 @@ classdef convolutionOperator < basicOperator
 
         end
 
+        %placeholder
         function result = abs(obj)
             result = 1;
         end
 
+        %placeholder
         function mat = returnMatrix(obj)
             mat = 1;
         end

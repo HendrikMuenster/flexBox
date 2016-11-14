@@ -2,7 +2,7 @@
 classdef basicDualizedOperator < dualPart & tildeMultiOperatorMultiDual
     methods
         function obj = basicDualizedOperator(alpha,numPrimals,A,varargin)
-            if (nargin > 2 && numel(varargin) == 1)
+            if (nargin > 3 && numel(varargin) == 1)
                 varargin = varargin{1};
             end
             vararginParser;

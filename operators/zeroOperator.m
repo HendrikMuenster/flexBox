@@ -24,6 +24,10 @@ classdef zeroOperator < basicOperator
         
         function result = size(obj,dim)
             result = obj.nPx;
+            
+            if (nargin < 2)
+                result = [result,result]; 
+            end
         end
         
 %         function res = ctranspose(obj)
