@@ -1,5 +1,5 @@
+Regularizer Terms (Divergence)
 #basics
-primalPart.m
 dualPart.m
 
 #terms

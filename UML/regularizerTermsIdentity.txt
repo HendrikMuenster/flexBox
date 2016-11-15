@@ -1,12 +1,12 @@
+Regularizer Terms (Identity)
 #basics
-primalPart.m
 dualPart.m
 
 #terms
 basicDualizedOperator.m
-basicIdentiy.m
-L1identiy.m
-L2identiy.m
+basicIdentity.m
+L1identity.m
+L2identity.m
 
 #tilde
 tildeMultiOperatorMultiDual.m

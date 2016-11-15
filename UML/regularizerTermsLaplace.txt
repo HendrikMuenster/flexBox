@@ -1,5 +1,5 @@
+Regularizer Terms (Laplace)
 #basics
-primalPart.m
 dualPart.m
 
 #terms

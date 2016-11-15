@@ -1,16 +1,18 @@
+Regularizer Terms (Shear)
 #basics
-primalPart.m
 dualPart.m
 
 #terms
 basicDualizedOperator.m
-basicHessian.m
-L1hessian.m
-L2hessian.m
+basicShear.m
+L1shearAniso.m
+L1shearIso.m
+L2shear.m
 
 #tilde
 tildeMultiOperatorMultiDual.m
 
 #proxs
 L1AnisoProxDual.m
+L1IsoProxDual.m
 L2proxDual.m
