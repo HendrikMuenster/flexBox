@@ -26,3 +26,5 @@ tildeMultiOperatorMultiDual.m
 IdentityProxPrimal.m
 MinMaxProxPrimal.m
 L1DataProxDual.m
+L1HuberDataProxDual.m
+L2DataProxDual.m
