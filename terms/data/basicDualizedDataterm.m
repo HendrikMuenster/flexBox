@@ -1,19 +1,24 @@
-%
+%represents base class for dualized data terms
+%all data terms that can be dualized should derive this class directly or indirectly
+%a dualized data term is of the form \alpha |Au-f|,
+%where A is the linear operator, u is the value to be minimized, and f is the data part
+%the class initializes required variables for the fixed-point algorithm
 classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
     properties
         f;
     end
 
     methods
-        function obj = basicDualizedDataterm(alpha,A,f,varargin) %alpha weight, A operator (e.g. identiy operator when Ku-f) f value
+        function obj = basicDualizedDataterm(alpha,A,f,varargin)
             if (nargin > 3 && numel(varargin) == 1)
                 varargin = varargin{1};
             end
-            
+
             vararginParser;
 
             obj = obj@dualPart(alpha);
 
+            %data terms always have only one dual variable
             obj.numVars = 1;
 
             if (iscell(A))

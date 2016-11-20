@@ -1,7 +1,7 @@
 classdef flexBox < handle
 
     properties
-        params      %flexBox params (tolerances, number of iterations, etc. see documentation)
+        params      %FlexBox params (tolerances, number of iterations, etc. see documentation)
 
         primals     %cell array of primal terms
         duals       %cell array of dual terms
@@ -123,6 +123,8 @@ classdef flexBox < handle
         end
 
         function showPrimal(obj,number)
+          %helper function to display primal with internal number #number as 2D
+          %or 3D image
             if (numel(obj.dims{number}) == 2)
                 figure(number);clf;imagesc(reshape(obj.x{number},obj.dims{number}),[0,1]);axis image;colormap(gray)
             elseif (numel(obj.dims{number}) == 3)
@@ -138,6 +140,7 @@ classdef flexBox < handle
         end
 
         function showPrimals(obj)
+          %displays all primal variables (if 2D or 3D)
             for i=1:numel(obj.x)
                 obj.showPrimal(i);
             end
@@ -259,7 +262,7 @@ classdef flexBox < handle
             if (exist('noInit','var') && noInit == 1)
 
             else
-                obj.init(); %init stuff
+                obj.init(); %check for orphaned primals, initialize tau and sigma
             end
 
             if (obj.checkCPP())
@@ -273,8 +276,8 @@ classdef flexBox < handle
                 end
 
                 reverseStr = [];
-                iteration = 1;error = Inf;
-                while error>obj.params.tol && iteration < obj.params.maxIt
+                iteration = 1; error = Inf;
+                while error > obj.params.tol && iteration < obj.params.maxIt
                     obj.doIteration;
 
                     if (mod(iteration,obj.params.checkError) == 0)
@@ -405,18 +408,20 @@ classdef flexBox < handle
             for i=1:numel(obj.duals)
                 obj.duals{i}.init(i,obj);
 
+                %sum up tau
                 for j=1:numel(obj.DcP{i})
                     indexTmp = obj.DcP{i}(j);
                     obj.params.tau{ indexTmp } = obj.params.tau{ indexTmp } + obj.duals{i}.myTau{j};
                 end
 
+                %sum up sigma
                 for j=1:numel(obj.DcD{i})
                     indexTmp = obj.DcD{i}(j);
                     obj.params.sigma{ indexTmp } = obj.params.sigma{ indexTmp } + obj.duals{i}.mySigma{j};
                 end
             end
 
-            %init with zero
+            %calculate reciprocals
             for i=1:numel(obj.x)
                 obj.params.tau{i} = 1 ./ obj.params.tau{i};
             end
@@ -427,6 +432,8 @@ classdef flexBox < handle
         end
 
         function [res,resP,resD] = calculateError(obj)
+            %calculates residual in primal dual algorithm            
+            
             %calculate first part
             for i=1:numel(obj.x)
                 obj.xError{i} = (obj.x{i} - obj.xOld{i}) / obj.params.tau{i};

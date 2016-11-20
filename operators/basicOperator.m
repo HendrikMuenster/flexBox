@@ -1,5 +1,5 @@
 %basic abstract operator class
-%derving classes should override the following functions:
+%deriving classes should override the following functions:
 %mtimes: matrix-matrix multiplication, overloaded function, see MATLAB documentation
 %returnMatrix: matrix representation of linear operator
 %size: size of operator e.g. size of corresponding matrix representation of linear operator
