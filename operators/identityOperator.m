@@ -4,13 +4,13 @@ classdef identityOperator < basicOperator
         nPx;
         minus;
     end
-    
+
     methods
         function obj = identityOperator(nPx,varargin)
             obj.nPx = nPx;
             obj.minus = 0;
         end
-        
+
         function result = mtimes(obj,vector)
             if (obj.minus)
                 result = -vector;
@@ -18,16 +18,16 @@ classdef identityOperator < basicOperator
                 result = vector;
             end
         end
-        
+
         function result = abs(obj)
             if (obj.minus)
                 result = -returnMatrix(obj);
             else
                 result = returnMatrix(obj);
             end
-            
+
         end
-        
+
         function result = returnMatrix(obj)
             if (obj.minus)
                 result = -speye(obj.nPx);
@@ -35,25 +35,24 @@ classdef identityOperator < basicOperator
                 result = speye(obj.nPx);
             end
         end
-        
+
         function result = uminus(obj)
             result = obj;
             result.minus = ~result.minus;
         end
-        
+
         function result = size(obj,dim)
-            result = obj.nPx;
+            result = obj.nPx; %matrix is quadratic
         end
-        
+
 %         function res = ctranspose(obj)
 %             res = obj;
 %             res.transposed = ~obj.transposed;
 %         end
 
         function result = getMaxRowSumAbs(obj)
-            result = 1;
+            result = 1; %matrix representation is identiy matrix -> max absolute value is 1
         end
     end
-    
-end
 
+end
