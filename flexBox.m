@@ -273,7 +273,7 @@ classdef flexBox < handle
                 
                 reverseStr = [];
                 iteration = 1;error = Inf;
-                while error>obj.params.tol && iteration < obj.params.maxIt
+                while error>obj.params.tol && iteration <= obj.params.maxIt
                     obj.doIteration;
 
                     if (mod(iteration,obj.params.checkError) == 0)
