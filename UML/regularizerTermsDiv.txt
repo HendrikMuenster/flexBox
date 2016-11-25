@@ -1,0 +1,17 @@
+Regularizer Terms (Divergence)
+#basics
+dualPart.m
+
+#terms
+basicDualizedOperator.m
+basicDivergence.m
+L1divergence.m
+L2divergence.m
+
+#tilde
+tildeMultiOperatorMultiDual.m
+
+
+#proxs
+L1AnisoProxDual.m
+L2proxDual.m

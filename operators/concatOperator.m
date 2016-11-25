@@ -1,13 +1,13 @@
 %represents the concatenation of two operators A and B
 classdef concatOperator < basicOperator
     properties
-        A;
-        B;
-        AT;
-        BT;
-        transposed;
+        A;          %operator for A
+        B;          %operator for B
+        AT;         %transposed operator for A
+        BT;         %transposed operator for A
+        transposed; %is-transposed-flag in order to decide which operators to use
     end
-    
+
     methods
         function obj = concatOperator(A,B,varargin)
             obj.A = A;
@@ -16,7 +16,7 @@ classdef concatOperator < basicOperator
             obj.BT = B';
             obj.transposed = 0;
         end
-        
+
         function result = mtimes(obj,vector)
             if (obj.transposed)
                 result = obj.BT * (obj.AT * vector(:));
@@ -24,7 +24,7 @@ classdef concatOperator < basicOperator
                 result = obj.A * (obj.B * vector(:));
             end
         end
-        
+
         function result = abs(obj)
             if (obj.transposed)
                 result = abs(obj.BT) * abs(obj.AT);
@@ -32,7 +32,7 @@ classdef concatOperator < basicOperator
                 result = abs(obj.A) * abs(obj.B);
             end
         end
-        
+
         function result = size(obj,varargin)
             if (nargin < 2)
                 if (obj.transposed)
@@ -40,7 +40,7 @@ classdef concatOperator < basicOperator
                 else
                     result = [size(obj.A,1),size(obj.B,1)];
                 end
-                
+
             else
                 dim = varargin{1};
                 if (dim == 1)
@@ -58,7 +58,7 @@ classdef concatOperator < basicOperator
                 end
             end
         end
-        
+
         function result = returnMatrix(obj)
             if (obj.transposed)
                 result = obj.BT.returnMatrix() * obj.AT.returnMatrix();
@@ -66,7 +66,7 @@ classdef concatOperator < basicOperator
                 result = obj.A.returnMatrix() * obj.B.returnMatrix();
             end
         end
-        
+
         function res = ctranspose(obj)
             res = obj;
             if (res.transposed == 1)
@@ -75,7 +75,7 @@ classdef concatOperator < basicOperator
                 res.transposed = 1;
             end
         end
-        
+
         function result = getMaxRowSumAbs(obj)
             if (obj.transposed == 1)
                 if (issparse(obj.AT))
@@ -88,7 +88,7 @@ classdef concatOperator < basicOperator
                 else
                     resultB = obj.BT.getMaxRowSumAbs();
                 end
-                
+
                 result = resultA * resultB;
             else
                 if (issparse(obj.A))
@@ -101,11 +101,10 @@ classdef concatOperator < basicOperator
                 else
                     resultB = obj.B.getMaxRowSumAbs();
                 end
-                
+
                 result = resultA * resultB;
             end
         end
     end
-    
-end
 
+end

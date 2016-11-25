@@ -1,0 +1,12 @@
+Operators
+#operators
+basicOperator.m
+concatOperator.m
+convolutionOperator.m
+diagonalOperator.m
+downsamplingOperator.m
+functionHandleOperator.m
+gradientOperator.m
+identityOperator.m
+superpixelOperator.m
+zeroOperator.m
