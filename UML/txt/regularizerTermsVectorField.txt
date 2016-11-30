@@ -1,4 +1,4 @@
-Regularizer Terms (Curl / Anticurl)
+Regularizer Terms (Vector-field)
 #basics
 dualPart.m
 
@@ -6,17 +6,23 @@ dualPart.m
 basicDualizedOperator.m
 basicCurl.m
 basicDivAnticurl.m
+basicDivergence.m
 basicDivCurl.m
+basicShear.m
 L1curl.m
 L1curlPlus.m
 L1curlSwitched.m
 L1divAnticurlIso.m
 L1divCurlIso.m
+L1divergence.m
+L1shearAniso.m
+L1shearIso.m
 L2curl.m
+L2divergence.m
+L2shear.m
 
 #tilde
 tildeMultiOperatorMultiDual.m
-
 
 #proxs
 L1AnisoProxDual.m

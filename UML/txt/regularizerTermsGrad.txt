@@ -1,4 +1,4 @@
-Regularizer Terms (Gradient / Gradient Difference / 2nd Order Gradient)
+Regularizer Terms (Gradient)
 #basics
 dualPart.m
 
@@ -9,14 +9,10 @@ basicGradientDifference.m
 basicSecondOrderGradient.m
 frobeniusGradient.m
 huberGradient.m
-innerProductGradient.m
-innerProductGradientDiff.m
 L1gradientAniso.m
 L1gradientDiffAniso.m
 L1gradientDiffIso.m
 L1gradientIso.m
-L1plusInnerProductGradient.m
-L1plusInnerProductGradientDifference.m
 L1secondOrderGradientAniso.m
 L1secondOrderGradientIso.m
 L2gradient.m
@@ -27,8 +23,6 @@ tildeMultiOperatorMultiDual.m
 #proxs
 FrobeniusProxDual.m
 L1HuberProxDual.m
-innerProductProxDual.m
 L1AnisoProxDual.m
 L1IsoProxDual.m
-L1IsoProxDualShift.m
-L2proxDual
+L2proxDual.m
