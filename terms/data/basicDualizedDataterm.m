@@ -5,11 +5,11 @@
 %the class initializes required variables for the fixed-point algorithm
 classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
     properties
-        f;
+        f;%cell array of data
     end
 
     methods
-        function obj = basicDualizedDataterm(alpha,A,f,varargin)
+        function obj = basicDualizedDataterm(alpha,numPrimals,A,f,varargin)
             if (nargin > 3 && numel(varargin) == 1)
                 varargin = varargin{1};
             end
