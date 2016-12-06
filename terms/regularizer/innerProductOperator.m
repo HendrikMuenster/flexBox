@@ -1,9 +1,11 @@
-%represents the term \alpha <Au,b> for one primal variable u
+%represents the term
+%\alpha <b,Au>
+%corresponds to one primal variable u and an arbitrary linear operator A
 classdef innerProductOperator < basicDualizedOperator & innerProductProxDual
     properties
         b
     end
-    
+
     methods
         function obj = innerProductOperator(alpha,A,b,varargin)
             if (iscell(A))

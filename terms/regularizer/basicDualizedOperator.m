@@ -1,4 +1,4 @@
-%
+%represents the base class for all dualized regularization terms
 classdef basicDualizedOperator < dualPart & tildeMultiOperatorMultiDual
     methods
         function obj = basicDualizedOperator(alpha,numPrimals,A,varargin)

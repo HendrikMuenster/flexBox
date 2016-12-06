@@ -1,22 +1,23 @@
-%corresponds to two primal variables (u,v) and prepresents the operator 
+%represents base class for terms containing the operator
 %K(u,v) = [u_x + v_y;u_x - v_y]
+%corresponds to two primal variables (u,v)
 classdef basicDivAnticurl < dualPart
     properties
     end
-    
+
     methods
         function obj = basicDivAnticurl(alpha,dims,varargin)
             if (nargin > 2 == numel(varargin) == 1)
                 varargin = varargin{1};
             end
             vararginParser;
-            
+
             if (exist('discretization','var') && strcmp(discretization,'backward'))
                 opTmp = generateBackwardGradientND( dims,ones(numel(dims),1) );
             else
                 opTmp = generateForwardGradientND( dims,ones(numel(dims),1) );
             end
-            
+
             obj = obj@dualPart(alpha);
             obj.numVars = 2; %divergence produces scalar quantity
             for i=1:numel(dims)
@@ -26,7 +27,7 @@ classdef basicDivAnticurl < dualPart
             end
             obj.mySigma{1} = 2*numel(dims);
             obj.mySigma{2} = 2*numel(dims);
-            
+
             obj.operator{3} = obj.operator{1};
             obj.operator{4} = -obj.operator{2};
         end
@@ -35,7 +36,7 @@ classdef basicDivAnticurl < dualPart
             for i=1:numel(dualNumbers)
                 main.yTilde{dualNumbers(i)} = main.y{dualNumbers(i)};
             end
-            
+
             for i=1:numel(dualNumbers)
                 for j=1:2
                     operatorNumber = 2*(i-1) + j;
@@ -43,7 +44,7 @@ classdef basicDivAnticurl < dualPart
                 end
             end
         end
-        
+
         function xTilde(obj,main,dualNumbers,primalNumbers)
             for i=1:numel(primalNumbers)
                 for j=1:2
@@ -52,7 +53,7 @@ classdef basicDivAnticurl < dualPart
                 end
             end
         end
-        
+
         function yError(obj,main,dualNumbers,primalNumbers)
             for i=1:numel(dualNumbers)
                 for j=1:2
@@ -61,7 +62,7 @@ classdef basicDivAnticurl < dualPart
                 end
             end
         end
-        
+
         function xError(obj,main,dualNumbers,primalNumbers)
             for i=1:numel(primalNumbers)
                 for j=1:2

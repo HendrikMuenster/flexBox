@@ -1,4 +1,6 @@
-%
+%represents base class for terms containing the gradient operator
+%\nabla u
+%corresponds to one primal variable u
 classdef basicGradient < basicDualizedOperator
     methods
         function obj = basicGradient(alpha,dims,varargin)
