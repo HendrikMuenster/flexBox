@@ -1,4 +1,4 @@
-%represents the term \alpha <b,Ku> for one primal variable u
+%represents the term \alpha <Au,b> for one primal variable u
 classdef innerProductOperator < basicDualizedOperator & innerProductProxDual
     properties
         b
@@ -6,14 +6,22 @@ classdef innerProductOperator < basicDualizedOperator & innerProductProxDual
     
     methods
         function obj = innerProductOperator(alpha,A,b,varargin)
-            obj = obj@basicDualizedOperator(alpha,1,A,varargin);
-            
-            if (numel(b) == size(A,1))
-                obj.b{1} = b(:);
-
+            if (iscell(A))
+                numPrimals = numel(A);
+                
+                if (numel(b) ~= size(A{1},1))
+                    error(['Input vector b should have length ',size(A{1},1),' which is size(A{1},1)']);
+                end
             else
-                error(['Input vector b should have length ',size(A,1),' which is size(A,1)']);
+                numPrimals = 1;
+                if (numel(b) ~= size(A,1))
+                    error(['Input vector b should have length ',size(A,1),' which is size(A,1)']);
+                end
             end
+            
+            obj = obj@basicDualizedOperator(alpha,numPrimals,A,varargin);
+            
+            obj.b{1} = b(:);
         end
     end
 end
