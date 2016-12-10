@@ -433,8 +433,8 @@ classdef flexBox < handle
         end
 
         function [res,resP,resD] = calculateError(obj)
-            %calculates residual in primal dual algorithm            
-            
+            %calculates residual in primal dual algorithm
+
             %calculate first part
             for i=1:numel(obj.x)
                 obj.xError{i} = (obj.x{i} - obj.xOld{i}) / obj.params.tau{i};
