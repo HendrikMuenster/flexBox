@@ -49,11 +49,16 @@ classdef functionHandleOperator < basicOperator
             res.transposed = ~res.transposed;
         end
 
-        function result = size(obj,dim)
+        function result = size(obj,varargin)
             sizeVec = obj.fHandle(zeros(obj.argumentSize));
             %vectorize result
             sizeVec = size(sizeVec(:));
-            result = sizeVec(dim);
+            
+            if (nargin > 1)
+                result = sizeVec(varargin{1});
+            else
+                result = sizeVec;
+            end
         end
 
         function result = getMaxRowSumAbs(obj)

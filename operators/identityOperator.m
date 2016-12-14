@@ -41,8 +41,12 @@ classdef identityOperator < basicOperator
             result.minus = ~result.minus;
         end
 
-        function result = size(obj,dim)
-            result = obj.nPx; %matrix is quadratic
+        function result = size(obj,varargin)
+            if (nargin < 2)
+                result = [obj.nPx,obj.nPx];
+            else
+                result = obj.nPx;
+            end
         end
 
 %         function res = ctranspose(obj)

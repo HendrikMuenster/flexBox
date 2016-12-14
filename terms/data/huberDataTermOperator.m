@@ -6,7 +6,7 @@ classdef huberDataTermOperator < basicDualizedDataterm & L1HuberDataProxDual
     
     methods
         function obj = huberDataTermOperator(alpha,A,f,epsi,varargin)
-            obj = obj@basicDualizedDataterm(alpha,A,f,varargin);
+            obj = obj@basicDualizedDataterm(alpha,1,A,f,varargin);
             
             obj.CPPsupport = 1;
             obj.epsi = epsi;

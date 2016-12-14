@@ -9,8 +9,10 @@ classdef L1HuberDataProxDual < handle
 
         function applyProx(obj,main,dualNumber,~)
             factor = 1 ./ (1+main.params.sigma{dualNumber}*obj.epsi ./ obj.factor);
-
-            main.y{dualNumber} = max(-obj.factor,min(obj.factor,main.yTilde{dualNumber}.* factor - factor*main.params.sigma{dualNumber}*obj.f(:)));
+            
+            for i=1:obj.numVars
+                main.y{dualNumber(i)} = max(-obj.factor,min(obj.factor,main.yTilde{dualNumber(i)}.* factor - factor*main.params.sigma{dualNumber(i)}*obj.f{i}));
+            end
         end
         
     end

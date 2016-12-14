@@ -22,7 +22,7 @@ classdef zeroOperator < basicOperator
         end
         
         
-        function result = size(obj,dim)
+        function result = size(obj,varargin)
             result = obj.nPx;
             
             if (nargin < 2)
