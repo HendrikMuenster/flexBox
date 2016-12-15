@@ -74,6 +74,10 @@ classdef flexBox < handle
             %number = addPrimalVar(dims)
             %adds a primal var of dimensions #dims to FlexBox and returns
             %the internal #number
+            
+            if (isscalar(dims))
+                dims = [dims,1];
+            end
 
             numberElements = prod(dims);
 
