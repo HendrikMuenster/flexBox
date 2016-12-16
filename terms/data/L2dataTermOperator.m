@@ -2,7 +2,7 @@
 classdef L2dataTermOperator < basicDualizedDataterm & L2DataProxDual
     methods
         function obj = L2dataTermOperator(alpha,A,f,varargin)
-            obj = obj@basicDualizedDataterm(alpha,A,f,varargin);
+            obj = obj@basicDualizedDataterm(alpha,1,A,f,varargin);
             
             obj.CPPsupport = 1;
         end

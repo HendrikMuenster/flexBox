@@ -67,8 +67,12 @@ classdef convolutionOperator < basicOperator
             res.transposed = ~res.transposed;
         end
 
-        function result = size(obj,dim)
-            result = prod(obj.inputDimension); %matrix is quadratic
+        function result = size(obj,varargin)
+            result = prod(obj.inputDimension);
+
+            if (nargin < 2)
+                result = [result,result];
+            end
         end
 
         function result = getMaxRowSumAbs(obj)

@@ -33,7 +33,7 @@ classdef basicOpticalFlow < basicDualizedDataterm
             A{1} = diagonalOperator(ux);
             A{2} = diagonalOperator(uy);
             
-            obj = obj@basicDualizedDataterm(alpha,A,-ut(:),varargin);
+            obj = obj@basicDualizedDataterm(alpha,2,A,-ut(:),varargin);
             
             obj.thisImage1 = image1;
             obj.thisImage2 = image2;

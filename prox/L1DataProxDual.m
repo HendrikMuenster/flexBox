@@ -9,8 +9,9 @@ classdef L1DataProxDual < handle
         end
 
         function applyProx(obj,main,dualNumber,~)
-            main.y{dualNumber} = max(-obj.factor,min(obj.factor,main.yTilde{dualNumber} - main.params.sigma{dualNumber}*obj.f(:)));
+            for i=1:obj.numVars
+                main.y{dualNumber(i)} = max(-obj.factor,min(obj.factor,main.yTilde{dualNumber(i)} - main.params.sigma{dualNumber(i)}*obj.f{i}));
+            end
         end
-        
     end
 end

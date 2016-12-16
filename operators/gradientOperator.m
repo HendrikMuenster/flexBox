@@ -52,8 +52,12 @@ classdef gradientOperator < basicOperator
             end
         end
 
-        function result = size(obj,dim)
-            result = size(obj.matrix,dim);
+        function result = size(obj,varargin)
+            if (nargin < 2)
+                result = size(obj.matrix);
+            else
+                result = size(obj.matrix,varargin{1});
+            end
         end
 
         function result = getMaxRowSumAbs(obj)

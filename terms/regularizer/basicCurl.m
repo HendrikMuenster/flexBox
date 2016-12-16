@@ -13,9 +13,9 @@ classdef basicCurl < basicDualizedOperator
             vararginParser;
 
             if (exist('discretization','var') && strcmp(discretization,'backward'))
-                opTmp = generateBackwardGradientND( dims,ones(numel(dims),1) );
+                opTmp = generateBackwardGradND( dims,ones(numel(dims),1) );
             else
-                opTmp = generateForwardGradientND( dims,ones(numel(dims),1) );
+                opTmp = generateForwardGradND( dims,ones(numel(dims),1) );
             end
 
             for i=1:numel(dims)

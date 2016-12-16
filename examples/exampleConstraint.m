@@ -13,7 +13,7 @@ imageNoisy = image + randn(size(image)) * 0.05;
 %show clean input and noisy image
 figure(1);imagesc(image);axis image;colormap(gray);title('Input Image')
 figure(2);imagesc(imageNoisy);axis image;colormap(gray);title('Noisy Image')
-%% ROF denoising
+%% ROF denoising with non-negativity constraint
 main = flexBox;
 
 %add primal var u
@@ -24,6 +24,9 @@ main.addTerm(L2dataTerm(1,imageNoisy),numberU);
 
 %add regularizer: 0.08*\|\nabla u\|_1
 main.addTerm(L1gradientIso(0.08,size(image)),numberU);
+
+%add non-negativity constraint u>= 0
+main.addTerm(nonNegativityConstraint(size(image)),numberU);
 
 %run minimization algorithm
 main.runAlgorithm;
