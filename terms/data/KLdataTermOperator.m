@@ -1,6 +1,6 @@
 %class for Kullback-Leibler Divergence, incorporates positivity of Ku
 % \min_u Ku-f + f\log(f/Ku) s.t. u>=0
-classdef KLdataTermOperator < basicDualizedDataterm
+classdef KLdataTermOperator < basicDualizedDataterm & KLDataProxDual
     methods
         function obj = KLdataTermOperator(alpha,A,f,varargin)
             obj = obj@basicDualizedDataterm(alpha,1,A,f,varargin);
@@ -9,10 +9,5 @@ classdef KLdataTermOperator < basicDualizedDataterm
             
             obj.CPPsupport = 1;
         end
-        
-        function applyProx(obj,main,dualNumber,~)
-            main.y{dualNumber} = min(1,0.5*(1 + main.yTilde{dualNumber} - sqrt( (main.yTilde{dualNumber}-1).^2 + 4*main.params.sigma{dualNumber}*obj.f{1} )));
-        end
-        
     end
 end
