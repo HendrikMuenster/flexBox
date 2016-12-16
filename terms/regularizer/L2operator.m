@@ -1,5 +1,5 @@
 %represents the term
-%\alpha |Au|_2^2
+%\alpha/2 |Au|_2^2
 %in the L_2^2norm
 %corresponds to one primal variable u and an arbitrary linear operator A
 classdef L2operator < basicDualizedOperator & L2proxDual

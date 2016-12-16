@@ -21,6 +21,10 @@ classdef functionHandleOperator < basicOperator
             obj.fHandle = inputfHandle;
             obj.fHandleT = inputfHandleT;
             obj.transposed = 0;
+            if (isscalar(inputArgumentSize))
+                inputArgumentSize = [inputArgumentSize,1];
+            end
+            
             obj.argumentSize = inputArgumentSize;
             obj.operatorNorm = inputOperatorNorm;
 
