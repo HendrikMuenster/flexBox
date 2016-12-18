@@ -8,8 +8,8 @@
 % Contact: hendrik.dirks@wwu.de
 %
 %
-% Version 1.03
-% Date: 2016-07-14
+% Version 1.04
+% Date: 2016-12-16
 
 % FlexBox is copyright ©2016 by Hendrik Dirks and is distributed under the terms of the GNU General Public License (GPL) version 3 (or later).
 %
@@ -55,6 +55,11 @@ env LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/local/cuda-7.5/lib
 %%%%%%%%%%%%%%%%%
 %%% Changelog %%%
 %%%%%%%%%%%%%%%%%
+16.12.2016 (Version 1.04)
+- new type of terms 'constraint' added. For now, box-constraint, non-neg. and non-pos constraints are available
+- fused the basicDualizedDataterm.m and basicDualizedOperator.m. An operator is now a data term with f=0
+- new MATLAB->CPP wrapper
+- several bugfixes
 
 14.07.2016 (Version 1.03)
 - CUDA module added
