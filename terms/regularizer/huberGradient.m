@@ -1,7 +1,7 @@
 %represents the term
 %\alpha |\nabla u|_{H_\epsilon} (huber norm)
 %corresponds to one primal variable u
-classdef huberGradient < basicGradient & L1HuberProxDual
+classdef huberGradient < basicGradient & HuberProxDual
     properties
         epsi
     end

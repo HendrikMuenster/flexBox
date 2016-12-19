@@ -38,6 +38,11 @@ public:
 #else
 		switch (this->p)
 		{
+			case dualBoxConstraintProx:
+			{
+				//to implement
+				break;
+			}
 			case dualL1AnisoProx:
 			{
 				for (int k = 0; k < dualNumbers.size(); k++)

@@ -408,21 +408,6 @@ classdef flexBox < handle
                 disp(['Warning: C++ module is not compiled!']);
             else
                 CPPsupport = 1;
-                for i=1:numel(obj.primals)
-                    if (~obj.primals{i}.CPPsupport)
-                        ClassName = class(obj.primals{i});
-                        disp(['No support for class ',ClassName]);
-                        CPPsupport = 0;
-                    end
-                end
-
-                for i=1:numel(obj.duals)
-                    if (~obj.duals{i}.CPPsupport)
-                        ClassName = class(obj.duals{i});
-                        disp(['No support for class ',ClassName]);
-                        CPPsupport = 0;
-                    end
-                end
             end
 
             result = CPPsupport;

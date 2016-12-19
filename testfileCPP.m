@@ -13,7 +13,7 @@ image = imresize(image,1);
 
 imageNoisy = image + randn(size(image)) * 0.05;
 
-%imageNoisy = image;
+imageNoisy = image;
 %figure(1);imagesc(image,[0,1]);axis image;colormap(gray)
 %figure(2);imagesc(imageNoisy,[0,1]);axis image;colormap(gray)
 
@@ -33,7 +33,6 @@ opEye = spdiags([oneM],[1],numel(image),numel(image));
 
 %opEye = speye(numel(image));
 %opEye(end-30000:end,:) = [];
-
 
 main.addTerm(L1dataTermOperator(1,diagonalOperator(ones(numel(image),1)),imageNoisy),numberU);
 main.addTerm(L1dataTermOperator(1,opEye,imageNoisy),numberU);
@@ -64,7 +63,6 @@ main.addTerm(L1operatorIso(0.5,1,speye(numel(image))),numberU);
 main.addTerm(L2operator(0.5,1,speye(numel(image))),numberU);
 main.addTerm(frobeniusOperator(10,1,speye(numel(image))),numberU);
 
-
 %vector field
 main.addTerm(L1divergence(0.5,size(image),'usedims',[0,1]),numberU);
 main.addTerm(L2divergence(0.5,size(image),'usedims',[0,1]),numberU);
@@ -81,8 +79,8 @@ main.addTerm(L2identity(0.5,size(image)),numberU);
 %main.params.tryCPP = 0;
 %tic;main.runAlgorithm;toc;
 %%
-%main.params.tryCPP = 0;
-%main.params.tol = 1e-7;
+main.params.tryCPP = 1;
+main.params.tol = 1e-5;
 main.params.verbose = 2;
 %for i=1:100
 tic;main.runAlgorithm;toc;

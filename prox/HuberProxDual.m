@@ -1,9 +1,9 @@
-classdef L1HuberProxDual < handle
+classdef HuberProxDual < handle
     properties
     end
     
     methods
-        function obj = L1HuberProxDual()
+        function obj = HuberProxDual()
         end
 
         function applyProx(obj,main,dualNumbers,~)
