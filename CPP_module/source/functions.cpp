@@ -59,15 +59,15 @@
 #include "flexDualizedDataTerm.h"
 
 //prox
-#include "flexProxDualDataL1.h"
-#include "flexProxDualDataL2.h"
-#include "flexProxDualDataKL.h"
-#include "flexProxDualL1Aniso.h"
-#include "flexProxDualL1Iso.h"
-#include "flexProxDualL2.h"
-#include "flexProxDualHuber.h"
-#include "flexProxDualFrobenius.h"
-#include "flexProxDualBoxConstraint.h"
+#include "prox/flexProxDualDataL1.h"
+#include "prox/flexProxDualDataL2.h"
+#include "prox/flexProxDualDataKL.h"
+#include "prox/flexProxDualL1Aniso.h"
+#include "prox/flexProxDualL1Iso.h"
+#include "prox/flexProxDualL2.h"
+#include "prox/flexProxDualHuber.h"
+#include "prox/flexProxDualFrobenius.h"
+#include "prox/flexProxDualBoxConstraint.h"
 
 
 using namespace std;
@@ -93,7 +93,6 @@ void copyMatlabToFlexmatrix(const mxArray *input, flexMatrix<floatingType,vector
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	char *func_type, *class_name;
 	// Initialize main flexBox object
 	flexBox<floatingType,vectorData> mainObject;
 	mainObject.isMATLAB = true;
@@ -134,7 +133,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mxArray *x = mxGetProperty(prhs[0],0,"x");  
 	mxArray *dims = mxGetProperty(prhs[0],0,"dims");  
 	
-	int numPrimalVars = mxGetN(x)*mxGetM(x);
+	int numPrimalVars = (int)mxGetN(x)*(int)mxGetM(x);
 	
 	for (int i=0;i < numPrimalVars; ++i)
 	{
@@ -166,11 +165,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mxArray *primals = mxGetProperty(prhs[0],0,"primals"); 
 	mxArray *pcp = mxGetProperty(prhs[0],0,"PcP");  //numbers of primal variables corresponding to primal terms
 
-	int numPrimalTerms = mxGetN(primals)*mxGetM(primals);
+	int numPrimalTerms = (int)mxGetN(primals)*(int)mxGetM(primals);
 	for (int i=0;i < numPrimalTerms; ++i)
 	{
 		//weight
-		float alpha = mxGetScalar(mxGetProperty(mxGetCell(primals,i),0,"factor"));
+		float alpha = (float)mxGetScalar(mxGetProperty(mxGetCell(primals,i),0,"factor"));
 		
 		if (verbose > 0)
 		{
@@ -207,14 +206,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mxArray *dcp = mxGetProperty(prhs[0],0,"DcP");  //numbers of primal variables corresponding to dual terms
 	mxArray *dcd = mxGetProperty(prhs[0],0,"DcD");  //numbers of dual variables corresponding to dual terms
 
-	int numDualTerms = mxGetN(duals)*mxGetM(duals);
+	int numDualTerms = (int)mxGetN(duals) * (int)mxGetM(duals);
 	for (int i=0;i < numDualTerms; ++i)
 	{
 		mxArray* classPointer = mxGetCell(duals,i);
 		const char* class_name = mxGetClassName(mxGetCell(duals,i));
 		
 		//weight
-		float alpha = mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"factor"));
+		float alpha = (float)mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"factor"));
 		
 		if (verbose > 0)
 		{
@@ -238,7 +237,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		//create list of operators
 		mxArray *matlabOperatorList = mxGetProperty(mxGetCell(duals,i),0,"operator");
 		
-		int numberOfOperators = mxGetN(matlabOperatorList) * mxGetM(matlabOperatorList);
+		int numberOfOperators = (int)mxGetN(matlabOperatorList) * (int)mxGetM(matlabOperatorList);
 		
 		std::vector<flexLinearOperator<floatingType, vectorData>*> operatorList;
 		for (int k = 0; k < numberOfOperators; ++k)
@@ -312,7 +311,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 					printf("Operator %d is type <superpixelOperator>\n", k);
 				}
 
-				float factor = mxGetScalar(mxGetProperty(pointerA, 0, "factor"));// factor that f is being upsized
+				float factor = (float)mxGetScalar(mxGetProperty(pointerA, 0, "factor"));// factor that f is being upsized
 				//dimension of data f
 
 				auto targetDimensionStruct = mxGetProperty(pointerA, 0, "targetDimension");
@@ -377,50 +376,42 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		if (checkProx(classPointer,"L1IsoProxDual"))
 		{
 			myProx = new flexProxDualL1Iso<floatingType, vectorData>();
-			proxName = dualL1IsoProx;
 		}
 		else if (checkProx(classPointer,"L1AnisoProxDual"))
 		{
 			myProx = new flexProxDualL1Aniso<floatingType, vectorData>();
-			proxName = dualL1AnisoProx;
 		}
 		else if (checkProx(classPointer,"L2proxDual"))
 		{
 			myProx = new flexProxDualL2<floatingType, vectorData>();
-			proxName = dualL2Prox;
 		}
 		else if (checkProx(classPointer,"HuberProxDual"))
 		{
-			float huberEpsilon = mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"epsi"));
+			float huberEpsilon = (float)mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"epsi"));
 			
 			myProx = new flexProxDualHuber<floatingType, vectorData>(huberEpsilon);
-			proxName = dualHuberProx;
 		}
 		else if (checkProx(classPointer,"FrobeniusProxDual"))
 		{
 			myProx = new flexProxDualFrobenius<floatingType, vectorData>();
-			proxName = dualFrobeniusProx;
 		}
 		//data
 		else if (checkProx(classPointer,"L2DataProxDual"))
 		{
 			myProx = new flexProxDualDataL2<floatingType, vectorData>();
-			proxName = dualL2DataProx;
 		}
 		else if (checkProx(classPointer,"L1DataProxDual"))
 		{
 			myProx = new flexProxDualDataL1<floatingType, vectorData>();
-			proxName = dualL1DataProx;
 		}
 		else if (checkProx(classPointer,"KLDataProxDual"))
 		{
 			myProx = new flexProxDualDataKL<floatingType, vectorData>();
-			proxName = dualKLDataProx;
 		}
 		else if (checkProx(classPointer,"constraintBoxDualized"))
 		{
-			float minVal = mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"minVal"));
-			float maxVal = mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"maxVal"));
+			float minVal = (float)mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"minVal"));
+			float maxVal = (float)mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"maxVal"));
 			
 			myProx = new flexProxDualBoxConstraint<floatingType, vectorData>(minVal, maxVal);
 			proxName = dualBoxConstraintProx;
@@ -432,20 +423,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		}
 
 		mxArray* fListInput = mxGetProperty(mxGetCell(duals,i),0,"f");
-		int sizeFList = mxGetN(fListInput) * mxGetM(fListInput);
+		int sizeFList = (int)mxGetN(fListInput) * (int)mxGetM(fListInput);
 
 		std::vector<std::vector<floatingType>> fList;
 		fList.resize(sizeFList);
 		
-		//fListInput is cell array now; assume that it consists of one element; ToDo: change to loop
 		for (int k = 0; k < sizeFList; ++k)
 		{
 			mxArray* fListInputElement = mxGetCell(fListInput,k);
 			//copy elements from matlab to fList vector
-			copyToVector(fList[k], mxGetPr(fListInputElement), mxGetN(fListInputElement) * mxGetM(fListInputElement));
+			copyToVector(fList[k], mxGetPr(fListInputElement), (int)mxGetN(fListInputElement) * (int)mxGetM(fListInputElement));
 		}
 
-		mainObject.addDual(new flexDualizedDataTerm<floatingType, vectorData>(proxName, myProx, alpha,_correspondingPrimals.size(), operatorList, fList), _correspondingPrimals);
+		mainObject.addDual(new flexDualizedDataTerm<floatingType, vectorData>(myProx, alpha,(int)_correspondingPrimals.size(), operatorList, fList), _correspondingPrimals);
 	}
 	
 	// copy content for dual vars from MATLAB
@@ -454,11 +444,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	int numberDualVars = mainObject.getNumDualVars();
 	for (int i=0;i < numberDualVars; ++i)
 	{
-		int numberOfElementsVector = mxGetN(mxGetCell(y, i)) * mxGetM(mxGetCell(y, i));
+        mxArray* yElement = mxGetCell(y, i);
+        
+		int numberOfElementsVector = (int)mxGetN(yElement) * (int)mxGetM(yElement);
 		//copy matlab variable to c++ variable
 		std::vector<floatingType> tmpVector(numberOfElementsVector, 0.0);
 
-		copyToVector(tmpVector, mxGetPr(mxGetCell(y,i)), numberOfElementsVector);
+		copyToVector(tmpVector, mxGetPr(yElement), numberOfElementsVector);
 
 		mainObject.setDual(i, tmpVector);
 	}

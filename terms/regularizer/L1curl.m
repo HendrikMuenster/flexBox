@@ -9,8 +9,6 @@ classdef L1curl < basicCurl & L1AnisoProxDual
     methods
         function obj = L1curl(alpha,dims,varargin)
             obj = obj@basicCurl(alpha,dims,varargin);
-
-            obj.CPPsupport = 1;
         end
     end
 end

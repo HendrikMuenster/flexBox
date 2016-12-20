@@ -2,7 +2,7 @@
 #define flexDualizedDataTerm_H
 
 #include "flexTermDual.h"
-#include "flexProx.h"
+#include "prox/flexProx.h"
 
 template < typename T, typename Tvector >
 class flexDualizedDataTerm : public flexTermDual<T, Tvector>
@@ -19,16 +19,18 @@ public:
 		T* fPtr;
 	#endif
 	
-		flexDualizedDataTerm(prox _p, flexProx<T,Tvector>* _myProx, T _alpha, int numberPrimals, std::vector<flexLinearOperator<T, Tvector>* > _operatorList) : flexDualizedDataTerm(_p, _myProx,_alpha,numberPrimals,_operatorList, std::vector<std::vector<T>>(0))	
-		{};
+		flexDualizedDataTerm(flexProx<T,Tvector>* _myProx, T _alpha, int numberPrimals, std::vector<flexLinearOperator<T, Tvector>* > _operatorList) : flexDualizedDataTerm(_myProx,_alpha,numberPrimals,_operatorList, std::vector<std::vector<T>>(0)){};
 
-		flexDualizedDataTerm(prox _p, flexProx<T,Tvector>* _myProx, T _alpha, int numberPrimals, std::vector<flexLinearOperator<T, Tvector>* > _operatorList, std::vector<std::vector<T>> _fList) : myProx(_myProx), flexTermDual<T, Tvector>(_p, _alpha, _operatorList.size(), _operatorList.size() / numberPrimals)	
+		flexDualizedDataTerm(flexProx<T,Tvector>* _myProx, T _alpha, int numberPrimals, std::vector<flexLinearOperator<T, Tvector>* > _operatorList, std::vector<std::vector<T>> _fList) : myProx(_myProx), flexTermDual<T, Tvector>(_myProx->getProx(), _alpha, (int)_operatorList.size(), (int)_operatorList.size() / numberPrimals)	
 		{
 			//convert input f to device vector
 			fList.resize(_fList.size());
 
 			#if __CUDACC__
-				thrust::copy(_f.begin(), _f.end(), this->f.begin());
+                //todo! f is now list of data. Implement for CUDA
+            
+                this->f.resize(_fList[0].size());
+				thrust::copy(_fList[0].begin(), _fList[0].end(), this->f.begin());
 				fPtr = thrust::raw_pointer_cast(this->f.data());
 			#else
 				for (int i = 0; i < fList.size(); ++i)

@@ -1,3 +1,0 @@
-c1xx : fatal error C1083: Datei (Quelle) kann nicht ge÷ffnet werden: "functions.cu": No such file or directory
-functions.cu
-

@@ -2,17 +2,18 @@
 #define flexProx_H
 
 
-
+#include "tools.h"
 #include <vector>
 
 template < class T, class Tvector >
 class flexProx
 {
 private:
-
+    
 public:
-
-	flexProx()
+    const prox p;
+    
+	flexProx(prox _p) : p(_p)
 	{
 		
 	}
@@ -21,6 +22,11 @@ public:
 	{
 		if (VERBOSE > 0) printf("Destructor prox\n!");
 	}
+    
+    prox getProx()
+    {
+        return p;
+    }
 
 	virtual void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers) = 0;
 	

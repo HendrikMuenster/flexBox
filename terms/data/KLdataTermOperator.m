@@ -6,8 +6,6 @@ classdef KLdataTermOperator < basicDualizedDataterm & KLDataProxDual
             obj = obj@basicDualizedDataterm(alpha,1,A,f,varargin);
             
             obj.f{1} = max(0,obj.f{1}); %f has to be positive
-            
-            obj.CPPsupport = 1;
         end
     end
 end

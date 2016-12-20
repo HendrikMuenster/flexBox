@@ -28,11 +28,11 @@ public:
 	//apply linear operator to vector
 	void times(const Tvector &input, Tvector &output)
 	{
-		int numElements = output.size();
+		int numElements = (int)output.size();
 
 		if (this->minus == true)
 		{
-			int numElements = input.size();
+			int numElements = (int)input.size();
 			#pragma omp parallel for
 			for (int i = 0; i < numElements; ++i)
 			{
@@ -41,7 +41,7 @@ public:
 		}
 		else
 		{
-			int numElements = input.size();
+			int numElements = (int)input.size();
 			#pragma omp parallel for
 			for (int i = 0; i < numElements; ++i)
 			{
@@ -52,7 +52,7 @@ public:
 
 	void doTimesPlus(const Tvector &input, Tvector &output)
 	{
-		int numElements = input.size();
+		int numElements = (int)input.size();
 		#pragma omp parallel for
 		for (int i = 0; i < numElements; ++i)
 		{
@@ -62,7 +62,7 @@ public:
 
 	void doTimesMinus(const Tvector &input, Tvector &output)
 	{
-		int numElements = input.size();
+		int numElements = (int)input.size();
 		#pragma omp parallel for
 		for (int i = 0; i < numElements; ++i)
 		{

@@ -31,7 +31,7 @@ public:
 		this->gradDirection = _gradDirection;
 		this->type = _type;
 		this->transposed = false;
-		this->numberDimensions = _inputDimension.size();
+		this->numberDimensions = (int)_inputDimension.size();
 
 #if __CUDACC__
 		this->inputDimension.resize(_inputDimension.size());
@@ -455,7 +455,7 @@ public:
 		return ((index / this->inputDimensionPtr[0]) / this->inputDimensionPtr[1]) % this->inputDimensionPtr[2];
 	}
 
-	T timesElement(const int index, const T* input)
+	T timesElement(int index, const T* input)
 	{
 		switch (this->gradDirection)
 		{
@@ -511,6 +511,8 @@ public:
 			break;
 		}
 		}
+        
+        return (T)0;
 	}
 
 

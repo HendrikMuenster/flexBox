@@ -9,8 +9,6 @@ classdef L2curl < basicCurl & L2proxDual
     methods
         function obj = L2curl(alpha,dims,varargin)
             obj = obj@basicCurl(alpha,dims,varargin);
-
-            obj.CPPsupport = 1;
         end
 
     end

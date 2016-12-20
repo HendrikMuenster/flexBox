@@ -12,9 +12,9 @@ private:
 	T* diagonalElementsPtr;
 public:
 
-	flexDiagonalOperator(std::vector<T> _diagonalElements) : flexLinearOperator<T, Tvector>(_diagonalElements.size(), _diagonalElements.size(), diagonalOp)
+	flexDiagonalOperator(std::vector<T> _diagonalElements) : flexLinearOperator<T, Tvector>((int)_diagonalElements.size(), (int)_diagonalElements.size(), diagonalOp)
 	{
-		this->diagonalElements.resize(_diagonalElements.size());
+		this->diagonalElements.resize((int)_diagonalElements.size());
 
 		#if __CUDACC__
 			thrust::copy(_diagonalElements.begin(), _diagonalElements.end(), this->diagonalElements.begin());
@@ -27,7 +27,7 @@ public:
 	};
 
 	#if __CUDACC__
-	flexDiagonalOperator(Tvector _diagonalElements) : diagonalElements(_diagonalElements), flexLinearOperator<T, Tvector>(_diagonalElements.size(), _diagonalElements.size(),diagonalOp)
+	flexDiagonalOperator(Tvector _diagonalElements) : diagonalElements(_diagonalElements), flexLinearOperator<T, Tvector>((int)_diagonalElements.size(), (int)_diagonalElements.size(), diagonalOp)
 	{
 		diagonalElementsPtr = thrust::raw_pointer_cast(this->diagonalElements.data());
 	};

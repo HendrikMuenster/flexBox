@@ -40,7 +40,7 @@ class flexTermDual
 		{ 
 			if (VERBOSE > 0) printf("Destructor virtual\n!");
 		
-			for (int i = operatorList.size() - 1; i >= 0; --i)
+			for (int i = (int)operatorList.size() - 1; i >= 0; --i)
 			{
 #if __CUDACC__
 				//free operator memory
@@ -91,7 +91,7 @@ class flexTermDual
 			thrust_operatorList.resize(this->operatorList.size());
 			thrust_operatorListT.resize(this->operatorList.size());
 
-			for (int i = 0; i < this->operatorList.size(); ++i)
+			for (int i = 0; i < (int)this->operatorList.size(); ++i)
 			{
 				flexLinearOperator<T, Tvector>* operatorPointer;
 				flexLinearOperator<T, Tvector>* operatorPointerT;

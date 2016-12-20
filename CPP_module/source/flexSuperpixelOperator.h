@@ -72,7 +72,7 @@ public:
 		int iOuterEnd = targetDimensionPtr[0];
 		int jOuterEnd = targetDimensionPtr[1];
 
-		int sizeY = targetDimensionPtr[1] * this->upsamplingFactor;
+		int sizeY = targetDimensionPtr[1] * (int)this->upsamplingFactor;
 
 		#pragma omp parallel for
 		for (int i = 0; i < iOuterEnd; ++i)
@@ -83,11 +83,11 @@ public:
 
 				int outputIndex = index2DtoLinear(i, j, targetDimensionPtr[1]);
 
-				int iInnerStart = i*this->upsamplingFactor;
-				int iInnerEnd = (i + 1)*this->upsamplingFactor;
+				int iInnerStart = i*(int)this->upsamplingFactor;
+				int iInnerEnd = (i + 1)*(int)this->upsamplingFactor;
 
-				int jInnerStart = j*this->upsamplingFactor;
-				int jInnerEnd = (j + 1)*this->upsamplingFactor;
+				int jInnerStart = j*(int)this->upsamplingFactor;
+				int jInnerEnd = (j + 1)*(int)this->upsamplingFactor;
 
 				T tmpResult = (T)0;
 
@@ -145,8 +145,8 @@ public:
 	{
 		T factor = (T)1 / (this->upsamplingFactor*this->upsamplingFactor);
 
-		int sizeX = targetDimensionPtr[0] * this->upsamplingFactor;
-		int sizeY = targetDimensionPtr[1] * this->upsamplingFactor;
+		int sizeX = targetDimensionPtr[0] * (int)this->upsamplingFactor;
+		int sizeY = targetDimensionPtr[1] * (int)this->upsamplingFactor;
 
 		#pragma omp parallel for
 		for (int i = 0; i < sizeX; ++i)
@@ -160,8 +160,8 @@ public:
 
 				//printf("Back: (%d,%d) \n", innerI, innerJ);
 
-				int backI = i / this->upsamplingFactor;
-				int backJ = j / this->upsamplingFactor;
+				int backI = i / (int)this->upsamplingFactor;
+				int backJ = j / (int)this->upsamplingFactor;
 
 				
 				int outputIndex = index2DtoLinear(backI, backJ, targetDimensionPtr[1]);

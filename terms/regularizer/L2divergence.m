@@ -9,8 +9,6 @@ classdef L2divergence < basicDivergence & L2proxDual
     methods
         function obj = L2divergence(alpha,dims,varargin)
             obj = obj@basicDivergence(alpha,dims,varargin);
-
-            obj.CPPsupport = 1;
         end
 
         %function call to preallocate usefull things

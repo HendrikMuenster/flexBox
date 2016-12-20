@@ -13,7 +13,7 @@ private:
 	T maxVal;
 public:
 
-	flexProxDualBoxConstraint(T _minVal, T _maxVal) : flexProx<T, Tvector>()
+	flexProxDualBoxConstraint(T _minVal, T _maxVal) : flexProx<T, Tvector>(dualBoxConstraintProx)
 	{
 		minVal = _minVal;
 		maxVal = _maxVal;
@@ -26,20 +26,23 @@ public:
 
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
-		for (int k = 0; k < dualNumbers.size(); k++)
-		{
-			T* ptrY = data->y[dualNumbers[k]].data();
-			T* ptrYtilde = data->yTilde[dualNumbers[k]].data();
-			T* ptrSigma = data->sigmaElt[dualNumbers[k]].data();
-
-			int numElements = data->yTilde[dualNumbers[k]].size();
-
-			#pragma omp parallel for
-			for (int i = 0; i < numElements; i++)
+		#if __CUDACC__
+		#else
+			for (int k = 0; k < dualNumbers.size(); k++)
 			{
-				ptrY[i] = myMax<T>((T)0, ptrYtilde[i] - ptrSigma[i] * this->maxVal) + myMin<T>((T)0, ptrYtilde[i] - ptrSigma[i] * this->minVal);
+				T* ptrY = data->y[dualNumbers[k]].data();
+				T* ptrYtilde = data->yTilde[dualNumbers[k]].data();
+				T* ptrSigma = data->sigmaElt[dualNumbers[k]].data();
+
+				int numElements = (int)data->yTilde[dualNumbers[k]].size();
+
+				#pragma omp parallel for
+				for (int i = 0; i < numElements; i++)
+				{
+					ptrY[i] = myMax<T>((T)0, ptrYtilde[i] - ptrSigma[i] * this->maxVal) + myMin<T>((T)0, ptrYtilde[i] - ptrSigma[i] * this->minVal);
+				}
 			}
-		}
+		#endif
 	}
 	
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<std::vector<T>> &fList)
