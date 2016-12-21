@@ -24,18 +24,9 @@ public:
 		vectorScalarSet(output, (T)0);
 	}
 
-	void timesPlus(const Tvector &input, Tvector &output)
-	{
-	}
+	void timesPlus(const Tvector &input, Tvector &output){}
 
-	void timesMinus(const Tvector &input, Tvector &output)
-	{
-	}
-
-	T timesElement(int index, const T* input)
-	{
-		return (T)0;
-	}
+	void timesMinus(const Tvector &input, Tvector &output){}
 
 	T getMaxRowSumAbs()
 	{
@@ -58,17 +49,12 @@ public:
 	}
 
 #if __CUDACC__
-	__device__ T timesElementCUDA(int index, const T* input)
+	thrust::device_vector<T> getAbsRowSumCUDA()
 	{
-		return (T)0;
-	}
+		Tvector result(this->getNumRows(),(T)0);
 
-	__device__ T getRowsumElementCUDA(int index)
-	{
-		return (T)0;
+		return result;
 	}
-#else
-
 #endif
 };
 

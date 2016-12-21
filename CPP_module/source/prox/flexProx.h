@@ -3,6 +3,7 @@
 
 
 #include "tools.h"
+#include "data/flexBoxData.h"
 #include <vector>
 
 template < class T, class Tvector >
@@ -30,7 +31,7 @@ public:
 
 	virtual void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers) = 0;
 	
-	virtual void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<std::vector<T>> &fList) = 0;
+	virtual void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<Tvector> &fList) = 0;
 };
 
 #endif

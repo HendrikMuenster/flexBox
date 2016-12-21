@@ -4,24 +4,19 @@
 #ifndef flexbox_H
 #define flexbox_H
 
-#include "flexTermDual.h"
-#include "flexDualizedOperator.h"
-#include "flexDualizedDataTerm.h"
-
-#include "flexTermPrimal.h"
-
-#include "flexSolver.h"
+#include "term/flexTermDual.h"
+#include "term/flexTermPrimal.h"
 
 #if __CUDACC__
-	#include "flexSolverPrimalDualCuda.h"
-	#include "flexBoxDataGPU.h"
-
+	#include "solver/flexSolverPrimalDualCuda.h"
+	#include "data/flexBoxDataGPU.h"
 	#include <device_functions.h>
 #else
-	#include "flexSolverPrimalDual.h"
+	#include "solver/flexSolverPrimalDual.h"
+    #include "data/flexBoxDataCPU.h"
 #endif
 
-#include "flexBoxDataCPU.h"
+
 
 
 
@@ -181,6 +176,9 @@ class flexBox
 				{
 					error = solver->calculateError(data);
 				}
+                //error = solver->calculateError(data);
+                
+                //printf("%f\n",error);
 
 				++iteration;
 			}

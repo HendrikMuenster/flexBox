@@ -18,10 +18,42 @@ public:
 	{
 		if (VERBOSE > 0) printf("Destructor prox\n!");
 	}
+    
+    #if __CUDACC__
+    template<typename T>
+	struct flexProxDualL1IsoDim2Functor
+	{
+		__host__ __device__
+		flexProxDualL1IsoDim2Functor(T alpha) : alpha(alpha){}
+
+		template <typename Tuple>
+		__host__ __device__
+        void operator()(Tuple t)
+		{
+			T norm = std::max((T)1, std::sqrt(thrust::get<2>(t) * thrust::get<2>(t) +thrust::get<3>(t) * thrust::get<3>(t)) / this->alpha);
+
+			thrust::get<0>(t) = thrust::get<2>(t) / norm;
+			thrust::get<1>(t) = thrust::get<3>(t) / norm;
+		}
+
+		T alpha;
+	};
+    #endif
 
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
 		#if __CUDACC__
+            if (dualNumbers.size() == 2)
+			{
+                auto startIterator = thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[0]].begin(), data->y[dualNumbers[1]].begin(), data->yTilde[dualNumbers[0]].begin(), data->yTilde[dualNumbers[1]].begin()));
+                auto endIterator =   thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[0]].end(),   data->y[dualNumbers[1]].end(),   data->yTilde[dualNumbers[0]].end(),   data->yTilde[dualNumbers[1]].end()));
+                
+                thrust::for_each(startIterator,endIterator,flexProxDualL1IsoDim2Functor<T>(alpha));
+			}
+            else
+            {
+                printf("Alert! Iso prox not implemented in CUDA for dim!=2");
+            }
 		#else
 			if (dualNumbers.size() == 1)
 			{
@@ -87,7 +119,7 @@ public:
 		#endif
 	}
 	
-	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<std::vector<T>> &fList)
+	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<Tvector> &fList)
 	{
 
 	}

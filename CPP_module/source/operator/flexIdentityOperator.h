@@ -52,22 +52,30 @@ public:
 
 	void doTimesPlus(const Tvector &input, Tvector &output)
 	{
-		int numElements = (int)input.size();
-		#pragma omp parallel for
-		for (int i = 0; i < numElements; ++i)
-		{
-			output[i] += input[i];
-		}
+		#if __CUDACC__
+			thrust::transform(output.begin(), output.end(), input.begin(), output.begin(), thrust::plus<T>());
+		#else
+            int numElements = (int)input.size();
+            #pragma omp parallel for
+            for (int i = 0; i < numElements; ++i)
+            {
+                output[i] += input[i];
+            }
+		#endif
 	}
 
 	void doTimesMinus(const Tvector &input, Tvector &output)
 	{
-		int numElements = (int)input.size();
-		#pragma omp parallel for
-		for (int i = 0; i < numElements; ++i)
-		{
-			output[i] -= input[i];
-		}
+		#if __CUDACC__
+			thrust::transform(output.begin(), output.end(), input.begin(), output.begin(), thrust::minus<T>());
+		#else
+            int numElements = (int)input.size();
+            #pragma omp parallel for
+            for (int i = 0; i < numElements; ++i)
+            {
+                output[i] -= input[i];
+            }
+		#endif
 	}
 
 	void timesPlus(const Tvector &input, Tvector &output)
@@ -94,11 +102,6 @@ public:
 		}
 	}
 
-	T timesElement(int index, const T* input)
-	{
-		return input[index];
-	}
-
 	T getMaxRowSumAbs()
 	{
 		return static_cast<T>(1);
@@ -120,14 +123,11 @@ public:
 	}
 
 	#if __CUDACC__
-	__device__ T timesElementCUDA(int index, const T* input)
+	thrust::device_vector<T> getAbsRowSumCUDA()
 	{
-		return input[index];
-	}
+		thrust::device_vector<T> result(this->getNumRows(), (T)1);
 
-	__device__ T getRowsumElementCUDA(int index)
-	{
-		return (T)1;
+		return result;
 	}
 	#endif
 };

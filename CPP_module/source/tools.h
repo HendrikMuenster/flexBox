@@ -524,6 +524,8 @@ private:
 		const T factor;
 		const T alpha;
 	};
+	
+	
 
 	/*GPU prox for L1 data term */
 	template < typename T >
@@ -639,6 +641,9 @@ private:
 	{
 		return *thrust::max_element(v.begin(), v.end());
 	}
+	
+	
+
 
 #endif
 
@@ -647,7 +652,7 @@ private:
 
 #if __CUDACC__
 
-/*template<typename T>
+template<typename T>
 __global__ void dxp2dCUDA(T* output, const T* input, int w, int h, const int signRule)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -865,7 +870,7 @@ __global__ void dyp2dTransposedCUDA(T* output, const T* input, int w, int h, con
 			}
 		}
 	}
-}*/
+}
 
 
 // cuda error checking

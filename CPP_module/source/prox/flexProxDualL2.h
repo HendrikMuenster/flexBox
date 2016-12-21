@@ -20,10 +20,35 @@ public:
 	{
 		if (VERBOSE > 0) printf("Destructor prox\n!");
 	}
+    
+    #if __CUDACC__
+        template < typename T >
+        struct flexProxDualL2Functor
+        {
+            __host__ __device__
+            flexProxDualL2Functor(T _alpha) : alpha(_alpha){};
+
+            template <typename Tuple>
+            __host__ __device__
+            void operator()(Tuple t)
+            {
+                thrust::get<0>(t) = alpha / (thrust::get<2>(t) + alpha) * thrust::get<1>(t);
+            }
+
+            const T alpha;
+        };
+    #endif
 
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
 		#if __CUDACC__
+            for (int i = 0; i < dualNumbers.size(); i++)
+			{
+                auto startIterator = thrust::make_zip_iterator(thrust::make_tuple(data->y[dualNumbers[i]].begin(), data->yTilde[dualNumbers[i]].begin(), data->sigmaElt[dualNumbers[i]].begin()));
+                auto endIterator = thrust::make_zip_iterator(  thrust::make_tuple(data->y[dualNumbers[i]].end(),   data->yTilde[dualNumbers[i]].end(),   data->sigmaElt[dualNumbers[i]].end()));
+                
+                thrust::for_each(startIterator,endIterator,flexProxDualL2Functor<T>(alpha));
+            }
 		#else
 			for (int k = 0; k < dualNumbers.size(); k++)
 			{
@@ -43,7 +68,7 @@ public:
 		#endif
 	}
 	
-	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<std::vector<T>> &fList)
+	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<Tvector> &fList)
 	{
 
 	}

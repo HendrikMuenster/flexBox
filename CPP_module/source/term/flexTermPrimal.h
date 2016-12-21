@@ -1,8 +1,7 @@
 #ifndef flexTermPrimal_H
 #define flexTermPrimal_H
 
-//#include "flexProxList.h"
-#include "flexBoxData.h"
+#include "data/flexBoxData.h"
 #include "vector"
 #include "tools.h"
 
@@ -38,10 +37,10 @@ class flexTermPrimal
 			{
 				case primalEmptyProx :
 				{
-					for (int i = 0; i < primalNumbers.size(); ++i)
-					{
-						data->x[primalNumbers[i]].swap(data->xTilde[primalNumbers[i]]);
-					}
+                    for (int i = 0; i < primalNumbers.size(); ++i)
+                    {
+                        data->x[primalNumbers[i]].swap(data->xTilde[primalNumbers[i]]);
+                    }
 					break;
 				}
 			}

@@ -48,10 +48,7 @@ public:
 			this->nnz = colList[_numCols]; //access last entry
 		}
 
-		//printf("Num Rows;Cols: %d,%d\n", _numRows, _numCols);
-
-
-		cudaMalloc(&this->listValues, this->nnz * sizeof(T)); CUDA_CHECK;
+        cudaMalloc(&this->listValues, this->nnz * sizeof(T)); CUDA_CHECK;
 		cudaMalloc(&this->listColIndices, this->nnz * sizeof(int)); CUDA_CHECK;
 		cudaMalloc(&this->listRowEntries, (_numRows + 1) * sizeof(int)); CUDA_CHECK;
 
@@ -166,8 +163,8 @@ public:
 
 	void times(const Tvector &input, Tvector &output)
 	{
-		const T alpha = 1.;
-		const T beta = 0.;
+		const T alpha = (T)1;
+		const T beta = (T)0;
 
 		T* ptrOutput = thrust::raw_pointer_cast(output.data());
 		const T* ptrInput = thrust::raw_pointer_cast(input.data());
@@ -184,8 +181,8 @@ public:
 
 	void timesPlus(const Tvector &input, Tvector &output)
 	{
-		const T alpha = 1.;
-		const T beta = 1.;
+		const T alpha = (T)1;
+		const T beta = (T)1;
 
 		T* ptrOutput = thrust::raw_pointer_cast(output.data());
 		const T* ptrInput = thrust::raw_pointer_cast(input.data());
@@ -202,8 +199,8 @@ public:
 
 	void timesMinus(const Tvector &input, Tvector &output)
 	{
-		const T alpha = -1.;
-		const T beta = 1.;
+		const T alpha = -(T)1;
+		const T beta = (T)1;
 
 		T* ptrOutput = thrust::raw_pointer_cast(output.data());
 		const T* ptrInput = thrust::raw_pointer_cast(input.data());
@@ -258,87 +255,10 @@ public:
 	{
 		if (transposed == false)
 		{
-			//printf("Transpose GPU Matrix! Params: %d,%d,%d\n", this->nnz, this->getNumRows(), this->getNumCols());
-			//transform matrix
-			T* listValuesTmp;
-			int* listColIndicesTmp;
-			int* listRowEntriesTmp;
-
-			cudaMalloc(&listValuesTmp, this->nnz * sizeof(T)); CUDA_CHECK;
-			cudaMemcpy(listValuesTmp, this->listValues, this->nnz * sizeof(T), cudaMemcpyDeviceToDevice); CUDA_CHECK;
-			cudaMalloc(&listColIndicesTmp, this->nnz * sizeof(int)); CUDA_CHECK;
-			cudaMemcpy(listColIndicesTmp, this->listColIndices, this->nnz * sizeof(int), cudaMemcpyDeviceToDevice); CUDA_CHECK;
-			cudaMalloc(&listRowEntriesTmp, (this->getNumRows() + 1) * sizeof(int)); CUDA_CHECK;
-			cudaMemcpy(listRowEntriesTmp, this->listRowEntries, (this->getNumRows() + 1) * sizeof(int), cudaMemcpyDeviceToDevice); CUDA_CHECK;
-
-			cudaFree(this->listRowEntries); CUDA_CHECK;
-			cudaMalloc(&this->listRowEntries, (this->getNumCols() + 1) * sizeof(int)); CUDA_CHECK;
-
-			cusparseStatus_t status = cusparseScsr2csc(this->handle, this->getNumRows(), this->getNumCols(), this->nnz, listValuesTmp, listRowEntriesTmp, listColIndicesTmp, this->listValues, this->listColIndices, this->listRowEntries, CUSPARSE_ACTION_NUMERIC, CUSPARSE_INDEX_BASE_ZERO); CUDA_CHECK;
-
-			cudaDeviceSynchronize();
-
-			cudaFree(listValuesTmp); CUDA_CHECK;
-			cudaFree(listColIndicesTmp); CUDA_CHECK;
-			cudaFree(listRowEntriesTmp); CUDA_CHECK;
-
-			int numRowsTmp = this->getNumRows();
-			this->setNumRows(this->getNumCols());
-			this->setNumCols(numRowsTmp);
-
-			transposed = true;
-
-			if (VERBOSE > 0)
-			{
-				switch (status)
-			{
-				case CUSPARSE_STATUS_SUCCESS:
-				{
-					printf("Copy was successfull\n");
-					break;
-				}
-				case CUSPARSE_STATUS_NOT_INITIALIZED:
-				{
-					printf("the library was not initialized\n");
-					break;
-				}
-				case CUSPARSE_STATUS_ALLOC_FAILED:
-				{
-					printf("the resources could not be allocated\n");
-					break;
-				}
-				case CUSPARSE_STATUS_INVALID_VALUE:
-				{
-					printf("invalid parameters were passed(m, n, nnz<0)\n");
-					break;
-				}
-				case CUSPARSE_STATUS_ARCH_MISMATCH:
-				{
-					printf("the device does not support double precision\n");
-					break;
-				}
-				case CUSPARSE_STATUS_EXECUTION_FAILED:
-				{
-					printf("the function failed to launch on the GPU\n");
-					break;
-				}
-				case CUSPARSE_STATUS_INTERNAL_ERROR:
-				{
-					printf("the function failed to launch on the GPU\n");
-					break;
-				}
-				default:
-				{
-					printf("Error Copy!");
-					break;
-				}
-			}
-		}
+            transposed = true;
 		}
 		else
 		{
-			//printf("Transpose Again\n");
-			
 			transposed = false;
 		}
 	}
@@ -373,6 +293,13 @@ public:
 		}
 
 		return rowsum;
+	}
+	
+	thrust::device_vector<T> getAbsRowSumCUDA()
+	{
+		Tvector result(this->getNumRows(),(T)1);
+
+		return result;
 	}
 #endif
 };

@@ -41,22 +41,19 @@
 
 #include "tools.h"
 
-#include "flexLinearOperator.h"
-#include "flexIdentityOperator.h"
-#include "flexZeroOperator.h"
-#include "flexDiagonalOperator.h"
-#include "flexMatrix.h"
-#include "flexGradientOperator.h"
-#include "flexSuperpixelOperator.h"
+#include "operator/flexLinearOperator.h"
+#include "operator/flexIdentityOperator.h"
+#include "operator/flexZeroOperator.h"
+#include "operator/flexDiagonalOperator.h"
+#include "operator/flexMatrix.h"
+#include "operator/flexGradientOperator.h"
+#include "operator/flexSuperpixelOperator.h"
 
 #include "flexBox.h"
 
 //primal
-#include "flexTermPrimal.h"
-
-//dual
-#include "flexDualizedOperator.h"
-#include "flexDualizedDataTerm.h"
+#include "term/flexTermPrimal.h"
+#include "term/flexTermDual.h"
 
 //prox
 #include "prox/flexProxDualDataL1.h"
@@ -75,7 +72,7 @@ using namespace std;
 typedef float floatingType;
 
 #if __CUDACC__
-	#include "flexMatrixGPU.h"
+	#include "operator/flexMatrixGPU.h"
 
 	typedef thrust::device_vector<floatingType> vectorData;
 #else
@@ -93,7 +90,12 @@ void copyMatlabToFlexmatrix(const mxArray *input, flexMatrix<floatingType,vector
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	// Initialize main flexBox object
+	bool isGPU = false;
+    #if __CUDACC__
+        isGPU = true;
+    #endif
+
+// Initialize main flexBox object
 	flexBox<floatingType,vectorData> mainObject;
 	mainObject.isMATLAB = true;
 	
@@ -304,7 +306,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 				
 				operatorList.push_back(new flexDiagonalOperator<floatingType, vectorData>(tmpDiagonal));
 			}
-			else if (checkClassType(pointerA, "superpixelOperator"))
+            else if (checkClassType(pointerA, "superpixelOperator") && isGPU == false)
 			{
 				if (verbose > 1)
 				{
@@ -325,19 +327,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 				operatorList.push_back(new flexSuperpixelOperator<floatingType, vectorData>(targetDimension, factor));
 			}
-			else if (checkSparse(pointerA))
+            else if (checkSparse(pointerA) || (checkClassType(pointerA, "superpixelOperator") && isGPU == true))
 			{
 				if (verbose > 1)
 				{
 					printf("Operator %d is type <matrix>\n", k);
 				}
-
+                
+                //check if super pixel operator
+                if (checkClassType(pointerA, "superpixelOperator"))
+                {
+                    pointerA = mxGetProperty(pointerA,0,"matrix");
+                }
+                
 				#if __CUDACC__
 					mwIndex  *ir, *jc;
 
 					jc = mxGetJc(pointerA);
 					ir = mxGetIr(pointerA);
-					double * pr = mxGetPr(pointerA);
+					double* pr = mxGetPr(pointerA);
 
 					//matlab stores in compressed column format
 					int numCols = mxGetN(pointerA);
@@ -356,7 +364,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 						rowList[l] = ir[l];
 						valList[l] = pr[l];
 					}
-
 					operatorList.push_back(new flexMatrixGPU<floatingType, vectorData>((int)mxGetM(pointerA), (int)mxGetN(pointerA), rowList, colList, valList,false));
 				#else
 					flexMatrix<floatingType, vectorData>*A = new flexMatrix<floatingType, vectorData>(static_cast<int>(mxGetM(pointerA)), static_cast<int>(mxGetN(pointerA)));
@@ -388,7 +395,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		else if (checkProx(classPointer,"HuberProxDual"))
 		{
 			float huberEpsilon = (float)mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"epsi"));
-			
 			myProx = new flexProxDualHuber<floatingType, vectorData>(huberEpsilon);
 		}
 		else if (checkProx(classPointer,"FrobeniusProxDual"))
@@ -435,7 +441,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			copyToVector(fList[k], mxGetPr(fListInputElement), (int)mxGetN(fListInputElement) * (int)mxGetM(fListInputElement));
 		}
 
-		mainObject.addDual(new flexDualizedDataTerm<floatingType, vectorData>(myProx, alpha,(int)_correspondingPrimals.size(), operatorList, fList), _correspondingPrimals);
+		mainObject.addDual(new flexTermDual<floatingType, vectorData>(myProx, alpha,(int)_correspondingPrimals.size(), operatorList, fList), _correspondingPrimals);
 	}
 	
 	// copy content for dual vars from MATLAB
