@@ -97,7 +97,7 @@ public:
 		//clear matrix
 		//clear();
 
-		int numberListElements = indexI.size();
+		int numberListElements = (int)indexI.size();
 
 		//initialize vecvector
 		std::vector<int> emptyBucket(0, 0);
@@ -116,7 +116,7 @@ public:
 			int numElements = 0;
 
 			//go through bucket
-			for (int indexBucket = 0; indexBucket < buckets[indexRow].size(); indexBucket++)
+			for (int indexBucket = 0; indexBucket < (int)buckets[indexRow].size(); indexBucket++)
 			{
 				int tmpIndex = buckets[indexRow][indexBucket];
 
@@ -263,6 +263,15 @@ public:
 
 		this->blockInsert(tmpindexI, tmpindexJ, tmpindexVal);
 	}
+    //DUMMY FUNCTION
+    #if __CUDACC__
+    thrust::device_vector<T> getAbsRowSumCUDA()
+	{
+		thrust::device_vector<T> result(this->getNumRows(), (T)1);
+
+		return result;
+	}
+    #endif
 };
 
 #endif

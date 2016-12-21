@@ -30,12 +30,12 @@ public:
 
 	~flexSolverPrimalDual()
 	{
-		for (int i = termsPrimal.size() - 1; i >= 0; --i)
+		for (int i = (int)termsPrimal.size() - 1; i >= 0; --i)
 		{
 			delete termsPrimal[i];
 		}
 
-		for (int i = termsDual.size() - 1; i >= 0; --i)
+		for (int i = (int)termsDual.size() - 1; i >= 0; --i)
 		{
 			delete termsDual[i];
 		}
@@ -50,10 +50,10 @@ public:
 	{
 		std::vector<T> tmpVec;
 
-		for (int k = 0; k < termsDual.size(); ++k)
+		for (int k = 0; k < (int)termsDual.size(); ++k)
 		{
-			auto numPrimals = dcp[k].size();
-			auto numDuals = dcd[k].size();
+			auto numPrimals = (int)dcp[k].size();
+			auto numDuals = (int)dcd[k].size();
 
 			for (int i = 0; i < numDuals; ++i)
 			{
@@ -74,16 +74,16 @@ public:
 			}
 		}
 
-		for (int i = 0; i < data->y.size(); ++i)
+		for (int i = 0; i < (int)data->y.size(); ++i)
 		{
 			auto ptrSigma = data->sigmaElt[i].data();
 
-			int numElements = data->y[i].size();
+			int numElements = (int)data->y[i].size();
 
 			#pragma omp parallel for
 			for (int j = 0; j < numElements; ++j)
 			{
-				ptrSigma[j] = (T)1 / myMax<T>(0.001, ptrSigma[j]);
+				ptrSigma[j] = (T)1 / myMax<T>(0.001f, ptrSigma[j]);
 			}
 		}
 
@@ -91,12 +91,12 @@ public:
 		{
 			auto ptrTau = data->tauElt[i].data();
 
-			int numElements = data->x[i].size();
+			int numElements = (int)data->x[i].size();
 
 			#pragma omp parallel for
 			for (int j = 0; j < numElements; ++j)
 			{
-				ptrTau[j] = (T)1 / myMax<T>(0.001, ptrTau[j]);
+				ptrTau[j] = (T)1 / myMax<T>(0.001f, ptrTau[j]);
 			}
 		}
 	}
@@ -126,15 +126,15 @@ public:
 
 	void yTilde(flexBoxData<T, Tvector>* data, flexTermDual<T, Tvector>* dualTerm, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
-		for (int i = 0; i < dualNumbers.size(); ++i)
+		for (int i = 0; i < (int)dualNumbers.size(); ++i)
 		{
 			const int dualNum = dualNumbers[i];
             
             vectorScalarSet(data->yTilde[dualNum],(T)0);
             
-			for (int j = 0; j < primalNumbers.size(); ++j)
+			for (int j = 0; j < (int)primalNumbers.size(); ++j)
 			{
-				int operatorNumber = primalNumbers.size() * i + j;
+				int operatorNumber = (int)primalNumbers.size() * i + j;
 
 				dualTerm->operatorList[operatorNumber]->timesPlus(data->xBar[primalNumbers[j]], data->yTilde[dualNum]);
 			}
@@ -143,7 +143,7 @@ public:
             T* ptrYold = data->yOld[dualNum].data();
 			T* ptrSigma = data->sigmaElt[dualNum].data();
             
-            int numElements = data->yTilde[dualNum].size();
+            int numElements = (int)data->yTilde[dualNum].size();
             
             #pragma omp parallel for
             for (int k = 0; k < numElements; ++k)
@@ -155,11 +155,11 @@ public:
 
 	void xTilde(flexBoxData<T, Tvector>* data, flexTermDual<T, Tvector>* dualTerm, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
-		for (int i = 0; i < dualNumbers.size(); ++i)
+		for (int i = 0; i < (int)dualNumbers.size(); ++i)
 		{
-			for (int j = 0; j < primalNumbers.size(); ++j)
+			for (int j = 0; j < (int)primalNumbers.size(); ++j)
 			{
-				int operatorNumber = primalNumbers.size() * i + j;
+				int operatorNumber = (int)primalNumbers.size() * i + j;
 
 				const int primalNum = primalNumbers[j];
 				const int dualNum = dualNumbers[i];
@@ -182,7 +182,7 @@ public:
 		//timer.end(); printf("Time for swap was: %f\n", timer.elapsed());
 
 		//if (doTime) timer.reset();
-		for (int i = 0; i < termsDual.size(); ++i)
+		for (int i = 0; i < (int)termsDual.size(); ++i)
 		{
 			//timer.reset();
 			this->yTilde(data, termsDual[i], dcd[i], dcp[i]);
@@ -194,14 +194,14 @@ public:
 		}
 
 		//timer.reset();
-		for (int i = 0; i < data->xTilde.size(); ++i)
+		for (int i = 0; i < (int)data->xTilde.size(); ++i)
 		{
 			vectorScalarSet(data->xTilde[i], (T)0);
 		}
 		//timer.end(); printf("Time for vectorScalarSet(data->xTilde[i], (T)0); was: %f\n", timer.elapsed());
 
 		//timer.reset();
-		for (int i = 0; i < termsDual.size(); ++i)
+		for (int i = 0; i < (int)termsDual.size(); ++i)
 		{
 			this->xTilde(data, termsDual[i], dcd[i], dcp[i]);
 		}
@@ -212,7 +212,7 @@ public:
 			T* ptrXold = data->xOld[i].data();
 			T* ptrTau = data->tauElt[i].data();
 
-			int numElements = data->xTilde[i].size();
+			int numElements = (int)data->xTilde[i].size();
 
 			#pragma omp parallel for
 			for (int k = 0; k < numElements; ++k)
@@ -223,7 +223,7 @@ public:
 		//timer.end(); printf("Time for this->xTilde was: %f\n", timer.elapsed());
 
 		//timer.reset();
-		for (int i = 0; i < termsPrimal.size(); ++i)
+		for (int i = 0; i < (int)termsPrimal.size(); ++i)
 		{
 			termsPrimal[i]->applyProx(data, pcp[i]);
 		}
@@ -231,13 +231,13 @@ public:
 
 		//do overrelaxation
 		//timer.reset();
-		for (int i = 0; i < data->xTilde.size(); ++i)
+		for (int i = 0; i < (int)data->xTilde.size(); ++i)
 		{
 			T* ptrXbar = data->xBar[i].data();
 			T* ptrX = data->x[i].data();
 			T* ptrXold = data->xOld[i].data(); 
 			
-			int numElements = data->x[i].size();
+			int numElements = (int)data->x[i].size();
 
 			#pragma omp parallel for
 			for (int k = 0; k < numElements; ++k)
@@ -250,12 +250,12 @@ public:
 
 	void yError(flexBoxData<T, Tvector>* data, flexTermDual<T, Tvector>* dualTerm, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
-		for (int i = 0; i < dualNumbers.size(); ++i)
+		for (int i = 0; i < (int)dualNumbers.size(); ++i)
 		{
-			for (int j = 0; j < primalNumbers.size(); ++j)
+			for (int j = 0; j < (int)primalNumbers.size(); ++j)
 			{
 				//Check here
-				int operatorNumber = primalNumbers.size() * i + j;
+				int operatorNumber = (int)primalNumbers.size() * i + j;
 
 				const int primalNum = primalNumbers[j];
 				const int dualNum = dualNumbers[i];
@@ -270,12 +270,12 @@ public:
 
 	void xError(flexBoxData<T, Tvector>* data, flexTermDual<T, Tvector>* dualTerm, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
-		for (int i = 0; i < dualNumbers.size(); ++i)
+		for (int i = 0; i < (int)dualNumbers.size(); ++i)
 		{
-			for (int j = 0; j < primalNumbers.size(); ++j)
+			for (int j = 0; j < (int)primalNumbers.size(); ++j)
 			{
 				//Check here
-				int operatorNumber = primalNumbers.size() * i + j;
+				int operatorNumber = (int)primalNumbers.size() * i + j;
 
 				const int primalNum = primalNumbers[j];
 				const int dualNum = dualNumbers[i];
@@ -291,7 +291,7 @@ public:
 	T calculateError(flexBoxData<T, Tvector> *data)
 	{
 		//first part of primal and dual residuals
-		for (int i = 0; i < data->x.size(); ++i)
+		for (int i = 0; i < (int)data->x.size(); ++i)
 		{
 			T* ptrxError = data->xError[i].data();
 			T* ptrX = data->x[i].data();
@@ -299,7 +299,7 @@ public:
 
 			T* ptrTau = data->tauElt[i].data();
 
-			int numElements = data->x[i].size();
+			int numElements = (int)data->x[i].size();
 
 			#pragma omp parallel for
 			for (int k = 0; k < numElements; ++k)
@@ -308,7 +308,7 @@ public:
 			}
 		}
 
-		for (int i = 0; i < data->y.size(); ++i)
+		for (int i = 0; i < (int)data->y.size(); ++i)
 		{
 			T* ptrYError = data->yError[i].data();
 			T* ptrY = data->y[i].data();
@@ -316,7 +316,7 @@ public:
 
 			T* ptrSigma = data->sigmaElt[i].data();
 
-			int numElements = data->y[i].size();
+			int numElements = (int)data->y[i].size();
 
 			#pragma omp parallel for
 			for (int k = 0; k < numElements; ++k)
@@ -326,7 +326,7 @@ public:
 		}
 
 		//operator specifiy error
-		for (int i = 0; i < termsDual.size(); ++i)
+		for (int i = 0; i < (int)termsDual.size(); ++i)
 		{
 			this->xError(data, termsDual[i], dcd[i], dcp[i]);
 			this->yError(data, termsDual[i], dcd[i], dcp[i]);

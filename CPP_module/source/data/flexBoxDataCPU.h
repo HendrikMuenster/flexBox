@@ -39,12 +39,12 @@ class flexBoxDataCPU : public flexBoxData<T, Tdata>
 
 	int getNumPrimalVars()
 	{
-		return this->x.size();
+		return (int)this->x.size();
 	}
 
 	int getNumDualVars()
 	{
-		return this->y.size();
+		return (int)this->y.size();
 	}
 
 	std::vector<T> getPrimal(int i)

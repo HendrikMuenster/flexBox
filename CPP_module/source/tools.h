@@ -64,7 +64,8 @@ enum prox
 	dualHuberProx,
 	dualL2DataProx,
 	dualL1DataProx,
-	dualKLDataProx
+	dualKLDataProx,
+	dualBoxConstraintProx
 };
 
 enum linOp
@@ -282,7 +283,7 @@ void vectorAddVectorTimesVector(std::vector<T> &result, const std::vector<T> &v1
 	{
 		case SIGN_PLUS:
 		{
-			int numElements = result.size();
+			int numElements = (int)result.size();
 			for (int i = 0; i < numElements; ++i)
 			{
 				result[i] += v1[i] * v2[i];
@@ -291,7 +292,7 @@ void vectorAddVectorTimesVector(std::vector<T> &result, const std::vector<T> &v1
 		}
 		case SIGN_MINUS:
 		{
-			int numElements = result.size();
+			int numElements = (int)result.size();
 			for (int i = 0; i < numElements; ++i)
 			{
 				result[i] -= v1[i] * v2[i];
@@ -300,7 +301,7 @@ void vectorAddVectorTimesVector(std::vector<T> &result, const std::vector<T> &v1
 		}
 		case SIGN_EQUALS:
 		{
-			int numElements = result.size();
+			int numElements = (int)result.size();
 			for (int i = 0; i < numElements; ++i)
 			{
 				result[i] = v1[i] * v2[i];
@@ -523,6 +524,8 @@ private:
 		const T factor;
 		const T alpha;
 	};
+	
+	
 
 	/*GPU prox for L1 data term */
 	template < typename T >
@@ -638,6 +641,9 @@ private:
 	{
 		return *thrust::max_element(v.begin(), v.end());
 	}
+	
+	
+
 
 #endif
 
@@ -646,7 +652,7 @@ private:
 
 #if __CUDACC__
 
-/*template<typename T>
+template<typename T>
 __global__ void dxp2dCUDA(T* output, const T* input, int w, int h, const int signRule)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -864,7 +870,7 @@ __global__ void dyp2dTransposedCUDA(T* output, const T* input, int w, int h, con
 			}
 		}
 	}
-}*/
+}
 
 
 // cuda error checking

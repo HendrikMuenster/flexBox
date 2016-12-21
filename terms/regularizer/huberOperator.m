@@ -1,7 +1,7 @@
 %represents the term
 %\alpha |A u|_{H_\epsilon} (huber norm)
 %corresponds to one primal variable u and an arbitrary linear operator A
-classdef huberOperator < basicDualizedOperator & L1HuberProxDual
+classdef huberOperator < basicDualizedOperator & HuberProxDual
     properties
         epsi
     end
