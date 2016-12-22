@@ -129,7 +129,7 @@ public:
 				#pragma omp parallel for
 				for (int i = 0; i < numElements; i++)
 				{
-					T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * epsiAlpha;
+					T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * epsiAlpha);
 
 					T yTmp = (T)1 / myMax<T>((T)1, sqrtf(pow2(ptrYtilde0[i] * huberFactor) + pow2(ptrYtilde1[i] * huberFactor) + pow2(ptrYtilde2[i] * huberFactor)) / alpha);
 
