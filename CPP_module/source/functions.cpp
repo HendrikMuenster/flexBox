@@ -65,6 +65,7 @@
 #include "prox/flexProxDualHuber.h"
 #include "prox/flexProxDualFrobenius.h"
 #include "prox/flexProxDualBoxConstraint.h"
+#include "prox/flexProxDualInnerProduct.h"
 
 
 using namespace std;
@@ -421,6 +422,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			
 			myProx = new flexProxDualBoxConstraint<floatingType, vectorData>(minVal, maxVal);
 			proxName = dualBoxConstraintProx;
+		}
+        else if (checkProx(classPointer,"innerProductProxDual"))
+		{
+			myProx = new flexProxDualInnerProduct<floatingType, vectorData>();
 		}
 		else
 		{
