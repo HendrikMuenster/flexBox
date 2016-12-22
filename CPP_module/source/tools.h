@@ -65,7 +65,8 @@ enum prox
 	dualL2DataProx,
 	dualL1DataProx,
 	dualKLDataProx,
-	dualBoxConstraintProx
+	dualBoxConstraintProx,
+	dualInnerProductProx
 };
 
 enum linOp
