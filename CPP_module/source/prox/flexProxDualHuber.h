@@ -27,22 +27,24 @@ public:
 	struct flexProxDualHuberDim2Functor
 	{
 		__host__ __device__
-		flexProxDualHuberDim2Functor(T alpha) : alpha(alpha){}
+		flexProxDualHuberDim2Functor(T _epsi, T _alpha) : epsi(_epsi), alpha(_alpha), epsiAlpha(epsi / alpha){}
 
 		template <typename Tuple>
 		__host__ __device__
         void operator()(Tuple t)
 		{
-            T huberFactor1 = (T)1 / ((T)1 + thrust::get<4>(t) * alpha);
-            T huberFactor2 = (T)1 / ((T)1 + thrust::get<5>(t) * alpha);
+            T huberFactor1 = (T)1 / ((T)1 + thrust::get<4>(t) * epsiAlpha);
+            T huberFactor2 = (T)1 / ((T)1 + thrust::get<5>(t) * epsiAlpha);
             
-			T norm = myMaxGPU<T>((T)1, std::sqrt( std::pow(thrust::get<2>(t)*huberFactor1,(int)2) + std::pow(thrust::get<3>(t)*huberFactor2,(int)2)));
+			T norm = myMaxGPU<T>((T)1, std::sqrt( std::pow(thrust::get<2>(t)*huberFactor1,(int)2) + std::pow(thrust::get<3>(t)*huberFactor2,(int)2)) / alpha);
 
 			thrust::get<0>(t) = thrust::get<2>(t) * huberFactor1 / norm;
 			thrust::get<1>(t) = thrust::get<3>(t) * huberFactor2 / norm;
 		}
-
+        
+        const T epsi;
 		const T alpha;
+        const T epsiAlpha;
 	};
     #endif
 
@@ -54,7 +56,7 @@ public:
                 auto startIterator = thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[0]].begin(), data->y[dualNumbers[1]].begin(), data->yTilde[dualNumbers[0]].begin(), data->yTilde[dualNumbers[1]].begin(), data->sigmaElt[dualNumbers[0]].begin(), data->sigmaElt[dualNumbers[1]].begin()));
                 auto endIterator =   thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[0]].end(),   data->y[dualNumbers[1]].end(),   data->yTilde[dualNumbers[0]].end(),   data->yTilde[dualNumbers[1]].end(),   data->sigmaElt[dualNumbers[0]].end(),   data->sigmaElt[dualNumbers[1]].end()));
                 
-                thrust::for_each(startIterator,endIterator,flexProxDualHuberDim2Functor<T>(this->huberEpsilon / alpha));
+                thrust::for_each(startIterator,endIterator,flexProxDualHuberDim2Functor<T>(this->huberEpsilon,alpha));
 			}
             else
             {
@@ -70,13 +72,15 @@ public:
 				T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
 
 				int numElements = (int)data->yTilde[dualNumbers[0]].size();
+                
+                T epsiAlpha = this->huberEpsilon / alpha;
 
 				#pragma omp parallel for
 				for (int i = 0; i < numElements; i++)
 				{
-					T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * (T)this->huberEpsilon / alpha);
+					T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * epsiAlpha);
 
-					T yTmp = (T)1 / myMax<T>((T)1, fabs(ptrYtilde0[i] * huberFactor));
+					T yTmp = (T)1 / myMax<T>((T)1, fabs(ptrYtilde0[i] * huberFactor) / alpha);
 
 					ptrY0[i] = ptrYtilde0[i] * huberFactor * yTmp;
 				}
@@ -92,13 +96,15 @@ public:
 				T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
 
 				int numElements = (int)data->yTilde[dualNumbers[0]].size();
+                
+                T epsiAlpha = this->huberEpsilon / alpha;
 
 				#pragma omp parallel for
 				for (int i = 0; i < numElements; i++)
 				{
-					T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * (T)this->huberEpsilon / alpha);
+					T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * epsiAlpha);
 
-					T yTmp = (T)1 / myMax<T>((T)1, sqrtf(pow2(ptrYtilde0[i] * huberFactor) + pow2(ptrYtilde1[i] * huberFactor)));
+					T yTmp = (T)1 / myMax<T>((T)1, sqrtf(pow2(ptrYtilde0[i] * huberFactor) + pow2(ptrYtilde1[i] * huberFactor)) / alpha);
 
 					ptrY0[i] = ptrYtilde0[i] * huberFactor * yTmp;
 					ptrY1[i] = ptrYtilde1[i] * huberFactor * yTmp;
@@ -117,13 +123,15 @@ public:
 				T* ptrSigma = data->sigmaElt[dualNumbers[0]].data();
 
 				int numElements = (int)data->yTilde[dualNumbers[0]].size();
+                
+                T epsiAlpha = this->huberEpsilon / alpha;
 
 				#pragma omp parallel for
 				for (int i = 0; i < numElements; i++)
 				{
-					T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * (T)this->huberEpsilon / alpha);
+					T huberFactor = (T)1 / ((T)1.0 + ptrSigma[i] * epsiAlpha;
 
-					T yTmp = (T)1 / myMax<T>((T)1, sqrtf(pow2(ptrYtilde0[i] * huberFactor) + pow2(ptrYtilde1[i] * huberFactor) + pow2(ptrYtilde2[i] * huberFactor)));
+					T yTmp = (T)1 / myMax<T>((T)1, sqrtf(pow2(ptrYtilde0[i] * huberFactor) + pow2(ptrYtilde1[i] * huberFactor) + pow2(ptrYtilde2[i] * huberFactor)) / alpha);
 
 					ptrY0[i] = ptrYtilde0[i] * huberFactor * yTmp;
 					ptrY1[i] = ptrYtilde1[i] * huberFactor * yTmp;
