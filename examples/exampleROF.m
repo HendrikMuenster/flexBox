@@ -16,6 +16,9 @@ figure(2);imagesc(imageNoisy);axis image;colormap(gray);title('Noisy Image')
 %% ROF denoising
 main = flexBox;
 
+main.params.verbose = 1;
+main.params.tryCPP = 1;
+
 %add primal var u
 numberU = main.addPrimalVar(size(image));
 
