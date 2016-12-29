@@ -4,6 +4,7 @@ project(FlexBox)
 #TODO: add support for older cmake versions?
 #TODO: add option to build examples
 #TODO: largeArrayDims??
+#TODO: CUDA: specific archs f.ex. -arch=compute_50 (auto-detect graphics card cmake 3.7?)
 
 ##########################
 #     FILES/INCUDES      #
