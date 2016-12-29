@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.0)
 project(FlexBox)
 
 #TODO: add support for older cmake versions?
@@ -68,8 +68,8 @@ set(SOURCES_IDE_TERM
 
 #matlab
 set(SOURCES_IDE_MATLAB
-  wrappers/Matlab/functions.cpp
-  wrappers/Matlab/functions.cu
+  wrappers/matlab/functions.cpp
+  wrappers/matlab/functions.cu
 )
 
 #group for visual studio
