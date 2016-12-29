@@ -35,7 +35,7 @@ set(SOURCES_IDE_OP
   operator/flexLinearOperator.h
   operator/flexMatrix.h
   operator/flexMatrixGPU.h
-  operator/flexSuperPixelOperator.h
+  operator/flexSuperpixelOperator.h
   operator/flexZeroOperator.h
 )
 
@@ -87,7 +87,21 @@ set(SOURCES_IDE ${SOURCES_IDE_DATA} ${SOURCES_IDE_OP} ${SOURCES_IDE_PROX} ${SOUR
 #   END FILES/INCUDES    #
 ##########################
 
-set(CMAKE_CXX_STANDARD 11)
+if (CMAKE_VERSION VERSION_LESS "3.1")
+  include(CheckCXXCompilerFlag)
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" CXX11_SUPPORT)
+  CHECK_CXX_COMPILER_FLAG("-std=c++0x" CXX0x_SUPPORT)
+  if(CXX11_SUPPORT)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  elseif(CXX0x_SUPPORT)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  else()
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Aborting...")
+  endif()
+else()
+  set(CMAKE_CXX_STANDARD 11)
+endif()
+
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
         message (STATUS  "No build type specified. Default is 'Release'.")
