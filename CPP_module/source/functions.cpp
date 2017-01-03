@@ -68,15 +68,17 @@
 #include "prox/flexProxDualInnerProduct.h"
 
 
-using namespace std;
+
 
 typedef float floatingType;
 
 #if __CUDACC__
+	using namespace thrust;
 	#include "operator/flexMatrixGPU.h"
 
 	typedef thrust::device_vector<floatingType> vectorData;
 #else
+	using namespace std;
 	typedef std::vector<floatingType> vectorData;
 #endif
 
