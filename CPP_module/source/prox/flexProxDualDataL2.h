@@ -25,7 +25,6 @@ public:
 	}
     
     #if __CUDACC__
-        template < typename T >
         struct flexProxDualDataL2Functor
         {
             __host__ __device__
@@ -50,7 +49,7 @@ public:
                 auto startIterator = thrust::make_zip_iterator(thrust::make_tuple(data->y[dualNumbers[i]].begin(), data->yTilde[dualNumbers[i]].begin(), data->sigmaElt[dualNumbers[i]].begin(),  fList[i].begin()));
                 auto endIterator = thrust::make_zip_iterator(  thrust::make_tuple(data->y[dualNumbers[i]].end(),   data->yTilde[dualNumbers[i]].end(),   data->sigmaElt[dualNumbers[i]].end(),    fList[i].end()));
                 
-                thrust::for_each(startIterator,endIterator,flexProxDualDataL2Functor<T>(alpha));
+                thrust::for_each(startIterator,endIterator,flexProxDualDataL2Functor(alpha));
             }
 		#else
 			for (int i = 0; i < dualNumbers.size(); i++)

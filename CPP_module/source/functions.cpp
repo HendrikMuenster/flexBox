@@ -380,7 +380,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			}
 		}
 	
-		prox proxName;
 		flexProx<floatingType, vectorData>* myProx;
 		
 		if (checkProx(classPointer,"L1IsoProxDual"))
