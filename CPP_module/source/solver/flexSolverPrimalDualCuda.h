@@ -88,8 +88,6 @@ public:
 		{
             thrust::transform(data->tauElt[i].begin(), data->tauElt[i].end(), data->tauElt[i].begin(), (T)1 / (0.00001 + _1) );
 		}
-        
-        
 	}
 
 	void addPrimal(flexTermPrimal<T, Tvector>* _primalPart, std::vector<int> _correspondingPrimals)
@@ -115,7 +113,6 @@ public:
 		dcd.push_back(tmpDCD);
 	}
     
-    template < typename T >
     struct yTildeFunctor
     {
         __host__ __device__
@@ -150,7 +147,7 @@ public:
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(data->yTilde[dualNum].begin(), data->yOld[dualNum].begin(), data->sigmaElt[dualNum].begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(data->yTilde[dualNum].end(),   data->yOld[dualNum].end(),   data->sigmaElt[dualNum].end())),
-			yTildeFunctor<T>());
+			yTildeFunctor());
 		}
 	}
 
@@ -170,7 +167,6 @@ public:
 		}
 	}
     
-    template < typename T >
     struct xTildeFunctor
     {
         __host__ __device__
@@ -226,7 +222,7 @@ public:
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(data->xTilde[primalNum].begin(), data->xOld[primalNum].begin(), data->tauElt[primalNum].begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(data->xTilde[primalNum].end(),   data->xOld[primalNum].end(),   data->tauElt[primalNum].end())),
-			xTildeFunctor<T>());
+			xTildeFunctor());
 		}
         //timer.end(); printf("Time for this->xTilde2 was: %f\n", timer.elapsed());
         
@@ -238,9 +234,6 @@ public:
 		}
 		//timer.end(); printf("Time for termsPrimal[i]->applyProx(data, tau, pcp[i]); was: %f\n", timer.elapsed());
 
-        
-        
-        
 		//do overrelaxation
 		//timer.reset();
 		for (int primalNum = 0; primalNum < (int)data->xTilde.size(); ++primalNum)
@@ -292,7 +285,6 @@ public:
 		}
 	}
     
-    template < typename T >
     struct calculateErrorFunctor
     {
         __host__ __device__
@@ -315,7 +307,7 @@ public:
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(data->xError[i].begin(), data->x[i].begin(), data->xOld[i].begin(), data->tauElt[i].begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(data->xError[i].end(),   data->x[i].end(),   data->xOld[i].end(),   data->tauElt[i].end())),
-            calculateErrorFunctor<T>());
+            calculateErrorFunctor());
 		}
 
 		for (int i = 0; i < (int)data->y.size(); ++i)
@@ -323,7 +315,7 @@ public:
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(data->yError[i].begin(), data->y[i].begin(), data->yOld[i].begin(), data->sigmaElt[i].begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(data->yError[i].end(),   data->y[i].end(),   data->yOld[i].end(),   data->sigmaElt[i].end())),
-            calculateErrorFunctor<T>());
+            calculateErrorFunctor());
 		}
 
 		//operator specifiy error

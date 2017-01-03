@@ -20,7 +20,6 @@ public:
 	}
     
     #if __CUDACC__
-    template<typename T>
 	struct flexProxDualL1IsoDim2Functor
 	{
 		__host__ __device__
@@ -30,7 +29,7 @@ public:
 		__host__ __device__
         void operator()(Tuple t)
 		{
-			T norm = std::max((T)1, std::sqrt(thrust::get<2>(t) * thrust::get<2>(t) +thrust::get<3>(t) * thrust::get<3>(t)) / this->alpha);
+			T norm = max((T)1, sqrt( pow(thrust::get<2>(t),(int)2) + pow(thrust::get<3>(t),(int)2)) / this->alpha);
 
 			thrust::get<0>(t) = thrust::get<2>(t) / norm;
 			thrust::get<1>(t) = thrust::get<3>(t) / norm;
@@ -48,7 +47,7 @@ public:
                 auto startIterator = thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[0]].begin(), data->y[dualNumbers[1]].begin(), data->yTilde[dualNumbers[0]].begin(), data->yTilde[dualNumbers[1]].begin()));
                 auto endIterator =   thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[0]].end(),   data->y[dualNumbers[1]].end(),   data->yTilde[dualNumbers[0]].end(),   data->yTilde[dualNumbers[1]].end()));
                 
-                thrust::for_each(startIterator,endIterator,flexProxDualL1IsoDim2Functor<T>(alpha));
+                thrust::for_each(startIterator,endIterator,flexProxDualL1IsoDim2Functor(alpha));
 			}
             else
             {

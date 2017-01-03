@@ -20,7 +20,6 @@ public:
 	}
     
     #if __CUDACC__
-    template<typename T>
 	struct flexProxDualL1AnisoFunctor
 	{
 		__host__ __device__
@@ -30,7 +29,7 @@ public:
 		__host__ __device__
         void operator()(Tuple t)
 		{
-			thrust::get<0>(t) = std::min(this->alpha, std::max(-this->alpha,thrust::get<1>(t)));
+			thrust::get<0>(t) = min(this->alpha, max(-this->alpha,thrust::get<1>(t)));
 		}
 
 		T alpha;
@@ -45,7 +44,7 @@ public:
                 auto startIterator = thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[k]].begin(), data->yTilde[dualNumbers[k]].begin()));
                 auto endIterator =   thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[k]].end(),   data->yTilde[dualNumbers[k]].end()));
                 
-                thrust::for_each(startIterator,endIterator,flexProxDualL1AnisoFunctor<T>(alpha));
+                thrust::for_each(startIterator,endIterator,flexProxDualL1AnisoFunctor(alpha));
             }
 		#else
 			for (int k = 0; k < dualNumbers.size(); k++)

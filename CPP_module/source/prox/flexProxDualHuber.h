@@ -23,7 +23,6 @@ public:
 	}
     
     #if __CUDACC__
-    template<typename T>
 	struct flexProxDualHuberDim2Functor
 	{
 		__host__ __device__
@@ -36,7 +35,7 @@ public:
             T huberFactor1 = (T)1 / ((T)1 + thrust::get<4>(t) * epsiAlpha);
             T huberFactor2 = (T)1 / ((T)1 + thrust::get<5>(t) * epsiAlpha);
             
-			T norm = myMaxGPU<T>((T)1, std::sqrt( std::pow(thrust::get<2>(t)*huberFactor1,(int)2) + std::pow(thrust::get<3>(t)*huberFactor2,(int)2)) / alpha);
+			T norm = max((T)1, sqrt( pow(thrust::get<2>(t)*huberFactor1,(int)2) + pow(thrust::get<3>(t)*huberFactor2,(int)2)) / alpha);
 
 			thrust::get<0>(t) = thrust::get<2>(t) * huberFactor1 / norm;
 			thrust::get<1>(t) = thrust::get<3>(t) * huberFactor2 / norm;
@@ -56,11 +55,11 @@ public:
                 auto startIterator = thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[0]].begin(), data->y[dualNumbers[1]].begin(), data->yTilde[dualNumbers[0]].begin(), data->yTilde[dualNumbers[1]].begin(), data->sigmaElt[dualNumbers[0]].begin(), data->sigmaElt[dualNumbers[1]].begin()));
                 auto endIterator =   thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[0]].end(),   data->y[dualNumbers[1]].end(),   data->yTilde[dualNumbers[0]].end(),   data->yTilde[dualNumbers[1]].end(),   data->sigmaElt[dualNumbers[0]].end(),   data->sigmaElt[dualNumbers[1]].end()));
                 
-                thrust::for_each(startIterator,endIterator,flexProxDualHuberDim2Functor<T>(this->huberEpsilon,alpha));
+                thrust::for_each(startIterator,endIterator,flexProxDualHuberDim2Functor(this->huberEpsilon,alpha));
 			}
             else
             {
-                printf("Alert! Huber prox not implemented in CUDA for dim!=2");
+                printf("Alert! Huber prox not implemented in CUDA for dim!=2\n");
             }
 		#else
 			if (dualNumbers.size() == 1)

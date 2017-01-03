@@ -35,7 +35,6 @@ public:
 	}
     
     #if __CUDACC__
-    template < typename T >
     struct flexDiagonalOperatorTimesFunctor
 	{
 		__host__ __device__ 
@@ -57,7 +56,7 @@ public:
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(output.begin(), input.begin(), this->diagonalElements.begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(output.end(),   input.end(),   this->diagonalElements.end())),
-			flexDiagonalOperatorTimesFunctor<T>());
+			flexDiagonalOperatorTimesFunctor());
         #else
             int numElements = (int)output.size();
 
@@ -70,7 +69,6 @@ public:
 	}
     
     #if __CUDACC__
-    template < typename T >
     struct flexDiagonalOperatorTimesPlusFunctor
 	{
 		__host__ __device__ 
@@ -90,7 +88,7 @@ public:
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(output.begin(), input.begin(), this->diagonalElements.begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(output.end(),   input.end(),   this->diagonalElements.end())),
-			flexDiagonalOperatorTimesPlusFunctor<T>());
+			flexDiagonalOperatorTimesPlusFunctor());
         #else
             int numElements = (int)output.size();
 
@@ -103,7 +101,6 @@ public:
 	}
 
     #if __CUDACC__
-    template < typename T >
     struct flexDiagonalOperatorTimesMinusFunctor
 	{
 		__host__ __device__ 
@@ -123,7 +120,7 @@ public:
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(output.begin(), input.begin(), this->diagonalElements.begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(output.end(),   input.end(),   this->diagonalElements.end())),
-			flexDiagonalOperatorTimesPlusFunctor<T>());
+			flexDiagonalOperatorTimesPlusFunctor());
         #else
             int numElements = (int)output.size();
 

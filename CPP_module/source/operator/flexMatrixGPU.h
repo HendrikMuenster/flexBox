@@ -48,9 +48,9 @@ public:
 			this->nnz = colList[_numCols]; //access last entry
 		}
 
-        cudaMalloc(&this->listValues, this->nnz * sizeof(T)); CUDA_CHECK;
-		cudaMalloc(&this->listColIndices, this->nnz * sizeof(int)); CUDA_CHECK;
-		cudaMalloc(&this->listRowEntries, (_numRows + 1) * sizeof(int)); CUDA_CHECK;
+        cudaMalloc(&this->listValues, this->nnz * sizeof(T)); 
+		cudaMalloc(&this->listColIndices, this->nnz * sizeof(int)); 
+		cudaMalloc(&this->listRowEntries, (_numRows + 1) * sizeof(int)); 
 
 		if (formatCRS == false)
 		{
@@ -59,21 +59,21 @@ public:
 			int* listColIndicesTmp;
 			int* listRowEntriesTmp;
 
-			cudaMalloc(&listValuesTmp, this->nnz * sizeof(T));	CUDA_CHECK;
-			cudaMemcpy(listValuesTmp, indexVal, this->nnz * sizeof(T), cudaMemcpyHostToDevice); CUDA_CHECK;
-			cudaMalloc(&listColIndicesTmp, (_numCols + 1) * sizeof(int));	CUDA_CHECK;
-			cudaMemcpy(listColIndicesTmp, colList, (_numCols + 1) * sizeof(int), cudaMemcpyHostToDevice); CUDA_CHECK;
-			cudaMalloc(&listRowEntriesTmp, this->nnz  * sizeof(int));	CUDA_CHECK;
-			cudaMemcpy(listRowEntriesTmp, rowList, this->nnz * sizeof(int), cudaMemcpyHostToDevice); CUDA_CHECK;
+			cudaMalloc(&listValuesTmp, this->nnz * sizeof(T));	
+			cudaMemcpy(listValuesTmp, indexVal, this->nnz * sizeof(T), cudaMemcpyHostToDevice); 
+			cudaMalloc(&listColIndicesTmp, (_numCols + 1) * sizeof(int));	
+			cudaMemcpy(listColIndicesTmp, colList, (_numCols + 1) * sizeof(int), cudaMemcpyHostToDevice); 
+			cudaMalloc(&listRowEntriesTmp, this->nnz  * sizeof(int));	
+			cudaMemcpy(listRowEntriesTmp, rowList, this->nnz * sizeof(int), cudaMemcpyHostToDevice);
 
 
 			cudaDeviceSynchronize();
-			cusparseStatus_t status = cusparseScsr2csc(this->handle, _numCols, _numRows, this->nnz, listValuesTmp, listColIndicesTmp, listRowEntriesTmp, this->listValues, this->listColIndices, this->listRowEntries, CUSPARSE_ACTION_NUMERIC, CUSPARSE_INDEX_BASE_ZERO); CUDA_CHECK;
+			cusparseStatus_t status = cusparseScsr2csc(this->handle, _numCols, _numRows, this->nnz, listValuesTmp, listColIndicesTmp, listRowEntriesTmp, this->listValues, this->listColIndices, this->listRowEntries, CUSPARSE_ACTION_NUMERIC, CUSPARSE_INDEX_BASE_ZERO); 
 			cudaDeviceSynchronize();
 
-			cudaFree(listValuesTmp); CUDA_CHECK;
-			cudaFree(listColIndicesTmp); CUDA_CHECK;
-			cudaFree(listRowEntriesTmp); CUDA_CHECK;
+			cudaFree(listValuesTmp);
+			cudaFree(listColIndicesTmp);
+			cudaFree(listRowEntriesTmp);
 
 			if (VERBOSE > 0)
 			{
@@ -134,9 +134,9 @@ public:
 	{
 		if (VERBOSE > 0) printf("MatrixGPU destructor!");
 		//free cuda memory
-		cudaFree(this->listValues); CUDA_CHECK;
-		cudaFree(this->listColIndices); CUDA_CHECK;
-		cudaFree(this->listRowEntries); CUDA_CHECK;
+		cudaFree(this->listValues); 
+		cudaFree(this->listColIndices); 
+		cudaFree(this->listRowEntries); 
 	}
 
 	flexMatrixGPU<T, Tvector>* copy()
@@ -255,7 +255,7 @@ public:
 	{
 		if (transposed == false)
 		{
-            transposed = true;
+            		transposed = true;
 		}
 		else
 		{
@@ -263,37 +263,9 @@ public:
 		}
 	}
 
-	T timesElement(int index, const T* input)
-	{
-		return (T)0;
-	}
 
 #if __CUDACC__
-	__device__ T timesElementCUDA(int index, const T* input)
-	{
-		T rowsum = (T)0;
-		// initialize result
-		int indexNext = this->listRowEntries[index+1];
-		for (int elementIndex = this->listRowEntries[index]; elementIndex < indexNext; ++elementIndex)
-		{
-			rowsum += input[this->listColIndices[elementIndex]] * this->listValues[elementIndex];
-		}
-		
-		return rowsum;
-	}
 
-	__device__ T getRowsumElementCUDA(int index)
-	{
-		T rowsum = (T)0;
-		// initialize result
-		int indexNext = listRowEntries[index + 1];
-		for (int elementIndex = listRowEntries[index]; elementIndex < indexNext; ++elementIndex)
-		{
-			rowsum += fabs(listValues[elementIndex]);
-		}
-
-		return rowsum;
-	}
 	
 	thrust::device_vector<T> getAbsRowSumCUDA()
 	{

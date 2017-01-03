@@ -22,7 +22,6 @@ public:
 	}
     
     #if __CUDACC__
-    template<typename T>
 	struct flexProxDualDataL1Functor
 	{
 		__host__ __device__
@@ -32,7 +31,7 @@ public:
 		__host__ __device__
         void operator()(Tuple t)
 		{
-			thrust::get<0>(t) = std::min(this->alpha, std::max(-this->alpha,thrust::get<1>(t) - alpha * thrust::get<2>(t) * thrust::get<3>(t)));
+			thrust::get<0>(t) = min(this->alpha, max(-this->alpha,thrust::get<1>(t) - alpha * thrust::get<2>(t) * thrust::get<3>(t)));
 		}
 
 		T alpha;
@@ -52,7 +51,7 @@ public:
                 auto startIterator = thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[k]].begin(), data->yTilde[dualNumbers[k]].begin(), data->sigmaElt[dualNumbers[k]].begin(), fList[k].begin()));
                 auto endIterator =   thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[k]].end(),   data->yTilde[dualNumbers[k]].end(),   data->sigmaElt[dualNumbers[k]].end(),   fList[k].end()));
                 
-                thrust::for_each(startIterator,endIterator,flexProxDualDataL1Functor<T>(alpha));
+                thrust::for_each(startIterator,endIterator,flexProxDualDataL1Functor(alpha));
             }
 		#else
 			for (int i = 0; i < dualNumbers.size(); i++)
