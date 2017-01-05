@@ -422,7 +422,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			float maxVal = (float)mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"maxVal"));
 			
 			myProx = new flexProxDualBoxConstraint<floatingType, vectorData>(minVal, maxVal);
-			proxName = dualBoxConstraintProx;
 		}
         else if (checkProx(classPointer,"innerProductProxDual"))
 		{
