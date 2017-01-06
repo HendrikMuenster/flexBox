@@ -14,7 +14,7 @@ figure(1);imagesc(image);axis image;colormap(gray);title('Input Image')
 figure(2);imagesc(imageNoisy);axis image;colormap(gray);title('Noisy Image')
 %% denoising with tgv
 main = flexBox;
-main.params.tryCPP = 0;
+main.params.tryCPP = 0; %change, if C++ module is compiled
 
 %add primal vars u,w
 numberU = main.addPrimalVar(size(image));
@@ -31,7 +31,7 @@ main.addTerm(L1secondOrderGradientIso(0.05,size(image)),[numberU,numberW1,number
 gradientBackX = generateBackwardGradND( size(image),[1,1], 1);
 gradientBackY = generateBackwardGradND( size(image),[1,1], 2);
 
-gradientSymmetrized = 0.5 * (backX + backY);
+gradientSymmetrized = 0.5 * (gradientBackX + gradientBackY);
 
 main.addTerm(frobeniusOperator(10,2,{gradientBackX,gradientSymmetrized,gradientSymmetrized,gradientBackY}),[numberW1,numberW2]);
 
