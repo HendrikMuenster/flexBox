@@ -29,7 +29,7 @@ public:
         for (int i = 0; i < fList.size(); ++i)
         {
             this->fList[i].resize(_fList[i].size());
-            #if __CUDACC__
+            #ifdef __CUDACC__
                 thrust::copy(_fList[i].begin(), _fList[i].end(), this->fList[i].begin());
             #else
                 std::copy(_fList[i].begin(), _fList[i].end(), this->fList[i].begin());

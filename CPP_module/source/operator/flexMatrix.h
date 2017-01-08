@@ -264,7 +264,7 @@ public:
 		this->blockInsert(tmpindexI, tmpindexJ, tmpindexVal);
 	}
     //DUMMY FUNCTION
-    #if __CUDACC__
+    #ifdef __CUDACC__
     thrust::device_vector<T> getAbsRowSumCUDA()
 	{
 		thrust::device_vector<T> result(this->getNumRows(), (T)1);

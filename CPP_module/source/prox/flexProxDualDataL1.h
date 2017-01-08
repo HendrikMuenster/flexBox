@@ -21,7 +21,7 @@ public:
 		if (VERBOSE > 0) printf("Destructor prox\n!");
 	}
     
-    #if __CUDACC__
+    #ifdef __CUDACC__
 	struct flexProxDualDataL1Functor
 	{
 		__host__ __device__
@@ -45,7 +45,7 @@ public:
 	
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<Tvector> &fList)
 	{
-		#if __CUDACC__
+		#ifdef __CUDACC__
             for (int k = 0; k < dualNumbers.size(); k++)
             {
                 auto startIterator = thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[k]].begin(), data->yTilde[dualNumbers[k]].begin(), data->sigmaElt[dualNumbers[k]].begin(), fList[k].begin()));

@@ -30,7 +30,7 @@ public:
 	
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<Tvector> &fList)
 	{
-		#if __CUDACC__
+		#ifdef __CUDACC__
             for (int i = 0; i < dualNumbers.size(); i++)
             {
                 thrust::transform(fList[i].begin(), fList[i].end(), data->y[dualNumbers[i]].begin(), alpha * _1);

@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.0)
 project(FlexBox)
 
-#TODO: add support for older cmake versions?
+#TODO: add support for older cmake versions (matlab_add_mex)?
 #TODO: add option to build examples
-#TODO: largeArrayDims??
+#TODO: largeArrayDims? needed?
 #TODO: CUDA: specific archs f.ex. -arch=compute_50 (auto-detect graphics card cmake 3.7?)
+#TODO: abort if cuda version < 3.2
+#TODO: Matlab_MAT_LIBRARY needed?
 
 ##########################
 #     FILES/INCUDES      #
@@ -12,13 +14,14 @@ project(FlexBox)
 
 #includes
 set(INCLUDE_DIRS
-  .
-  data
-  operator
-  prox
-  solver
-  term
+  ${CMAKE_SOURCE_DIR}/.
+  ${CMAKE_SOURCE_DIR}/data
+  ${CMAKE_SOURCE_DIR}/operator
+  ${CMAKE_SOURCE_DIR}/prox
+  ${CMAKE_SOURCE_DIR}/solver
+  ${CMAKE_SOURCE_DIR}/term
 )
+
 
 #data
 set(SOURCES_IDE_DATA

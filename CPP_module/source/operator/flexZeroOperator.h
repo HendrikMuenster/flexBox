@@ -48,7 +48,7 @@ public:
 		this->setNumCols(numRowsTmp);
 	}
 
-#if __CUDACC__
+#ifdef __CUDACC__
 	thrust::device_vector<T> getAbsRowSumCUDA()
 	{
 		Tvector result(this->getNumRows(),(T)0);

@@ -16,7 +16,7 @@
 
 #define VERBOSE 0
 
-#if __CUDACC__
+#ifdef __CUDACC__
 	#include <thrust/device_vector.h> 
 	#include <thrust/transform.h> 
 	#include <thrust/sequence.h> 
@@ -215,7 +215,7 @@ public:
 
 	void reset()
 	{
-#if __CUDACC__
+#ifdef __CUDACC__
 			cudaDeviceSynchronize();
 		#endif
 		t_begin = omp_get_wtime();
@@ -223,7 +223,7 @@ public:
 
 	void end()
 	{
-#if __CUDACC__
+#ifdef __CUDACC__
 			cudaDeviceSynchronize();
 		#endif
 		t_end = omp_get_wtime();
@@ -243,7 +243,7 @@ private:
 
 
 
-#if __CUDACC__
+#ifdef __CUDACC__
 
 	template < typename T >
 	void calculateXYError(thrust::device_vector<T> &x, thrust::device_vector<T> &xOld, thrust::device_vector<T> &xError, T tau)
@@ -420,7 +420,7 @@ private:
 
 	//kernels for CUDA operators
 
-#if __CUDACC__
+#ifdef __CUDACC__
 
 template<typename T>
 __global__ void dxp2dCUDA(T* output, const T* input, int w, int h, const int signRule)

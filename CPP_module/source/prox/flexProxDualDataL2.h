@@ -24,7 +24,7 @@ public:
 		
 	}
     
-    #if __CUDACC__
+    #ifdef __CUDACC__
         struct flexProxDualDataL2Functor
         {
             __host__ __device__
@@ -43,7 +43,7 @@ public:
 	
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<Tvector> &fList)
 	{
-		#if __CUDACC__
+		#ifdef __CUDACC__
             for (int i = 0; i < dualNumbers.size(); i++)
 			{
                 auto startIterator = thrust::make_zip_iterator(thrust::make_tuple(data->y[dualNumbers[i]].begin(), data->yTilde[dualNumbers[i]].begin(), data->sigmaElt[dualNumbers[i]].begin(),  fList[i].begin()));

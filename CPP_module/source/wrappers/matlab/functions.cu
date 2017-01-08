@@ -72,7 +72,7 @@
 
 typedef float floatingType;
 
-#if __CUDACC__
+#ifdef __CUDACC__
 	using namespace thrust;
 	#include "operator/flexMatrixGPU.h"
 
@@ -94,7 +94,7 @@ void copyMatlabToFlexmatrix(const mxArray *input, flexMatrix<floatingType,vector
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	bool isGPU = false;
-    #if __CUDACC__
+    #ifdef __CUDACC__
         isGPU = true;
     #endif
 
@@ -343,7 +343,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                     pointerA = mxGetProperty(pointerA,0,"matrix");
                 }
                 
-				#if __CUDACC__
+				#ifdef __CUDACC__
 					mwIndex  *ir, *jc;
 
 					jc = mxGetJc(pointerA);
