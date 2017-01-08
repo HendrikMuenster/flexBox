@@ -5,8 +5,6 @@ project(FlexBox)
 #TODO: add option to build examples
 #TODO: largeArrayDims? needed?
 #TODO: CUDA: specific archs f.ex. -arch=compute_50 (auto-detect graphics card cmake 3.7?)
-#TODO: abort if cuda version < 3.2
-#TODO: Matlab_MAT_LIBRARY needed?
 
 ##########################
 #     FILES/INCUDES      #
@@ -147,10 +145,10 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 #Matlab
 if(BUILD_MATLAB)
-  find_package(Matlab COMPONENTS MX_LIBRARY MAT_LIBRARY)
+  find_package(Matlab COMPONENTS MX_LIBRARY)
 
   if(NOT Matlab_FOUND)
-    message (STATUS "Couldn't find Matlab or one of its required components (MX and/or MAT). Building without...")
+    message (STATUS "Couldn't find Matlab or its required components MX. Building without...")
   endif()
 
 endif(BUILD_MATLAB)
@@ -163,6 +161,11 @@ if(USE_CUDA)
     message (STATUS "Couldn't find CUDA. Building without...")
   endif()
 
+  if(CUDA_VERSION VERSION_LESS "3.2")
+    message (STATUS "At least CUDA 3.2 is needed. Only found: " ${CUDA_VERSION} ". Building without...")
+    set(CUDA_FOUND OFF)
+  endif()
+
 endif(USE_CUDA)
 
 
@@ -170,15 +173,14 @@ endif(USE_CUDA)
 add_library(flexBoxLib INTERFACE)
 target_include_directories(flexBoxLib INTERFACE ${INCLUDE_DIRS})
 
-#build main
-add_executable(Example main.cpp)
-target_link_libraries(Example PUBLIC flexBoxLib)
-
+#build samples
+#add_executable(Example main.cpp)
+#target_link_libraries(Example PUBLIC flexBoxLib)
 
 add_custom_target(IDE SOURCES ${SOURCES_IDE})
 
 
-#add Matlab target
+#add Matlab target if Matlab was found
 if(Matlab_FOUND)
   add_subdirectory(${WRAPPERS_DIR}/matlab)
 endif(Matlab_FOUND)
