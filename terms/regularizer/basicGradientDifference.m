@@ -11,9 +11,9 @@ classdef basicGradientDifference < basicDualizedOperator
             vararginParser;
 
             if (exist('discretization','var') && strcmp(discretization,'backward'))
-                opTmp = generateBackwardGradientND( dims,ones(numel(dims),1) );
+                opTmp = generateBackwardGradND( dims,ones(numel(dims),1) );
             else
-                opTmp = generateForwardGradientND( dims,ones(numel(dims),1) );
+                opTmp = generateForwardGradND( dims,ones(numel(dims),1) );
             end
 
             %usedims should be a {0,1} array of length dims indicating whether a

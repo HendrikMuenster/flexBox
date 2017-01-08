@@ -19,6 +19,7 @@ figure(1);imagesc(f1);axis image;colormap(gray);title('Image 1')
 figure(2);imagesc(f2);axis image;colormap(gray);title('Image 2')
 %%
 main = flexBox;
+main.params.tryCPP = 0; %change, if C++ module is compiled
 
 %add primal vars v_1,v_2
 numberV1 = main.addPrimalVar(size(f1));
@@ -28,8 +29,8 @@ numberV2 = main.addPrimalVar(size(f2));
 main.addTerm(L1opticalFlowTerm(1,f1,f2),[numberV1,numberV2]);
 
 %add regularizers - one for each component
-main.addTerm(L1gradientIso(0.05,size(f1)),numberV1);
-main.addTerm(L1gradientIso(0.05,size(f1)),numberV2);
+main.addTerm(huberGradient(0.1,size(f1),0.01),numberV1);
+main.addTerm(huberGradient(0.1,size(f1),0.01),numberV2);
 
 main.runAlgorithm;
 

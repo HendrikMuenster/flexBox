@@ -15,6 +15,7 @@ figure(1);imagesc(image);axis image;colormap(gray);title('Input Image')
 figure(2);imagesc(imageNoisy);axis image;colormap(gray);title('Noisy Image')
 %% ROF denoising
 main = flexBox;
+main.params.tryCPP = 0;
 
 main.params.verbose = 1;
 main.params.tryCPP = 1;
@@ -36,3 +37,5 @@ result = main.getPrimal(numberU);
 
 %show result
 figure(3);imagesc(result);axis image;colormap(gray);title('Denoised Image');
+
+figure(4);plot(1:size(image),result(150,:));title('1D Result - Staircasing');

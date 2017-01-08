@@ -1,25 +1,27 @@
-#ifndef flexProxDualKL_H
-#define flexProxDualKL_H
+#ifndef flexProxDualInnerProduct_H
+#define flexProxDualInnerProduct_H
 
 
 
 #include "flexProx.h"
 
 template < typename T, typename Tvector >
-class flexProxDualDataKL : public flexProx<T, Tvector>
+class flexProxDualInnerProduct : public flexProx<T, Tvector>
 {
 private:
 
 public:
 
-	flexProxDualDataKL() : flexProx<T, Tvector>(dualKLDataProx)
+	flexProxDualInnerProduct() : flexProx<T, Tvector>(dualInnerProductProx)
 	{
 	}
 
-	~flexProxDualDataKL()
+	~flexProxDualInnerProduct()
 	{
 		if (VERBOSE > 0) printf("Destructor prox\n!");
 	}
+    
+
 
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
@@ -29,14 +31,14 @@ public:
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<Tvector> &fList)
 	{
 		#if __CUDACC__
-            printf("flexProxDualDataKL Prox not implemented for CUDA\n");
+            for (int i = 0; i < dualNumbers.size(); i++)
+            {
+                thrust::transform(fList[i].begin(), fList[i].end(), data->y[dualNumbers[i]].begin(), alpha * _1);
+            }
 		#else
 			for (int i = 0; i < dualNumbers.size(); i++)
 			{
 				T* ptrY = data->y[dualNumbers[i]].data();
-				T* ptrYtilde = data->yTilde[dualNumbers[i]].data();
-				T* ptrSigma = data->sigmaElt[dualNumbers[i]].data();
-
 				T* ptrF = fList[i].data();
 
 				int numElements = (int)data->yTilde[dualNumbers[i]].size();
@@ -44,7 +46,7 @@ public:
 				#pragma omp parallel for
 				for (int j = 0; j < numElements; j++)
 				{
-					ptrY[j] = (T)0.5 * ((T)1 + ptrYtilde[j] - std::sqrt(myPow2<T>(ptrYtilde[j] - (T)1) + (T)4 * ptrSigma[j] * ptrF[j]));
+					ptrY[j] = alpha * ptrF[j];
 				}
 			}
 		#endif

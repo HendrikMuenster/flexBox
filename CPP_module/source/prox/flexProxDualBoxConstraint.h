@@ -25,7 +25,6 @@ public:
 	}
     
     #if __CUDACC__
-    template<typename T>
 	struct flexProxDualBoxConstraintFunctor
 	{
 		__host__ __device__
@@ -35,7 +34,7 @@ public:
 		__host__ __device__
         void operator()(Tuple t)
 		{
-			thrust::get<0>(t) = std::min((T)0, thrust::get<1>(t) - thrust::get<2>(t) * this->minVal) + std::max((T)0, thrust::get<1>(t) - thrust::get<2>(t) * this->maxVal);
+			thrust::get<0>(t) = min((T)0, thrust::get<1>(t) - thrust::get<2>(t) * this->minVal) + max((T)0, thrust::get<1>(t) - thrust::get<2>(t) * this->maxVal);
 		}
 
 		const T minVal;
@@ -51,7 +50,7 @@ public:
                 auto startIterator = thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[k]].begin(), data->yTilde[dualNumbers[k]].begin(), data->sigmaElt[dualNumbers[k]].begin()));
                 auto endIterator =   thrust::make_zip_iterator( thrust::make_tuple(data->y[dualNumbers[k]].end(),   data->yTilde[dualNumbers[k]].end(),   data->sigmaElt[dualNumbers[k]].end()));
                 
-                thrust::for_each(startIterator,endIterator,flexProxDualBoxConstraintFunctor<T>(this->minVal,this->maxVal));
+                thrust::for_each(startIterator,endIterator,flexProxDualBoxConstraintFunctor(this->minVal,this->maxVal));
             }
 		#else
 			for (int k = 0; k < dualNumbers.size(); k++)

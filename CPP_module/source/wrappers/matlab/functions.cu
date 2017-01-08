@@ -65,17 +65,20 @@
 #include "prox/flexProxDualHuber.h"
 #include "prox/flexProxDualFrobenius.h"
 #include "prox/flexProxDualBoxConstraint.h"
+#include "prox/flexProxDualInnerProduct.h"
 
 
-using namespace std;
+
 
 typedef float floatingType;
 
 #if __CUDACC__
+	using namespace thrust;
 	#include "operator/flexMatrixGPU.h"
 
 	typedef thrust::device_vector<floatingType> vectorData;
 #else
+	using namespace std;
 	typedef std::vector<floatingType> vectorData;
 #endif
 
@@ -377,7 +380,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			}
 		}
 	
-		prox proxName;
 		flexProx<floatingType, vectorData>* myProx;
 		
 		if (checkProx(classPointer,"L1IsoProxDual"))
@@ -420,7 +422,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			float maxVal = (float)mxGetScalar(mxGetProperty(mxGetCell(duals,i),0,"maxVal"));
 			
 			myProx = new flexProxDualBoxConstraint<floatingType, vectorData>(minVal, maxVal);
-			proxName = dualBoxConstraintProx;
+		}
+        else if (checkProx(classPointer,"innerProductProxDual"))
+		{
+			myProx = new flexProxDualInnerProduct<floatingType, vectorData>();
 		}
 		else
 		{

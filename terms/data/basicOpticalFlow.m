@@ -55,7 +55,7 @@ classdef basicOpticalFlow < basicDualizedDataterm
             obj.operator{2} = diagonalOperator(uy);
             obj.operatorT{2} = diagonalOperator(uy);
             
-            obj.f = -ut;
+            obj.f{1} = -ut;
             
         end
         
