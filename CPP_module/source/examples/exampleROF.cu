@@ -1,4 +1,5 @@
-#include <vector>
+#include <thrust/host_vector.h>
+#include <thrust/device_vector.h>
 #include <iostream>
 
 #include "CImg.h"
@@ -19,8 +20,7 @@ using namespace std;
 using namespace cimg_library;
 
 typedef float floatingType;
-typedef std::vector<floatingType> vectorData;
-
+typedef thrust::device_vector<floatingType> vectorData;
 
 int main()
 {
@@ -47,7 +47,6 @@ int main()
 			imageOriginalGray[j*imageOriginal.width() + i] = grayValue;
 		}
 	}
-
 
 	CImg<float> imageNoise = imageOriginalGray;
 	imageNoise.noise(30);

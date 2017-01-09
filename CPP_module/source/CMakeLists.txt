@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 project(FlexBox)
+set (FlexBox_VERSION_MAJOR 1)
+set (FlexBox_VERSION_MINOR 4)
 
 #TODO: add support for older cmake versions (matlab_add_mex)?
-#TODO: add option to build examples
-#TODO: largeArrayDims? needed?
 #TODO: CUDA: specific archs f.ex. -arch=compute_50 (auto-detect graphics card cmake 3.7?)
+#TODO: add /MP for visual studio parallel builds
 
 ##########################
 #     FILES/INCUDES      #
@@ -105,9 +106,9 @@ endif()
 
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-        message (STATUS  "No build type specified. Default is 'Release'.")
-        set (CMAKE_BUILD_TYPE Release CACHE STRING "The type of build" FORCE)
-        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+  message (STATUS  "No build type specified. Default is 'Release'.")
+  set (CMAKE_BUILD_TYPE Release CACHE STRING "The type of build" FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
 endif()
 
 
@@ -117,10 +118,6 @@ option(BUILD_MATLAB "Build Matlab (mex) interface" ON)
 option(BUILD_EXAMPLES "Build C++/CUDA examples" OFF)
 
 set (WRAPPERS_DIR "wrappers")
-
-#set additional build flags
-set(DEBUG_FLAGS "-g -DVERBOSE")
-set(RELEASE_FLAGS "-O3 -DNDEBUG")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_FLAGS}")
@@ -173,14 +170,14 @@ endif(USE_CUDA)
 add_library(flexBoxLib INTERFACE)
 target_include_directories(flexBoxLib INTERFACE ${INCLUDE_DIRS})
 
-#build samples
-#add_executable(Example main.cpp)
-#target_link_libraries(Example PUBLIC flexBoxLib)
 
 add_custom_target(IDE SOURCES ${SOURCES_IDE})
-
 
 #add Matlab target if Matlab was found
 if(Matlab_FOUND)
   add_subdirectory(${WRAPPERS_DIR}/matlab)
 endif(Matlab_FOUND)
+
+if(BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif(BUILD_EXAMPLES)

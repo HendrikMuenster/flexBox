@@ -5,9 +5,9 @@ if(CUDA_FOUND)
   include_directories(${Matlab_INCLUDE_DIRS})
   include_directories(${INCLUDE_DIRS})
   set(CUDA_NVCC_FLAGS --std=c++11 -Xcompiler -fPIC -arch=compute_50 -code=sm_50)
-  CUDA_COMPILE(cuda_compiled functions.cu SHARED)
+  cuda_compile(cuda_generated functions.cu SHARED)
   matlab_add_mex(NAME Matlab
-        SRC ${cuda_compiled}
+        SRC ${cuda_generated}
         LINK_TO flexBoxLib ${Matlab_MEX_LIBRARY} ${Matlab_MX_LIBRARY} ${CUDA_LIBRARIES} ${CUDA_cusparse_LIBRARY} ${CUDA_CUFFT_LIBRARIES}
         OUTPUT_NAME flexBoxCPP
   )
