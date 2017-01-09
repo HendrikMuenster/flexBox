@@ -1,9 +1,0 @@
-/* TODO: change this, because it's ugly */
-struct files
-{
-  const char* imgA        = "@CMAKE_CURRENT_SOURCE_DIR@/img/a.bmp";
-  const char* imgB        = "@CMAKE_CURRENT_SOURCE_DIR@/img/b.bmp";
-  const char* imgFrame10  = "@CMAKE_CURRENT_SOURCE_DIR@/img/frame10.bmp";
-  const char* imgFrame11  = "@CMAKE_CURRENT_SOURCE_DIR@/img/frame11.bmp";
-  const char* imgTest     = "@CMAKE_CURRENT_SOURCE_DIR@/img/test.bmp";
-} sampleFiles;
