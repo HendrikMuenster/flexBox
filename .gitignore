@@ -15,10 +15,3 @@ slprj/
 
 # Session info
 octave-workspace
-
-
-################################
-#         CPP_MODULE           #
-################################
-CPP_module/*
-!CPP_module/README.md
