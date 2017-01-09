@@ -15,7 +15,7 @@ public:
 	{
 		this->diagonalElements.resize((int)_diagonalElements.size());
 
-		#if __CUDACC__
+		#ifdef __CUDACC__
 			thrust::copy(_diagonalElements.begin(), _diagonalElements.end(), this->diagonalElements.begin());
 
 		#else
@@ -23,7 +23,7 @@ public:
 		#endif
 	};
 
-	#if __CUDACC__
+	#ifdef __CUDACC__
 	flexDiagonalOperator(Tvector _diagonalElements) : diagonalElements(_diagonalElements), flexLinearOperator<T, Tvector>((int)_diagonalElements.size(), (int)_diagonalElements.size(), diagonalOp){};
 	#endif
 
@@ -34,7 +34,7 @@ public:
 		return A;
 	}
     
-    #if __CUDACC__
+    #ifdef __CUDACC__
     struct flexDiagonalOperatorTimesFunctor
 	{
 		__host__ __device__ 
@@ -52,7 +52,7 @@ public:
 	//apply linear operator to vector
 	void times(const Tvector &input, Tvector &output)
 	{
-        #if __CUDACC__
+        #ifdef __CUDACC__
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(output.begin(), input.begin(), this->diagonalElements.begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(output.end(),   input.end(),   this->diagonalElements.end())),
@@ -68,7 +68,7 @@ public:
         #endif
 	}
     
-    #if __CUDACC__
+    #ifdef __CUDACC__
     struct flexDiagonalOperatorTimesPlusFunctor
 	{
 		__host__ __device__ 
@@ -84,7 +84,7 @@ public:
     #endif
 	void timesPlus(const Tvector &input, Tvector &output)
 	{
-        #if __CUDACC__
+        #ifdef __CUDACC__
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(output.begin(), input.begin(), this->diagonalElements.begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(output.end(),   input.end(),   this->diagonalElements.end())),
@@ -100,7 +100,7 @@ public:
         #endif
 	}
 
-    #if __CUDACC__
+    #ifdef __CUDACC__
     struct flexDiagonalOperatorTimesMinusFunctor
 	{
 		__host__ __device__ 
@@ -116,7 +116,7 @@ public:
     #endif
 	void timesMinus(const Tvector &input, Tvector &output)
 	{
-        #if __CUDACC__
+        #ifdef __CUDACC__
             thrust::for_each(
                 thrust::make_zip_iterator(thrust::make_tuple(output.begin(), input.begin(), this->diagonalElements.begin())),
                 thrust::make_zip_iterator(thrust::make_tuple(output.end(),   input.end(),   this->diagonalElements.end())),
@@ -156,7 +156,7 @@ public:
 	//transposing the identity does nothing
 	void transpose(){}
 
-	#if __CUDACC__
+	#ifdef __CUDACC__
 	thrust::device_vector<T> getAbsRowSumCUDA()
 	{
 		Tvector diagonalElementsCopy = this->diagonalElements;

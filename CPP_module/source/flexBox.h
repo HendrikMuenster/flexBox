@@ -7,13 +7,13 @@
 #include "term/flexTermDual.h"
 #include "term/flexTermPrimal.h"
 
-#if __CUDACC__
+#ifdef __CUDACC__
 	#include "solver/flexSolverPrimalDualCuda.h"
 	#include "data/flexBoxDataGPU.h"
 	#include <device_functions.h>
 #else
 	#include "solver/flexSolverPrimalDual.h"
-    #include "data/flexBoxDataCPU.h"
+  #include "data/flexBoxDataCPU.h"
 #endif
 
 
@@ -40,7 +40,7 @@ class flexBox
 
 		//List of dimensions
 		std::vector<std::vector<int> > dims;
-		
+
 		flexBoxData<T,Tdata>* data;
 		flexSolver<T, Tdata>* solver;
 
@@ -55,13 +55,13 @@ class flexBox
 			this->displayStatus = static_cast<int>(1000);
 			this->verbose = static_cast<int>(0);
 
-			#if __CUDACC__
+			#ifdef __CUDACC__
 				this->data = new flexBoxDataGPU<T, Tdata>();
 				this->solver = new flexSolverPrimalDualCuda<T, Tdata>();
 			#else
 				this->data = new flexBoxDataCPU<T, Tdata>();
 				this->solver = new flexSolverPrimalDual<T, Tdata>();
-			#endif	
+			#endif
 
 			this->isMATLAB = false;
 
@@ -73,7 +73,7 @@ class flexBox
 			delete solver;
 		}
 
-		int getNumPrimalVars() const 
+		int getNumPrimalVars() const
 		{
 			return data->getNumPrimalVars();
 		}
@@ -140,7 +140,7 @@ class flexBox
 
 			T error = static_cast<int>(1);
 			int iteration = 0;
-			
+
 			Timer timer;
 			Timer timer2;
 			bool doTime = true;
@@ -152,7 +152,7 @@ class flexBox
 				//timer2.reset();
 				solver->doIteration(data);
 				//timer2.end(); printf("Time for iteration was: %f\n", timer2.elapsed());
-				
+
 				if (iteration % displayStatus == 1)
 				{
 					if (this->isMATLAB)
@@ -171,20 +171,20 @@ class flexBox
 
 					}
 				}
-				
+
 				if (iteration % checkError == 0)
 				{
 					error = solver->calculateError(data);
 				}
                 //error = solver->calculateError(data);
-                
+
                 //printf("%f\n",error);
 
 				++iteration;
 			}
 
 			if (doTime) timer.end();
-			
+
 			if (this->verbose > 0)
 			{
 				if (doTime) printf("Time for %d Iterations was: %f\n", iteration, timer.elapsed());

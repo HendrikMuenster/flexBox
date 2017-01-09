@@ -23,7 +23,7 @@ public:
 
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers)
 	{
-		#if __CUDACC__
+		#ifdef __CUDACC__
             printf("flexProxDualFrobenius Prox not implemented for CUDA\n");
 		#else
 			T norm = (T)0;

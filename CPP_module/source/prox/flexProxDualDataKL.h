@@ -28,7 +28,7 @@ public:
 	
 	void applyProx(T alpha, flexBoxData<T, Tvector>* data, const std::vector<int> &dualNumbers, const std::vector<int> &primalNumbers, std::vector<Tvector> &fList)
 	{
-		#if __CUDACC__
+		#ifdef __CUDACC__
             printf("flexProxDualDataKL Prox not implemented for CUDA\n");
 		#else
 			for (int i = 0; i < dualNumbers.size(); i++)

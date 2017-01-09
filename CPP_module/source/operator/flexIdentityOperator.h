@@ -52,7 +52,7 @@ public:
 
 	void doTimesPlus(const Tvector &input, Tvector &output)
 	{
-		#if __CUDACC__
+		#ifdef __CUDACC__
 			thrust::transform(output.begin(), output.end(), input.begin(), output.begin(), thrust::plus<T>());
 		#else
             int numElements = (int)input.size();
@@ -66,7 +66,7 @@ public:
 
 	void doTimesMinus(const Tvector &input, Tvector &output)
 	{
-		#if __CUDACC__
+		#ifdef __CUDACC__
 			thrust::transform(output.begin(), output.end(), input.begin(), output.begin(), thrust::minus<T>());
 		#else
             int numElements = (int)input.size();
@@ -122,7 +122,7 @@ public:
 		this->setNumCols(numRowsTmp);
 	}
 
-	#if __CUDACC__
+	#ifdef __CUDACC__
 	thrust::device_vector<T> getAbsRowSumCUDA()
 	{
 		thrust::device_vector<T> result(this->getNumRows(), (T)1);

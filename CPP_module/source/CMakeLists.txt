@@ -1,139 +1,186 @@
-cmake_minimum_required (VERSION 3.1)
-project (FlexBox)
+cmake_minimum_required(VERSION 3.0)
+project(FlexBox)
 
-set(CMAKE_CXX_STANDARD 11)
+#TODO: add support for older cmake versions (matlab_add_mex)?
+#TODO: add option to build examples
+#TODO: largeArrayDims? needed?
+#TODO: CUDA: specific archs f.ex. -arch=compute_50 (auto-detect graphics card cmake 3.7?)
+
+##########################
+#     FILES/INCUDES      #
+##########################
+
+#includes
+set(INCLUDE_DIRS
+  ${CMAKE_SOURCE_DIR}/.
+  ${CMAKE_SOURCE_DIR}/data
+  ${CMAKE_SOURCE_DIR}/operator
+  ${CMAKE_SOURCE_DIR}/prox
+  ${CMAKE_SOURCE_DIR}/solver
+  ${CMAKE_SOURCE_DIR}/term
+)
 
 
-if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+#data
+set(SOURCES_IDE_DATA
+  data/flexBoxData.h
+  data/flexBoxDataCPU.h
+  data/flexBoxDataGPU.h
+)
+
+#operator
+set(SOURCES_IDE_OP
+  operator/flexDiagonalOperator.h
+  operator/flexGradientOperator.h
+  operator/flexIdentityOperator.h
+  operator/flexLinearOperator.h
+  operator/flexMatrix.h
+  operator/flexMatrixGPU.h
+  operator/flexSuperpixelOperator.h
+  operator/flexZeroOperator.h
+)
+
+#prox
+set(SOURCES_IDE_PROX
+  prox/flexProx.h
+  prox/flexProxDualBoxConstraint.h
+  prox/flexProxDualDataKL.h
+  prox/flexProxDualDataL1.h
+  prox/flexProxDualDataL2.h
+  prox/flexProxDualFrobenius.h
+  prox/flexProxDualHuber.h
+  prox/flexProxDualL1Aniso.h
+  prox/flexProxDualL1Iso.h
+  prox/flexProxDualL2.h
+)
+
+#solver
+set(SOURCES_IDE_SOLV
+  solver/flexSolver.h
+  solver/flexSolverPrimalDual.h
+  solver/flexSolverPrimalDualCuda.h
+)
+
+#term
+set(SOURCES_IDE_TERM
+  term/flexTermDual.h
+  term/flexTermPrimal.h
+)
+
+#matlab
+set(SOURCES_IDE_MATLAB
+  wrappers/matlab/functions.cpp
+  wrappers/matlab/functions.cu
+)
+
+#group for visual studio
+source_group("data" FILES ${SOURCES_IDE_DATA})
+source_group("operator" FILES ${SOURCES_IDE_OP})
+source_group("prox" FILES ${SOURCES_IDE_PROX})
+source_group("solver" FILES ${SOURCES_IDE_SOLV})
+source_group("term" FILES ${SOURCES_IDE_TERM})
+source_group("matlab" FILES ${SOURCES_IDE_MATLAB})
+
+#combine
+set(SOURCES_IDE ${SOURCES_IDE_DATA} ${SOURCES_IDE_OP} ${SOURCES_IDE_PROX} ${SOURCES_IDE_SOLV} ${SOURCES_IDE_TERM} ${SOURCES_IDE_MATLAB})
+
+##########################
+#   END FILES/INCUDES    #
+##########################
+
+if (CMAKE_VERSION VERSION_LESS "3.1")
+  include(CheckCXXCompilerFlag)
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" CXX11_SUPPORT)
+  CHECK_CXX_COMPILER_FLAG("-std=c++0x" CXX0x_SUPPORT)
+  if(CXX11_SUPPORT)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  elseif(CXX0x_SUPPORT)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  else()
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Aborting...")
+  endif()
+else()
+  set(CMAKE_CXX_STANDARD 11)
+endif()
+
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
         message (STATUS  "No build type specified. Default is 'Release'.")
         set (CMAKE_BUILD_TYPE Release CACHE STRING "The type of build" FORCE)
         set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
-endif ()
-
-#add_subdirectory(...)
-#include_directories(...)
-
-#TODO: build dirs
-#TODO: debug/release
-#TODO: python interface?
-#TODO: status, errors, etc.
-#TODO: CMAKE_BUILD_TYPE, CMAKE_CONFIGURATION_TYPES
-#TODO: maybe add install target
-#TODO: maybe add shared/static option
-#TODO: MX, ENG, MAT - Libs?
-#TODO: add support for older cmake versions?
-#TODO: add option to build examples
-
-option (USE_OPENMP "Use OpenMP" ON)
-option (USE_CUDA "Use CUDA" OFF)
-option (BUILD_MATLAB "build Matlab (mex) interface" ON)
-
-#set (WRAPPERS_DIR "wrappers") #if f.ex python wrapper is added in the future
+endif()
 
 
-include_directories (.)
+option(USE_OPENMP "Use OpenMP" OFF)
+option(USE_CUDA "Use CUDA" OFF)
+option(BUILD_MATLAB "Build Matlab (mex) interface" ON)
+option(BUILD_EXAMPLES "Build C++/CUDA examples" OFF)
 
-#includes and sources for all configs
-#set(SOURCES main.cpp)
-set(INCLUDES
-  flexBox.h
-  flexBoxData.h
-  flexDiagonalOperator.h
-  flexDualizedDataTerm.h
-  flexDualizedOperator.h
-  flexGradientOperator.h
-  flexIdentityOperator.h
-  flexLinearOperator.h
-  flexProxList.h
-  flexSolver.h
-  flexSuperpixelOperator.h
-  flexTermDual.h
-  flexTermPrimal.h
-  flexTildeMultiOperatorMultiDual.h
-  flexZeroOperator.h
-  tools.h
-  )
-
+set (WRAPPERS_DIR "wrappers")
 
 #set additional build flags
-set (DEBUG_FLAGS "-g -DVERBOSE")
-set (RELEASE_FLAGS "-O3 -DNDEBUG")
+set(DEBUG_FLAGS "-g -DVERBOSE")
+set(RELEASE_FLAGS "-O3 -DNDEBUG")
 
-set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_FLAGS}")
-set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_FLAGS}")
-set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${RELEASE_FLAGS}")
-set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RELEASE_FLAGS}")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_FLAGS}")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${RELEASE_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RELEASE_FLAGS}")
 
 #OpenMP
-if (USE_OPENMP)
-  find_package (OpenMP)
+if(USE_OPENMP)
+  find_package(OpenMP)
 
-  if (OPENMP_FOUND)
+  if(OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  else ()
+  else()
     message (STATUS "Couldn't find OpenMP. Building without...")
-  endif (OPENMP_FOUND)
+  endif(OPENMP_FOUND)
 
-endif (USE_OPENMP)
+endif(USE_OPENMP)
 
-#includes cmakes 3.7. version of FindMatlab which is not buggy
-list (APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmakeModules)
+#includes FindMatlab (from cmake v3.7)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 #Matlab
-if (BUILD_MATLAB)
-  find_package(Matlab)
+if(BUILD_MATLAB)
+  find_package(Matlab COMPONENTS MX_LIBRARY)
 
-  if (Matlab_FOUND)
+  if(NOT Matlab_FOUND)
+    message (STATUS "Couldn't find Matlab or its required components MX. Building without...")
+  endif()
 
-    #functions.{cpp | cu} is matlab specific (contains mex entry functions)
-    if (USE_CUDA)
-      #set(SOURCES functions.cu)
-    else ()
-      #set(SOURCES functions.cpp)
-    endif (USE_CUDA)
+endif(BUILD_MATLAB)
 
-  else ()
-    message (STATUS "Couldn't find Matlab. Building without...")
-  endif (Matlab_FOUND)
+#CUDA
+if(USE_CUDA)
+  find_package(CUDA)
 
-endif (BUILD_MATLAB)
+  if(NOT CUDA_FOUND)
+    message (STATUS "Couldn't find CUDA. Building without...")
+  endif()
 
-if (USE_CUDA)
-else ()
-  #non cuda specific includes
-  set(INCLUDES ${INCLUDES} flexBoxDataCPU.h flexMatrix.h flexSolverPrimalDual.h)
-endif (USE_CUDA)
+  if(CUDA_VERSION VERSION_LESS "3.2")
+    message (STATUS "At least CUDA 3.2 is needed. Only found: " ${CUDA_VERSION} ". Building without...")
+    set(CUDA_FOUND OFF)
+  endif()
 
-#MESSAGE ( STATUS "includes: " ${INCLUDES} )
-#MESSAGE ( STATUS "SOURCES: " ${SOURCES} )
-
-#build flexBox library
-add_library(flexBoxLib SHARED ${INCLUDES} ${SOURCES})
-target_include_directories(flexBoxLib PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-)
-set_target_properties(flexBoxLib PROPERTIES LINKER_LANGUAGE CXX)
-
-#MESSAGE ( STATUS "Matlab_LIBRARIES: " ${Matlab_LIBRARIES} )
-#MESSAGE ( STATUS "Matlab_MEX_LIBRARY: " ${Matlab_MEX_LIBRARY} )
-#MESSAGE ( STATUS "Matlab_MX_LIBRARY: " ${Matlab_MX_LIBRARY} )
-#MESSAGE ( STATUS "Matlab_ENG_LIBRARY: " ${Matlab_ENG_LIBRARY} )
-
-if (Matlab_FOUND)
-  matlab_add_mex (NAME flexBoxCPP2
-    SRC functions.cpp
-    LINK_TO ${Matlab_LIBRARIES} #flexBoxLib ${Matlab_LIBRARIES} why is flexBoxLib not needed?
-  )
-endif ()
+endif(USE_CUDA)
 
 
-#build
-add_executable(flexBox main.cpp)
-target_include_directories(flexBox PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-)
-target_link_libraries(flexBox PUBLIC flexBoxLib)
+#flexBox template library
+add_library(flexBoxLib INTERFACE)
+target_include_directories(flexBoxLib INTERFACE ${INCLUDE_DIRS})
 
-#add_executable(FlexBox ${SOURCES} ${INCLUDES})
-#target_link_libraries
+#build samples
+#add_executable(Example main.cpp)
+#target_link_libraries(Example PUBLIC flexBoxLib)
+
+add_custom_target(IDE SOURCES ${SOURCES_IDE})
+
+
+#add Matlab target if Matlab was found
+if(Matlab_FOUND)
+  add_subdirectory(${WRAPPERS_DIR}/matlab)
+endif(Matlab_FOUND)

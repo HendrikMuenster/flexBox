@@ -242,7 +242,7 @@ public:
 
 	void timesPlus(const Tvector &input, Tvector &output)
 	{
-        #if __CUDACC__
+        #ifdef __CUDACC__
 			dim3 block2d = dim3(32, 16, 1);
 			dim3 grid2d = dim3((this->inputDimension[0] + block2d.x - 1) / block2d.x, (this->inputDimension[1] + block2d.y - 1) / block2d.y, 1);
 
@@ -256,7 +256,7 @@ public:
 			{
 				if (this->transposed == false)
 				{
-					#if __CUDACC__
+					#ifdef __CUDACC__
 						dxp2dCUDA << <grid2d, block2d >> >(ptrOutput,ptrInput, this->inputDimension[0], this->inputDimension[1], SIGN_PLUS);
 					#else
 						this->dxp2d(input,output,PLUS);
@@ -264,7 +264,7 @@ public:
 				}
 				else
 				{
-					#if __CUDACC__
+					#ifdef __CUDACC__
 						dxp2dTransposedCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], SIGN_PLUS);
 					#else
 						this->dxp2dTransposed(input, output, PLUS);
@@ -275,7 +275,7 @@ public:
 			{
 				if (this->transposed == false)
 				{
-					#if __CUDACC__
+					#ifdef __CUDACC__
 						dyp2dCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], SIGN_PLUS);
 					#else
 						this->dyp2d(input, output, PLUS);
@@ -283,7 +283,7 @@ public:
 				}
 				else
 				{
-					#if __CUDACC__
+					#ifdef __CUDACC__
 						dyp2dTransposedCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], SIGN_PLUS);
 					#else
 						this->dyp2dTransposed(input, output, PLUS);
@@ -300,7 +300,7 @@ public:
 
 	void timesMinus(const Tvector &input, Tvector &output)
 	{
-		#if __CUDACC__
+		#ifdef __CUDACC__
 			dim3 block2d = dim3(32, 16, 1);
 			dim3 grid2d = dim3((this->inputDimension[0] + block2d.x - 1) / block2d.x, (this->inputDimension[1] + block2d.y - 1) / block2d.y, 1);
 
@@ -314,7 +314,7 @@ public:
 			{
 				if (this->transposed == false)
 				{
-					#if __CUDACC__
+					#ifdef __CUDACC__
 						dxp2dCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], SIGN_MINUS);
 					#else
 						this->dxp2d(input, output, MINUS);
@@ -322,7 +322,7 @@ public:
 				}
 				else
 				{
-					#if __CUDACC__
+					#ifdef __CUDACC__
 						dxp2dTransposedCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], SIGN_MINUS);
 					#else
 						this->dxp2dTransposed(input, output, MINUS);
@@ -333,7 +333,7 @@ public:
 			{
 				if (this->transposed == false)
 				{
-					#if __CUDACC__
+					#ifdef __CUDACC__
 						dyp2dCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], SIGN_MINUS);
 					#else
 						this->dyp2d(input, output, MINUS);
@@ -341,7 +341,7 @@ public:
 				}
 				else
 				{
-					#if __CUDACC__
+					#ifdef __CUDACC__
 						dyp2dTransposedCUDA << <grid2d, block2d >> >(ptrOutput, ptrInput, this->inputDimension[0], this->inputDimension[1], SIGN_MINUS);
 					#else
 						this->dyp2dTransposed(input, output, MINUS);
@@ -394,7 +394,7 @@ public:
 		return (i + j*this->inputDimension[0]);
 	}
 
-	#if __CUDACC__	
+	#ifdef __CUDACC__	
 	thrust::device_vector<T> getAbsRowSumCUDA()
 	{
 		thrust::device_vector<T> result(this->getNumRows(), (T)2);

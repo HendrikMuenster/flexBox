@@ -46,7 +46,7 @@ class flexTermPrimal
 			}
 		}
 
-#if __CUDACC__
+#ifdef __CUDACC__
 		__device__ int getNumberPrimals()
 		{
 			return this->numberVars;

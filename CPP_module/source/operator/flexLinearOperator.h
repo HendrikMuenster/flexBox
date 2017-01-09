@@ -62,7 +62,7 @@ public:
 
 	virtual std::vector<T> getAbsRowSum() = 0;
 
-	#if __CUDACC__		
+	#ifdef __CUDACC__		
 		virtual thrust::device_vector<T> getAbsRowSumCUDA() = 0;
 	#endif
 
