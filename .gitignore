@@ -18,67 +18,7 @@ octave-workspace
 
 
 ################################
-#             C++              #
+#         CPP_MODULE           #
 ################################
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-
-################################
-#             CUDA             #
-################################
-*.i
-*.ii
-*.gpu
-*.ptx
-*.cubin
-*.fatbin
-
-
-################################
-#             CMAKE            #
-################################
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-
-
-################################
-#           GENERAL            #
-################################
-build/
+CPP_module/*
+!CPP_module/README.md
