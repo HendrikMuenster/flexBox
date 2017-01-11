@@ -14,7 +14,7 @@ figure(1);imagesc(image);axis image;colormap(gray);title('Input Image')
 figure(2);imagesc(imageNoisy);axis image;colormap(gray);title('Noisy Image')
 %% denoising with tgv
 main = flexBox;
-main.params.tryCPP = 0; %change, if C++ module is compiled
+main.params.tryCPP = 1; %change, if C++ module is compiled
 
 %add primal vars u,w
 numberU = main.addPrimalVar(size(image));

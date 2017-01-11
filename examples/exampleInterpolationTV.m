@@ -32,12 +32,8 @@ main.addTerm(L1dataTermOperator(1,downsamplingOp,f1),numberU);
 %add regularizers - one for each component
 main.addTerm(L1gradientIso(0.01,upsamplingFactor*size(f1)),numberU);
 
-%% optionally: activate C++ support
-main.params.tryCPP = 1;
-%%
-main.params.verbose = 1;
-
-main.runAlgorithm;
+%run minimization algorithm
+tic;main.runAlgorithm;toc;
 
 % get result
 result = main.getPrimal(numberU);

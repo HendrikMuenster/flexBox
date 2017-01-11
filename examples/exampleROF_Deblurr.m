@@ -35,7 +35,6 @@ main.addTerm(L2dataTermOperator(1,blurrOperator,imageBlurred),numberU);
 %add regularizer: 0.1*\|\nabla u\|_1
 main.addTerm(L1gradientIso(0.1,size(image)),numberU);
 
-
 main.runAlgorithm();
 
 %get result

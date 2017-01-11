@@ -32,7 +32,8 @@ main.addTerm(L1opticalFlowTerm(1,f1,f2),[numberV1,numberV2]);
 main.addTerm(huberGradient(0.1,size(f1),0.01),numberV1);
 main.addTerm(huberGradient(0.1,size(f1),0.01),numberV2);
 
-main.runAlgorithm;
+%run minimization algorithm
+tic;main.runAlgorithm;toc;
 
 % get result
 resultV1 = main.getPrimal(numberV1);

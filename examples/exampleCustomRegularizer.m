@@ -18,7 +18,7 @@ f2 = im2double(f2);
 figure(1);imagesc(f1);axis image;colormap(gray);title('Image 1')
 figure(2);imagesc(f2);axis image;colormap(gray);title('Image 2')
 %%
-% let use minimize the functional
+% let us minimize the functional
 % min_{u_1,u_2} |u_1-f1|_2^2 + |u_2-f2|_2^2 + 0.5*| sqrt(  (u_1)^2 + (u_1 -
 % u_2)^2  ) |_1
 

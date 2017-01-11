@@ -15,6 +15,7 @@ figure(1);imagesc(image);axis image;colormap(gray);title('Input Image')
 figure(2);imagesc(imageNoisy);axis image;colormap(gray);title('Noisy Image')
 %% ROF denoising with non-negativity constraint
 main = flexBox;
+main.params.tryCPP = 1; %change, if C++ module is compiled
 
 %add primal var u
 numberU = main.addPrimalVar(size(image));
@@ -29,7 +30,7 @@ main.addTerm(L1gradientIso(0.08,size(image)),numberU);
 main.addTerm(nonNegativityConstraint(size(image)),numberU);
 
 %run minimization algorithm
-main.runAlgorithm;
+tic;main.runAlgorithm;toc;
 
 %get result
 result = main.getPrimal(numberU);
