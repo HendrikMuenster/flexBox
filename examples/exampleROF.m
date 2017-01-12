@@ -19,13 +19,12 @@ main.params.tryCPP =0; %change, if C++ module is compiled
 
 %add primal var u
 numberU = main.addPrimalVar(size(image));
-numberU = main.addPrimalVar(size(image));
 
 %add data-fidelity: 1/2\|u-f\|_2^2
-main.addTerm(L2dataTermOperator(1,-speye(numel(image)),imageNoisy),numberU);
+main.addTerm(L2dataTerm(1,imageNoisy),numberU);
 
 %add regularizer: 0.08*\|\nabla u\|_1
-main.addTerm(L2gradient(1.08,size(image)),numberU);
+main.addTerm(L1gradientIso(0.08,size(image)),numberU);
 
 %run minimization algorithm
 tic;main.runAlgorithm;toc;
