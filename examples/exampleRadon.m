@@ -4,11 +4,14 @@ clear all;close all;clc;
 addpath(genpath('..'));
 
 sizeImage = 128;
-angles = 1:10:180;
+angles = 1:3:180;
 
 %generate Shepp-Logan phantom
 image = phantom('Modified Shepp-Logan', sizeImage);
 
+%read MATLAB MRI example
+image = im2double(imread('mri.tif'));
+%%
 %show clean input image
 figure(1);imagesc(image);axis image;colormap(gray);title('Input image');
 
@@ -28,7 +31,7 @@ figure(4);imagesc(filteredBackprojection);axis image;colormap(gray);title('Irado
 
 %% Reconstruction and denoising using ROF model
 main = flexBox;
-main.params.tryCPP = 0; %change, if C++ module is compiled
+main.params.tryCPP = 1; %change, if C++ module is compiled
 
 %add primal var u
 numberU = main.addPrimalVar(size(image));
@@ -40,6 +43,20 @@ main.addTerm(L2dataTermOperator(1,radonMatrix,imageRadonTransformNoise),numberU)
 %main.addTerm(L2identity(1,size(image)),numberU); %Tikhonov-regularization
 %main.addTerm(L2gradient(2,size(image)),numberU); %Smoothness
 main.addTerm(L1gradientIso(0.08,size(image)),numberU); %TV-regularization
+
+
+% %BEGIN TGV REGULARIZATION
+% numberW1 = main.addPrimalVar(size(image));
+% numberW2 = main.addPrimalVar(size(image));
+% main.addTerm(L1secondOrderGradientIso(0.05,size(image)),[numberU,numberW1,numberW2]);
+% 
+% %create symmetrized gradients
+% gradientBackX = generateBackwardGradND( size(image),[1,1], 1);
+% gradientBackY = generateBackwardGradND( size(image),[1,1], 2);
+% gradientSymmetrized = 0.5 * (gradientBackX + gradientBackY);
+% 
+% main.addTerm(frobeniusOperator(10,2,{gradientBackX,gradientSymmetrized,gradientSymmetrized,gradientBackY}),[numberW1,numberW2]);
+% %END TGV REGULARIZATION
 
 %box constraint ensures the result to stay in [0,1]
 main.addTerm(boxConstraint(0,1,size(image)),numberU);

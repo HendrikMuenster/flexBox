@@ -12,6 +12,7 @@ classdef identityOperator < basicOperator
         end
 
         function result = mtimes(obj,vector)
+            
             if (obj.minus)
                 result = -vector;
             else
