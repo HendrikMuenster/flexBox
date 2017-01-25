@@ -27,10 +27,16 @@ classdef gradientOperator < basicOperator
                 obj.type = 'forward';
                 obj.matrix = generateForwardGradND( inputDimension,stepsize,gradDirection );
             end
+            
+            obj.isMinus = 0;
         end
 
         function result = mtimes(obj,vector)
             result = obj.matrix * vector;
+            
+            if (obj.isMinus)
+                result = -result;
+            end
         end
 
         function result = abs(obj)

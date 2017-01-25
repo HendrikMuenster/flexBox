@@ -39,6 +39,7 @@ classdef convolutionOperator < basicOperator
             obj.fftFilterC = conj(obj.fftFilter);
 
             obj.transposed = 0;
+            obj.isMinus = 0;
         end
 
         function result = mtimes(obj,vector)
@@ -49,7 +50,10 @@ classdef convolutionOperator < basicOperator
                 result = ifftn(fftn( reshape(vector,obj.inputDimension)  ) .* obj.fftFilterC);
                 result = result(:);
             end
-
+            
+            if (obj.isMinus)
+                result = -result;
+            end
         end
 
         %placeholder
@@ -59,6 +63,7 @@ classdef convolutionOperator < basicOperator
 
         %placeholder
         function mat = returnMatrix(obj)
+            error('Cannot return matrix for convolution operator');
             mat = 1;
         end
 
@@ -73,6 +78,11 @@ classdef convolutionOperator < basicOperator
             if (nargin < 2)
                 result = [result,result];
             end
+        end
+        
+        function result = uminus(obj)
+            result = obj;
+            result.isMinus = ~result.isMinus;
         end
 
         function result = getMaxRowSumAbs(obj)

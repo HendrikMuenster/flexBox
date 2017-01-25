@@ -3,8 +3,6 @@ classdef concatOperator < basicOperator
     properties
         A;          %operator for A
         B;          %operator for B
-        AT;         %transposed operator for A
-        BT;         %transposed operator for A
         transposed; %is-transposed-flag in order to decide which operators to use
     end
 
@@ -12,98 +10,59 @@ classdef concatOperator < basicOperator
         function obj = concatOperator(A,B,varargin)
             obj.A = A;
             obj.B = B;
-            obj.AT = A';
-            obj.BT = B';
             obj.transposed = 0;
         end
 
         function result = mtimes(obj,vector)
-            if (obj.transposed)
-                result = obj.BT * (obj.AT * vector(:));
-            else
-                result = obj.A * (obj.B * vector(:));
+            result = obj.A * (obj.B * vector(:));
+            
+            if (obj.isMinus)
+                result = -result;
             end
         end
 
         function result = abs(obj)
-            if (obj.transposed)
-                result = abs(obj.BT) * abs(obj.AT);
-            else
-                result = abs(obj.A) * abs(obj.B);
-            end
+            result = abs(obj.A) * abs(obj.B);
         end
 
         function result = size(obj,varargin)
             if (nargin < 2)
-                if (obj.transposed)
-                    result = [size(obj.B,2),size(obj.A,2)];
-                else
-                    result = [size(obj.A,1),size(obj.B,1)];
-                end
-
+                result = [size(obj.A,1),size(obj.B,1)];
             else
                 dim = varargin{1};
                 if (dim == 1)
-                    if (obj.transposed)
-                        result = size(obj.B,2);
-                    else
-                        result = size(obj.A,1);
-                    end
+                    result = size(obj.A,1);
                 else
-                    if (obj.transposed)
-                        result = size(obj.A,2);
-                    else
-                        result = size(obj.B,1);
-                    end
+                    result = size(obj.B,1);
                 end
             end
         end
 
         function result = returnMatrix(obj)
-            if (obj.transposed)
-                result = obj.BT.returnMatrix() * obj.AT.returnMatrix();
-            else
-                result = obj.A.returnMatrix() * obj.B.returnMatrix();
-            end
+            result = obj.A.returnMatrix() * obj.B.returnMatrix();
         end
 
         function res = ctranspose(obj)
             res = obj;
-            if (res.transposed == 1)
-                res.transposed = 0;
-            else
-                res.transposed = 1;
-            end
+            
+            tmpOp = res.A;
+            res.A = res.B';
+            res.B = tmpOp';
         end
 
         function result = getMaxRowSumAbs(obj)
-            if (obj.transposed == 1)
-                if (issparse(obj.AT))
-                    resultA = max(sum(abs(obj.AT),1));
-                else
-                    resultA = obj.AT.getMaxRowSumAbs();
-                end
-                if (issparse(obj.BT))
-                    resultB = max(sum(abs(obj.BT),1));
-                else
-                    resultB = obj.BT.getMaxRowSumAbs();
-                end
-
-                result = resultA * resultB;
+            if (issparse(obj.A))
+                resultA = max(sum(abs(obj.A),1));
             else
-                if (issparse(obj.A))
-                    resultA = max(sum(abs(obj.A),1));
-                else
-                    resultA = obj.A.getMaxRowSumAbs();
-                end
-                if (issparse(obj.B))
-                    resultB = max(sum(abs(obj.B),1));
-                else
-                    resultB = obj.B.getMaxRowSumAbs();
-                end
-
-                result = resultA * resultB;
+                resultA = obj.A.getMaxRowSumAbs();
             end
+            if (issparse(obj.B))
+                resultB = max(sum(abs(obj.B),1));
+            else
+                resultB = obj.B.getMaxRowSumAbs();
+            end
+
+            result = resultA * resultB;
         end
     end
 

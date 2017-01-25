@@ -23,6 +23,10 @@ classdef downsamplingOperator < basicOperator
 
         function result = mtimes(obj,vector)
             result = obj.matrix * vector;
+            
+            if (obj.isMinus)
+                result = -result;
+            end
         end
 
         function result = abs(obj)

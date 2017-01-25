@@ -37,6 +37,10 @@ classdef functionHandleOperator < basicOperator
                 result = obj.fHandle(vector);
             end
             result = result(:);
+            
+            if (obj.isMinus)
+                result = -result;
+            end
         end
 
         %this is not correct!

@@ -9,7 +9,7 @@ classdef zeroOperator < basicOperator
             obj.nPx = nPx;
         end
         
-        function result = mtimes(obj,vector)
+        function result = mtimes(~,~)
             result = 0;
         end
 
