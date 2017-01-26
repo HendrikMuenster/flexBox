@@ -32,11 +32,40 @@ classdef gradientOperator < basicOperator
         end
 
         function result = mtimes(obj,vector)
+%             %this is a lightweight test
+%             if (strcmp(obj.type,'forward') && obj.gradDirection == 1)
+%                 result = imfilter(reshape(vector,obj.inputDimension),[0,-1,1]');
+%                 result(end,:) = 0;
+%             elseif (strcmp(obj.type,'forward') && obj.gradDirection == 2)
+%                 result = imfilter(reshape(vector,obj.inputDimension),[0,-1,1]);
+%                 result(:,end) = 0;
+%             elseif (strcmp(obj.type,'backward') && obj.gradDirection == 1)
+%                 %tic;
+%                 vector = reshape(vector,obj.inputDimension);
+%                 result = imfilter(vector,[1,-1,0]','same');
+%                 result(1,:) = -vector(1,:); 
+%                 result(end,:) = vector(end-1,:);% toc;
+%                 %tic;result2 = obj.matrix * vector(:);toc;
+%                 %result2 = reshape(result2,obj.inputDimension);
+%                 
+%                 
+%                 %figure(1);imagesc(result - result2);
+%                 %pause
+%             elseif (strcmp(obj.type,'backward') && obj.gradDirection == 2)
+%                 vector = reshape(vector,obj.inputDimension);
+%                 result = imfilter(vector,[1,-1,0],'same');
+%                 result(:,1) = -vector(:,1); 
+%                 result(:,end) = vector(:,end-1);
+%             else
+%                 result = obj.matrix * vector;
+%             end
             result = obj.matrix * vector;
             
             if (obj.isMinus)
                 result = -result;
             end
+            
+            result = result(:);
         end
 
         function result = abs(obj)
