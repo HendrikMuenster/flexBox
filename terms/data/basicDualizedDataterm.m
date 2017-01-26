@@ -62,14 +62,14 @@ classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
 
                     obj.length{opNum} = size(opTmp,1);
 
-                    if (ismatrix(opTmp) || issparse(opTmp))
-                        obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(opTmp),1));
-                        obj.myTau{j} = obj.myTau{j} + max(sum(abs(opTmp),2));
-                    else
+                    if (isa(obj.operator{opNum},'basicOperator'))
                         %this method must be implemented by every
                         %custom operator
                         obj.mySigma{i} = obj.mySigma{i} + obj.operator{opNum}.getMaxRowSumAbs();
                         obj.myTau{j} = obj.myTau{j} + obj.operatorT{opNum}.getMaxRowSumAbs();
+                    else
+                        obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(opTmp),1));
+                        obj.myTau{j} = obj.myTau{j} + max(sum(abs(opTmp),2));
                     end
                 end
             end
