@@ -31,7 +31,7 @@ figure(4);imagesc(filteredBackprojection);axis image;colormap(gray);title('Irado
 
 %% Reconstruction and denoising using ROF model
 main = flexBox;
-main.params.tryCPP = 1; %change, if C++ module is compiled
+main.params.tryCPP = 0; %change, if C++ module is compiled
 
 %add primal var u
 numberU = main.addPrimalVar(size(image));

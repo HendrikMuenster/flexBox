@@ -15,6 +15,9 @@ end
 f1 = im2double(f1);
 f2 = im2double(f2);
 
+%f1 = imresize(f1,2);
+%f2 = imresize(f2,2);
+
 figure(1);imagesc(f1);axis image;colormap(gray);title('Image 1')
 figure(2);imagesc(f2);axis image;colormap(gray);title('Image 2')
 %%

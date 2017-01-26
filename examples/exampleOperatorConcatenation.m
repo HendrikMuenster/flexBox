@@ -22,7 +22,7 @@ blurrOperator = convolutionOperator(size(image),kernelSize,sigma);
 identityOp = identityOperator(numel(image));
 
 %concat both operators using the concatOperator class
-concatOp = concatOperator(blurrOperator,identityOp);
+concatOp = concatOperator(blurrOperator,identityOp,'composition');
 
 
 imageBlurred = reshape(concatOp * imageNoisy(:),size(image));

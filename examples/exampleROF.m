@@ -7,7 +7,7 @@ image = im2double((imread('data/test.png')));
 if (size(image,3) > 1)
     image = rgb2gray(image);
 end
-
+%image = imresize(image,3);
 imageNoisy = image + randn(size(image)) * 0.05;
 
 %show clean input and noisy image
@@ -15,7 +15,7 @@ figure(1);imagesc(image);axis image;colormap(gray);title('Input Image')
 figure(2);imagesc(imageNoisy);axis image;colormap(gray);title('Noisy Image')
 %% ROF denoising
 main = flexBox;
-main.params.tryCPP =0; %change, if C++ module is compiled
+main.params.tryCPP = 0; %change, if C++ module is compiled
 
 %add primal var u
 numberU = main.addPrimalVar(size(image));

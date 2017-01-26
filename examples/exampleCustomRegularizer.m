@@ -23,6 +23,7 @@ figure(2);imagesc(f2);axis image;colormap(gray);title('Image 2')
 % u_2)^2  ) |_1
 
 main = flexBox;
+main.params.tryCPP = 1;
 
 %add primal vars v_1,v_2
 numberU1 = main.addPrimalVar(size(f1));
@@ -41,7 +42,7 @@ nPx = numel(f1);
 
 main.addTerm(L1operatorIso(1,2,{identityOperator(nPx),zeroOperator(nPx),identityOperator(nPx),-identityOperator(nPx)}),[numberU1,numberU2]);
 
-main.runAlgorithm;
+tic;main.runAlgorithm;toc;
 
 %get result
 result1 = main.getPrimal(numberU1);

@@ -19,6 +19,7 @@ figure(1);imagesc(f1);axis image;colormap(gray);title('Image 1')
 upsamplingFactor = 4;
 
 main = flexBox;
+main.params.tryCPP = 0; %change, if C++ module is compiled
 
 %add primal var u
 numberU = main.addPrimalVar(size(f1)*upsamplingFactor);
