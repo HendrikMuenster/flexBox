@@ -6,7 +6,13 @@ classdef huberDataTermOperator < basicDualizedDataterm & L1HuberDataProxDual
     
     methods
         function obj = huberDataTermOperator(alpha,A,f,epsi,varargin)
-            obj = obj@basicDualizedDataterm(alpha,1,A,f,varargin);
+            if (iscell(A))
+                numPrimals = numel(A);
+            else
+                numPrimals = 1;
+            end
+		
+            obj = obj@basicDualizedDataterm(alpha,numPrimals,A,f,varargin);
             obj.epsi = epsi;
         end
     end

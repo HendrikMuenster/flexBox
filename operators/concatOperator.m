@@ -11,8 +11,13 @@ classdef concatOperator < basicOperator
             obj.A = A;
             obj.B = B;
             
-            if (size(A,1) ~= size(B,1))
+            if ((strcmp(operation,'addition') || strcmp(operation,'difference')) && size(A,1) ~= size(B,1))
                 error('Cannot create concat operator, because size(A,1) ~= size(B,1)');
+            end
+            
+            
+            if (strcmp(operation,'composition') && size(A,2) ~= size(B,1))
+                error('Cannot create concat operator, because size(A,2) ~= size(B,1)');
             end
             
             if (strcmp(operation,'composition') || strcmp(operation,'addition') || strcmp(operation,'difference'))
