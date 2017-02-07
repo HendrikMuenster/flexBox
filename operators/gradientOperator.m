@@ -12,7 +12,7 @@ classdef gradientOperator < basicOperator
             if (nargin > 2 && numel(varargin) == 1)
                 varargin = varargin{1};
             end
-            %vararginParser;
+            vararginParser;
 
             initVar('stepsize',ones(numel(inputDimension),1));
             initVar('discretization','forward');
