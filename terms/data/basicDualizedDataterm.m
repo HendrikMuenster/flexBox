@@ -29,16 +29,7 @@ classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
             obj.numVars = numel(A) / numPrimals;
             obj.numPrimals = numPrimals;
 
-
-            for i=1:obj.numPrimals
-                obj.myTau{i} = 0;
-            end
-            for i=1:numel(A) / obj.numPrimals
-                obj.mySigma{i} = 0;
-            end
-
-
-            for i=1:numel(A) / obj.numPrimals %for all dual variables
+            for i=1:obj.numVars %for all dual variables
                 if (numel(f{i}) > 0)
                     obj.f{i} = reshape(f{i},[numel(f{i}),1]);
                 else
@@ -61,16 +52,6 @@ classdef basicDualizedDataterm < dualPart & tildeMultiOperatorMultiDual
                     obj.operatorT{opNum} = opTmp';
 
                     obj.length{opNum} = size(opTmp,1);
-
-                    if (isa(obj.operator{opNum},'basicOperator'))
-                        %this method must be implemented by every
-                        %custom operator
-                        obj.mySigma{i} = obj.mySigma{i} + obj.operator{opNum}.getMaxRowSumAbs();
-                        obj.myTau{j} = obj.myTau{j} + obj.operatorT{opNum}.getMaxRowSumAbs();
-                    else
-                        obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(opTmp),1));
-                        obj.myTau{j} = obj.myTau{j} + max(sum(abs(opTmp),2));
-                    end
                 end
             end
 

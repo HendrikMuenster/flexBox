@@ -10,8 +10,8 @@ classdef diagonalOperator < basicOperator
         end
 
         function result = mtimes(obj,vector)
-            result = obj.diagonalElements .* vector;
-            
+            result = obj.diagonalElements .* vector(:);
+
             if (obj.isMinus)
                 result = -result;
             end

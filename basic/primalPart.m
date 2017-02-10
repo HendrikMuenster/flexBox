@@ -7,6 +7,10 @@ classdef primalPart < functionalPart
         function obj = primalPart(alpha)
             obj = obj@functionalPart(alpha);
         end
+        
+        function init(obj)
+            
+        end
     end
     
     methods (Abstract)

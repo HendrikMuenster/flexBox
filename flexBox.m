@@ -328,12 +328,12 @@ classdef flexBox < handle
 
             %init primals
             for i=1:numel(obj.primals)
-                obj.primals{i}.init(i,obj);
+                obj.primals{i}.init();
             end
 
             %init duals
             for i=1:numel(obj.duals)
-                obj.duals{i}.init(i,obj);
+                obj.duals{i}.init();
 
                 %sum up tau
                 for j=1:numel(obj.DcP{i})

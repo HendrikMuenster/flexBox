@@ -15,9 +15,6 @@ classdef functionalPart < handle
             obj.numPrimals = 1;
         end
 
-        %function call to preallocate usefull things
-        function init(varargin)
-        end
     end
 
 

@@ -10,7 +10,7 @@ classdef L2DataProxDual < handle
 
         function applyProx(obj,main,dualNumber,~)
             for i=1:obj.numVars
-                main.y{dualNumber(i)} = (obj.factor/(main.params.sigma{dualNumber(i)}+obj.factor)) * (main.yTilde{dualNumber(i)} - main.params.sigma{dualNumber(i)}*obj.f{i});
+                main.y{dualNumber(i)} = (obj.factor/(main.params.sigma{dualNumber(i)}+obj.factor)) * (main.yTilde{dualNumber(i)} - main.params.sigma{dualNumber(i)}*obj.f{i}(:));
             end
         end
     end

@@ -5,6 +5,7 @@ classdef basicOpticalFlow < basicDualizedDataterm
         thisImage2;
         termType %brightnessConstancy (default) or gradientConstancy
         constancyDimension
+        numSpatial
     end
     
     methods
@@ -15,8 +16,7 @@ classdef basicOpticalFlow < basicDualizedDataterm
             vararginParser;
             
             initVar('discretization','interpolated');
-            initVar('v1Tilde',zeros(size(image1)));
-            initVar('v2Tilde',zeros(size(image1)));
+            initVar('vTilde',zeros([size(image1),ndims(image1)]));
             initVar('termType','brightnessConstancy');
             
             if (strcmp(termType,'gradientConstancy'))
@@ -28,46 +28,52 @@ classdef basicOpticalFlow < basicDualizedDataterm
             end
             
             
-            [ux,uy,ut] = basicOpticalFlow.generateDatatermParts(discretization,image1,image2,v1Tilde,v2Tilde,termType,constancyDimension);
+            du = basicOpticalFlow.generateDatatermParts(discretization,image1,image2,vTilde,termType,constancyDimension);
             
-            A{1} = diagonalOperator(ux);
-            A{2} = diagonalOperator(uy);
+            for i=1:numel(du)-1
+                A{i} = diagonalOperator(du{i});
+            end
             
-            obj = obj@basicDualizedDataterm(alpha,2,A,-ut(:),varargin);
+            obj = obj@basicDualizedDataterm(alpha,numel(A),A,-du{end}(:),varargin);
             
             obj.thisImage1 = image1;
             obj.thisImage2 = image2;
             obj.termType = termType;
             obj.constancyDimension = constancyDimension;
+            obj.numSpatial = ndims(image1);
         end
         
-        function warpDataterm(obj,v1Tilde,v2Tilde,varargin)
+        function warpDataterm(obj,vTilde,varargin)
             initVar('discretization','interpolated');
             
-            v1Tilde = reshape(v1Tilde,size(obj.thisImage1));
-            v2Tilde = reshape(v2Tilde,size(obj.thisImage1));
+            du = obj.generateDatatermParts(discretization,obj.thisImage1,obj.thisImage2,vTilde,obj.termType,obj.constancyDimension);
             
-            [ux,uy,ut] = obj.generateDatatermParts(discretization,obj.thisImage1,obj.thisImage2,v1Tilde,v2Tilde,obj.termType,obj.constancyDimension);
+            for i=1:numel(du)-1
+                obj.operator{i} = diagonalOperator(du{i});
+                obj.operatorT{i} = obj.operator{i};
+            end
             
-            obj.operator{1} = diagonalOperator(ux);
-            obj.operatorT{1} = diagonalOperator(ux);
-            
-            obj.operator{2} = diagonalOperator(uy);
-            obj.operatorT{2} = diagonalOperator(uy);
-            
-            obj.f{1} = -ut;
-            
+            obj.f{1} = -du{end};
         end
         
     end
     methods(Static)
-        function [ux,uy,ut] = generateDatatermParts(discretization,image1,image2,v1Tilde,v2Tilde,termType,constancyDimension)
-            [I1x,I1y,I2w,I2wx,I2wy,I2wxx,I2wxy,I2wyx,I2wyy,markerOutOfGrid] = basicOpticalFlow.generateGradients(discretization,image1,image2,v1Tilde,v2Tilde);
+        function du = generateDatatermParts(discretization,image1,image2,vTilde,termType,constancyDimension)
+            %[I1x,I1y,I2w,I2wx,I2wy,I2wxx,I2wxy,I2wyx,I2wyy,markerOutOfGrid] = basicOpticalFlow.generateGradients(discretization,image1,image2,vTilde);
+            [I2w,dI2w,markerOutOfGrid] = basicOpticalFlow.generateGradients(discretization,image1,image2,vTilde);
             
             if (strcmp(termType,'brightnessConstancy'))
-                ux = I2wx;
-                uy = I2wy;
-                ut = I2w - image1 - v1Tilde .* I2wx -  v2Tilde .* I2wy;
+                %image derivatives are the first du parts
+                du = dI2w;
+                du{end+1} = I2w - image1;
+                
+                idx = repmat({':'},1,ndims(vTilde) - 1);
+                idx{end+1} = 0;
+                for i=1:numel(dI2w)
+                    idx{end} = i;
+                    
+                    du{end} = du{end} - vTilde(idx{:}) .* du{i};
+                end
             elseif (strcmp(termType,'gradientConstancy'))
                 if (constancyDimension == 1)
                     ux = I2wxx;
@@ -81,29 +87,18 @@ classdef basicOpticalFlow < basicDualizedDataterm
             end
 
             if (sum(markerOutOfGrid(:)) > 0)
-                ux(markerOutOfGrid) = 0;
-                uy(markerOutOfGrid) = 0;
-                ut(markerOutOfGrid) = 0;
+                for i=1:numel(du)
+                    du{i}(markerOutOfGrid) = 0;
+                end
             end
         end
         
-        function [I1x,I1y,I2w,I2wx,I2wy,I2wxx,I2wxy,I2wyx,I2wyy,markerOutOfGrid] = generateGradients(discretization,image1,image2,v1Tilde,v2Tilde)
+        %function [I1x,I1y,I2w,I2wx,I2wy,I2wxx,I2wxy,I2wyx,I2wyy,markerOutOfGrid] = generateGradients(discretization,image1,image2,vTilde)
+        function [I2w,dI2w,markerOutOfGrid] = generateGradients(discretization,image1,image2,vTilde)
             
-            if (exist('discretization','var') && strcmp(discretization,'forward'))
-                error('Not working')
-                grad = generateForwardGradientND( dims,ones(numel(dims),1) );
-                
-                grad = grad*image2(:);
-                
-                ut = image2(:)-image1(:);
-            elseif (exist('discretization','var') && strcmp(discretization,'backward'))
-                error('Not working')
-                grad = generateBackwardGradientND( dims,ones(numel(dims),1) );
-                
-                grad = grad*image2(:);
-                
-                ut = image2(:)-image1(:);
-			elseif (exist('discretization','var') && strcmp(discretization,'regularCentral'))
+            numSpatial = ndims(image1);
+            
+			if (exist('discretization','var') && strcmp(discretization,'regularCentral'))
                 gradientXf = gradientOperator(size(image1),1,'discretization','forward');
                 gradientXb = gradientOperator(size(image1),1,'discretization','backward');
                 gradientY = (gradientXf.matrix + gradientXb.matrix)/2;
@@ -127,57 +122,147 @@ classdef basicOpticalFlow < basicDualizedDataterm
 			elseif (exist('discretization','var') && strcmp(discretization,'interpolated'))
                 
                 methodInter = 'spline';
-
-                [M,N] = size(image1);
                 
-                [gridX,gridY] = meshgrid(1:N,1:M);
-
-                idxx = gridX + reshape(v1Tilde,[M,N]);
-                idyy = gridY + reshape(v2Tilde,[M,N]);
+                for i=1:numSpatial
+                    idx{i} = 1:size(image1,i);
+                end
                 
-                markerOutOfGrid = (idxx>=size(idxx,2)) + (idxx<=1) + (idyy>=size(idyy,1)) + (idyy<=1);
+                grid = cell(1,numSpatial);
+                [grid{:}] = ndgrid(idx{:});
+                
+                %start with empty marker grid
+                markerOutOfGrid = zeros(size(grid{1}));
+                
+                idxI2w = 'image2';
+                
+                %create grids
+                for i=1:numSpatial
+                    sizDim = size(image1,i);
+                    
+                    idx = repmat({':'},1,numSpatial);idx{end+1} = i;
+                    
+                    gridShift{i} = grid{i} + vTilde(idx{:});
+                    gridShiftm{i} = gridShift{i} - 0.5;
+                    gridShiftp{i} = gridShift{i} + 0.5;
+                    
+                    gridm{i} = max(1,min(sizDim,grid{i} - 0.5));
+                    gridp{i} = max(1,min(sizDim,grid{i} + 0.5));
+                end
+                    
+                for i=1:numSpatial
+                    sizDim = size(image1,i);
+                    %create idx for derivative of I2w
+                    idx1 = 'image2';
+                    idx2 = 'image2';
+                    for j=1:numSpatial
+                        if (i == j)
+                            idx1 = [idx1,',gridShiftp{',num2str(j),'}'];
+                            idx2 = [idx2,',gridShiftm{',num2str(j),'}'];
+                        else
+                            idx1 = [idx1,',gridShift{',num2str(j),'}'];
+                            idx2 = [idx2,',gridShift{',num2str(j),'}'];
+                        end
+                    end
+                    idx1 = [idx1,',''spline'''];
+                    idx2 = [idx2,',''spline'''];
+                    idxI2w = [idxI2w,',gridShift{',num2str(i),'}'];
+                    
+                    dI2w{i} = eval(['interpn(',idx1,');']) - eval(['interpn(',idx2,');']);
+                    
+                    check1 = isnan(dI2w{i});
+                    check2 = isinf(dI2w{i});
+
+                    if ((sum(check1(:)) + sum(check2(:))) > 0)
+                        error('Isinf + Isnan!!!')
+                    end
+
+                    markerOutOfGrid = markerOutOfGrid + (grid{i}>=(sizDim)) + (grid{i}<=1);
+                    markerOutOfGrid = markerOutOfGrid + (gridShift{i}>=(sizDim)) + (gridShift{i}<=1);
+                    markerOutOfGrid = markerOutOfGrid + (gridShiftp{i}>=(sizDim)) + (gridShiftp{i}<=1);
+                    markerOutOfGrid = markerOutOfGrid + (gridShiftm{i}>=(sizDim)) + (gridShiftm{i}<=1);
+                    
+                end
                 markerOutOfGrid = markerOutOfGrid > 0;
+                
+                I2w = eval(['interpn(',idxI2w,',''spline''',');']);
+                
+                check1 = isnan(I2w);
+                check2 = isinf(I2w);
 
-                idxx = max(1,min(N,idxx));
-                idxm = max(1,min(N,idxx-0.5));
-                idxp = max(1,min(N,idxx+0.5));
+                if ((sum(check1(:)) + sum(check2(:))) > 0)
+                    error('Isinf + Isnan!!!')
+                end
 
-                idyy = max(1,min(M,idyy));
-                idym = max(1,min(M,idyy-0.5));
-                idyp = max(1,min(M,idyy+0.5));
+%                 
+%                 idx{3} = 1;
+%                 [M,N] = size(image1);
+%                 
+%                  [gridX,gridY] = meshgrid(1:N,1:M);
+% 
+%                 
+%                 idxx = gridX + reshape(vTilde(:,:,1),[M,N]);
+%                 idyy = gridY + reshape(vTilde(:,:,2),[M,N]);
+%                 grid{1}
+%                 gridShift{1}
+%                 gridX
+%                 idxx
+%                 vTilde(idx{:})
+%                 
+% 
+%                 
+%                 markerOutOfGrid = (idxx>=size(idxx,2)) + (idxx<=1) + (idyy>=size(idyy,1)) + (idyy<=1);
+%                 markerOutOfGrid = markerOutOfGrid > 0;
+% 
+%                 idxx = max(1,min(N,idxx));
+%                 idxm = max(1,min(N,idxx-0.5));
+%                 idxp = max(1,min(N,idxx+0.5));
+% 
+%                 idyy = max(1,min(M,idyy));
+%                 idym = max(1,min(M,idyy-0.5));
+%                 idyp = max(1,min(M,idyy+0.5));
+%                 
+%                 gridXm = max(1,min(N,gridX-0.5));
+%                 gridXp = max(1,min(N,gridX+0.5));
+%                 
+%                 gridYm = max(1,min(M,gridY-0.5));
+%                 gridYp = max(1,min(M,gridY+0.5));
+%                 
+%                 I1x = interp2(image1,gridXp,gridY,methodInter) - interp2(image1,gridXm,gridY,methodInter);
+%                 I1y = interp2(image1,gridX,gridYp,methodInter) - interp2(image1,gridX,gridYm,methodInter);
+%         
+%                 I2w = interp2(image2,idxx,idyy,methodInter);
+%                 I2wx = interp2(image2,idxp,idyy,methodInter) - interp2(image2,idxm,idyy,methodInter);
+%                 I2wy = interp2(image2,idxx,idyp,methodInter) - interp2(image2,idxx,idym,methodInter);
+%                 
+%                 I1t = dI2w{i};
+%                 I2t = I2wx;
+%                 
+%                 figure(1);imagesc(dI2w{i});colorbar;
+%                 figure(2);imagesc(I2wx);colorbar;
+%                 figure(3);imagesc(I1t-I2t);colorbar;
+%                 
+%                 
                 
-                gridXm = max(1,min(N,gridX-0.5));
-                gridXp = max(1,min(N,gridX+0.5));
-                
-                gridYm = max(1,min(M,gridY-0.5));
-                gridYp = max(1,min(M,gridY+0.5));
-                
-                I1x = interp2(image1,gridXp,gridY,methodInter) - interp2(image1,gridXm,gridY,methodInter);
-                I1y = interp2(image1,gridX,gridYp,methodInter) - interp2(image1,gridX,gridYm,methodInter);
-        
-                I2w = interp2(image2,idxx,idyy,methodInter);
-                I2wx = interp2(image2,idxp,idyy,methodInter) - interp2(image2,idxm,idyy,methodInter);
-                I2wy = interp2(image2,idxx,idyp,methodInter) - interp2(image2,idxx,idym,methodInter);
-
-                %second order derivatives
-                I2wxx = (interp2(image2,idxp,idyy,methodInter) + interp2(image2,idxm,idyy,methodInter) - 2*interp2(image2,idxx,idyy,methodInter)) / 2;
-                I2wyy = (interp2(image2,idxx,idyp,methodInter) + interp2(image2,idxx,idym,methodInter) - 2*interp2(image2,idxx,idyy,methodInter)) / 2;
-                
-                I2wxy = (interp2(image2,idxp,idyp,methodInter) - interp2(image2,idxp,idym,methodInter) - (interp2(image2,idxm,idyp,methodInter) - interp2(image2,idxm,idym,methodInter)) ) / 2;
-                I2wyx = I2wxy;
+%                 I1x = interp2(image1,gridXp,gridY,methodInter) - interp2(image1,gridXm,gridY,methodInter);
+%                 I1y = interp2(image1,gridX,gridYp,methodInter) - interp2(image1,gridX,gridYm,methodInter);
+%         
+%                 I2w = interp2(image2,idxx,idyy,methodInter);
+%                 I2wx = interp2(image2,idxp,idyy,methodInter) - interp2(image2,idxm,idyy,methodInter);
+%                 I2wy = interp2(image2,idxx,idyp,methodInter) - interp2(image2,idxx,idym,methodInter);
+% 
+%                 %second order derivatives
+%                 I2wxx = (interp2(image2,idxp,idyy,methodInter) + interp2(image2,idxm,idyy,methodInter) - 2*interp2(image2,idxx,idyy,methodInter)) / 2;
+%                 I2wyy = (interp2(image2,idxx,idyp,methodInter) + interp2(image2,idxx,idym,methodInter) - 2*interp2(image2,idxx,idyy,methodInter)) / 2;
+%                 
+%                 I2wxy = (interp2(image2,idxp,idyp,methodInter) - interp2(image2,idxp,idym,methodInter) - (interp2(image2,idxm,idyp,methodInter) - interp2(image2,idxm,idym,methodInter)) ) / 2;
+%                 I2wyx = I2wxy;
                 %I2wxx = interp2(I2wx,gridXp,gridY,methodInter) - interp2(I2wx,gridXm,gridY,methodInter);
                 %I2wxy = interp2(I2wx,gridX,gridYp,methodInter) - interp2(I2wx,gridX,gridYm,methodInter);
                 %I2wyx = interp2(I2wy,gridXp,gridY,methodInter) - interp2(I2wy,gridXm,gridY,methodInter);
                 %I2wyy = interp2(I2wy,gridX,gridYp,methodInter) - interp2(I2wy,gridX,gridYm,methodInter);
             else
-                error('Not working')
-                grad = generateCentralGradientND( dims,ones(numel(dims),1) );
-                grad = grad*image2(:);
-                
-                ut = image2(:)-image1(:);
+                error('Not working');
             end
-            
-            
         end
     end
 end
