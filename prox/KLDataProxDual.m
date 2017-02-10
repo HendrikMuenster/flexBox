@@ -8,7 +8,7 @@ classdef KLDataProxDual < handle
         end
 
         function applyProx(obj,main,dualNumber,~)
-            main.y{dualNumber} = min(1,0.5*(1 + main.yTilde{dualNumber} - sqrt( (main.yTilde{dualNumber}-1).^2 + 4*main.params.sigma{dualNumber}*obj.f{1} )));
+            main.y{dualNumber} = min(obj.factor,0.5*(obj.factor + main.yTilde{dualNumber} - sqrt( (main.yTilde{dualNumber}+obj.factor).^2 + 4*(main.params.sigma{dualNumber}*obj.factor*obj.f{1} - obj.factor*main.yTilde{dualNumber}) )));
         end
         
     end
