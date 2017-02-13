@@ -31,6 +31,10 @@ numberV2 = main.addPrimalVar(size(f2));
 %add optical flow data term
 main.addTerm(L1opticalFlowTerm(1,f1,f2),[numberV1,numberV2]);
 
+%uncomment for gradient constancy
+%main.addTerm(L1opticalFlowTerm(1,f1,f2,'termType','gradientConstancy','constancyDimension',1),[numberV1,numberV2]);
+%main.addTerm(L1opticalFlowTerm(1,f1,f2,'termType','gradientConstancy','constancyDimension',2),[numberV1,numberV2]);
+
 %add regularizers - one for each component
 main.addTerm(huberGradient(0.1,size(f1),0.01),numberV1);
 main.addTerm(huberGradient(0.1,size(f1),0.01),numberV2);
@@ -39,7 +43,8 @@ main.addTerm(huberGradient(0.1,size(f1),0.01),numberV2);
 tic;main.runAlgorithm;toc;
 
 % get result
-resultV1 = main.getPrimal(numberV1);
-resultV2 = main.getPrimal(numberV2);
+% switch components because MATLAB switches axes
+resultV2 = main.getPrimal(numberV1);
+resultV1 = main.getPrimal(numberV2);
 
 figure(3);clf;imagesc(flowToColorV2(cat(3,resultV1,resultV2),5));title('Color-coded flow field')
