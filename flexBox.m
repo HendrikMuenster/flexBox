@@ -8,7 +8,6 @@ classdef flexBox < handle
 
         x           %current iteration values for primal part
         xOld        %old iteration values for primal part
-        xTilde      %intermediate value for primal dual algortihm
         xBar        %overrelaxed value for x
 
         y           %current iteration values for dual part
@@ -17,7 +16,6 @@ classdef flexBox < handle
 
         dims        %dimensionals for primal variables
         numberPvars %internal unique identifiers for primal variables
-        PcP         %which primal variable(s) belongs to which primal part
         DcP         %which primal variable(s) belongs to which dual part
         DcD         %which dual variables(s) belong to which dual part
 
@@ -54,7 +52,6 @@ classdef flexBox < handle
 
             obj.x = {};
             obj.xOld = {};
-            obj.xTilde = {};
             obj.xBar = {};
             obj.y = {};
             obj.yOld = {};
@@ -62,7 +59,6 @@ classdef flexBox < handle
             obj.dims = {};
             obj.numberPvars = 0;
 
-            obj.PcP = {};
             obj.DcP = {};
             obj.DcD = {};
 
@@ -84,7 +80,6 @@ classdef flexBox < handle
             obj.x{end+1} = zeros(numberElements,1);
             obj.xOld{end+1} = zeros(numberElements,1);
             obj.xBar{end+1} = zeros(numberElements,1);
-            obj.xTilde{end+1} = zeros(numberElements,1);
             obj.dims{end+1} = dims;
             obj.numberPvars = obj.numberPvars + 1;
 
@@ -96,34 +91,25 @@ classdef flexBox < handle
             %adds a functional term to FlexBox. The variable #corresponding
             %specifies the internal number of corresponding primal variables.
             %The output #numberDuals contains internal number(s) of the created
-            %dual variables or 0 if no dual variable has been created
-            numberDuals = 0;
+            %dual variables
             if (numel(corresponding) ~= term.numPrimals)
                 error(['Number of corresponding primals wrong. Expecting ',num2str(term.numPrimals),' variables'])
             end
 
-            %overwrite class name:
-            s = superclasses(class(term));
+            %this is a dual part
+            obj.duals{end+1} = term;
+            %save corresponding Dual->Primal,Dual->Dual
+            obj.DcP{end+1} = corresponding;
+            obj.DcD{end+1} = numel(obj.y) + 1 : numel(obj.y) + term.numVars;
 
-            if (sum(ismember(s, 'primalPart')) > 0)
-                %this is a primal part
-                obj.primals{end+1} = term;
-                obj.PcP{end+1} = corresponding;
-            elseif (sum(ismember(s, 'dualPart')) > 0)
-                %this is a dual part
-                obj.duals{end+1} = term;
-                %save corresponding Dual->Primal,Dual->Dual
-                obj.DcP{end+1} = corresponding;
-                obj.DcD{end+1} = numel(obj.y) + 1 : numel(obj.y) + term.numVars;
+            numberDuals = obj.DcD{end};
 
-                numberDuals = obj.DcD{end};
-
-                %create variables
-                for i=1:term.numVars
-                    obj.y{end+1} = zeros(term.length{i},1);
-                    obj.yOld{end+1} = zeros(term.length{i},1);
-                end
+            %create variables
+            for i=1:term.numVars
+                obj.y{end+1} = zeros(term.length{i},1);
+                obj.yOld{end+1} = zeros(term.length{i},1);
             end
+            
         end
 
         function showPrimal(obj,number)
@@ -249,20 +235,16 @@ classdef flexBox < handle
                 obj.duals{i}.applyProx(obj,obj.DcD{i},obj.DcP{i});
             end
 
-            %calc xTilde
-            for i=1:numel(obj.x)
-                obj.xTilde{i} = obj.x{i};
-            end
-
-            %since xTilde consists of applications of K' to y, it should be
-            %done by dual variables
-            for i=1:numel(obj.duals)
-                obj.duals{i}.xTilde(obj,obj.DcD{i},obj.DcP{i});
-            end
-
-            %primal prox
-            for i=1:numel(obj.primals)
-                obj.primals{i}.applyProx(obj,obj.PcP{i});
+            %primal update is x = x - K^ty
+            for k=1:numel(obj.duals)
+                dualNumbers = obj.DcD{k};
+                primalNumbers = obj.DcP{k};
+                for i=1:numel(dualNumbers)
+                    for j=1:numel(primalNumbers)
+                        operatorNumber = numel(primalNumbers)*(i-1) + j;
+                        obj.x{primalNumbers(j)} = obj.x{primalNumbers(j)} - obj.params.tau{primalNumbers(j)}*(obj.duals{k}.operatorT{operatorNumber} * obj.y{dualNumbers(i)});
+                    end
+                end
             end
 
             %do overrelaxation
@@ -301,22 +283,6 @@ classdef flexBox < handle
 %         end
 
         function init(obj)
-            %check for primal variables that do not correspond to any term
-            %and create an empty term for them
-            for i=1:numel(obj.x)
-                check = 0;
-                for j=1:numel(obj.PcP)
-                    if (sum(ismember(obj.PcP{j}, i)) > 0)
-                        check = 1;
-                    end
-                end
-                if (~check)
-                    obj.addTerm(emptyDataTerm(),i);
-                end
-            end
-
-            %
-
             %init with zero
             for i=1:numel(obj.x)
                 obj.params.tau{i} = 0;

@@ -46,8 +46,5 @@ tic;main.runAlgorithm;toc;
 % switch components because MATLAB switches axes
 resultV2 = main.getPrimal(numberV1);
 resultV1 = main.getPrimal(numberV2);
-%%
-figure(4);clf;imagesc(resultV2);colorbar;
-figure(5);clf;imagesc(resultV1);colorbar;
 
 figure(3);clf;imagesc(flowToColorV2(cat(3,resultV1,resultV2),5));title('Color-coded flow field')
