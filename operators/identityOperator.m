@@ -5,8 +5,14 @@ classdef identityOperator < basicOperator
     end
 
     methods
-        function obj = identityOperator(nPx,varargin)
-            obj.nPx = nPx;
+        function obj = identityOperator(nPx1,varargin)
+			if (nargin == 1)
+				obj.nPx(1) = nPx1;
+				obj.nPx(2) = nPx1;
+			else
+				obj.nPx(1) = nPx1;
+				obj.nPx(2) = varargin{1};
+			end
             obj.isMinus = 0;
         end
 
@@ -16,6 +22,12 @@ classdef identityOperator < basicOperator
             else
                 result = vector;
             end
+			
+			if (obj.nPx(1) < obj.nPx(2))
+				result = result(1:obj.nPx(1));
+			elseif (obj.nPx(1) > obj.nPx(2))
+				result(obj.nPx(2)+1:obj.nPx(1)) = 0;
+			end
         end
 
         function result = abs(obj)
@@ -33,13 +45,16 @@ classdef identityOperator < basicOperator
             else
                 result = speye(obj.nPx);
             end
+			
+			result = result(1:nPx(1),1:nPx(2));
         end
 
         function result = size(obj,varargin)
-            if (nargin < 2)
-                result = [obj.nPx,obj.nPx];
+			if (nargin > 1)
+                dim = varargin{1};
+                result = obj.nPx(dim);
             else
-                result = obj.nPx;
+                result = [obj.nPx(1),obj.nPx(2)]; 
             end
         end
 

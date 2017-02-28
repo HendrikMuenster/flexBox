@@ -1,12 +1,19 @@
 %represents an empty matrix
 classdef zeroOperator < basicOperator
     properties
-        nPx
+        nPx;
     end
     
     methods
-        function obj = zeroOperator(nPx,varargin)
-            obj.nPx = nPx;
+        function obj = zeroOperator(nPx1,varargin)
+			if (nargin == 1)
+				obj.nPx(1) = nPx1;
+				obj.nPx(2) = nPx1;
+			else
+				obj.nPx(1) = nPx1;
+				obj.nPx(2) = varargin{1};
+			end
+            
         end
         
         function result = mtimes(~,~)
@@ -18,15 +25,15 @@ classdef zeroOperator < basicOperator
         end
         
         function mat = returnMatrix(obj)
-            mat = sparse(obj.nPx,obj.nPx);
+            mat = sparse(obj.nPx(1),obj.nPx(2));
         end
         
-        
         function result = size(obj,varargin)
-            result = obj.nPx;
-            
-            if (nargin < 2)
-                result = [result,result]; 
+			if (nargin > 1)
+                dim = varargin{1};
+                result = obj.nPx(dim);
+            else
+                result = [obj.nPx(1),obj.nPx(2)]; 
             end
         end
         

@@ -14,10 +14,10 @@ classdef L1IsoProxDual < handle
             for i=1:obj.numVars
                 norm = norm + main.yTilde{dualNumbers(i)}.^2;
             end
-            norm = max(1,sqrt(norm)./obj.factor);
+            norm = max(obj.factor,sqrt(norm));
             
             for i=1:obj.numVars
-                main.y{dualNumbers(i)} = main.yTilde{dualNumbers(i)} ./ norm;
+                main.y{dualNumbers(i)} = obj.factor*main.yTilde{dualNumbers(i)} ./ norm;
             end
         end
         

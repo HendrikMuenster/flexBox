@@ -1,5 +1,5 @@
 %term for \alpha |Au-f|_H_eps
-classdef huberDataTermOperator < basicDualizedDataterm & L1HuberDataProxDual
+classdef huberDataTermOperator < basicDualizedDataterm & HuberDataProxDual
     properties
         epsi
     end
