@@ -1,4 +1,4 @@
-%term for \alpha |Au-f|_H_eps
+%term for \alpha |Au-f|_{H_epsi}
 classdef huberDataTermOperator < basicDualizedDataterm & HuberDataProxDual
     properties
         epsi

@@ -186,6 +186,9 @@ classdef basicOpticalFlow < basicDualizedDataterm
                         end
                     end
                     
+                    %['interpn(image2',idxI2w1,',''spline'');']
+                    %['interpn(image2',idxI2w2,',''spline'');']
+                    
                     dI2w{i} = eval(['interpn(image2',idxI2w1,',''spline'');']) - eval(['interpn(image2',idxI2w2,',''spline'');']);
                     dI1{i} = eval(['interpn(image1',idxI11,',''spline'');']) - eval(['interpn(image1',idxI12,',''spline'');']);
 
@@ -212,7 +215,9 @@ classdef basicOpticalFlow < basicDualizedDataterm
                     end
                     
                     for j=1:numSpatial
-                        ddI2w{i}{j} = eval(['interpn(dI2w{',num2str(j),'}',idxI2w1,',''spline'');']) - eval(['interpn(dI2w{',num2str(j),'}',idxI2w2,',''spline'');']);
+                        %['interpn(dI2w{',num2str(j),'}',idxI2w1,',''spline'');']
+                        %['interpn(dI2w{',num2str(j),'}',idxI2w2,',''spline'');']
+                        ddI2w{j}{i} = eval(['interpn(dI2w{',num2str(j),'}',idxI2w1,',''spline'');']) - eval(['interpn(dI2w{',num2str(j),'}',idxI2w2,',''spline'');']);
                     end
                 end
                 
