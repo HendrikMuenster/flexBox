@@ -1,6 +1,6 @@
 % prox for L2 with additional f
 % min_y 1/2\|y-x\|_2^2 + <y,f> + \alpha\|y\|_2^2 
-classdef L2DataProxDual < handle
+classdef L2DataProxDual < basicProx
     properties
     end
     

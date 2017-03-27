@@ -1,6 +1,6 @@
 % prox for Frobenius norm
 % min_y 1/2\|y-x\|_2^2 + \delta_{ \|y\|_F \leq \alpha }
-classdef FrobeniusProxDual < handle
+classdef FrobeniusProxDual < basicProx
     properties
     end
     

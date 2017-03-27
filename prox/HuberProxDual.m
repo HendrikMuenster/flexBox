@@ -1,4 +1,4 @@
-classdef HuberProxDual < handle
+classdef HuberProxDual < basicProx
     properties
     end
     

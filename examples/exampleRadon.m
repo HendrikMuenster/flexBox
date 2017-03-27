@@ -10,7 +10,7 @@ angles = 1:3:180;
 image = phantom('Modified Shepp-Logan', sizeImage);
 
 %read MATLAB MRI example
-image = im2double(imread('mri.tif'));
+%image = im2double(imread('mri.tif'));
 %%
 %show clean input image
 figure(1);imagesc(image);axis image;colormap(gray);title('Input image');

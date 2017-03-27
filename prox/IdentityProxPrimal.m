@@ -1,4 +1,4 @@
-classdef IdentityProxPrimal < handle
+classdef IdentityProxPrimal < basicProx
     properties
     end
     

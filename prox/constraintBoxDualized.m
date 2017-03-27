@@ -1,4 +1,4 @@
-classdef constraintBoxDualized < handle
+classdef constraintBoxDualized < basicProx
     properties
         minVal
         maxVal

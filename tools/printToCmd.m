@@ -2,7 +2,7 @@ function [ reverseStr ] = printToCmd( reverseStr,message )
     message = strrep(message,'%','%%');
     message = strrep(message,'\','\\');
 
-    fprintf([reverseStr, message]);
+    fprintf([num2str(reverseStr), message]);
     
     %find extra chars
     %nof_extra = length(strfind(message,'%%'));

@@ -1,4 +1,4 @@
-classdef labelingProxDual < handle
+classdef labelingProxDual < basicProx
     properties
     end
     

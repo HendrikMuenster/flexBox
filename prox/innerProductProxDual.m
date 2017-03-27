@@ -1,4 +1,4 @@
-classdef innerProductProxDual < handle
+classdef innerProductProxDual < basicProx
     properties
     end
     

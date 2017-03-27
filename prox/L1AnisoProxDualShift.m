@@ -1,4 +1,4 @@
-classdef L1AnisoProxDualShift < handle
+classdef L1AnisoProxDualShift < basicProx
     properties (Access = public, Abstract = true)
     end
     
