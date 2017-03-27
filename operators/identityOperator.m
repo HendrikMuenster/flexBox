@@ -22,7 +22,7 @@ classdef identityOperator < basicOperator
             else
                 result = vector;
             end
-			
+
 			if (obj.nPx(1) < obj.nPx(2))
 				result = result(1:obj.nPx(1));
 			elseif (obj.nPx(1) > obj.nPx(2))
@@ -45,7 +45,7 @@ classdef identityOperator < basicOperator
             else
                 result = speye(obj.nPx);
             end
-			
+
 			result = result(1:nPx(1),1:nPx(2));
         end
 
@@ -54,14 +54,13 @@ classdef identityOperator < basicOperator
                 dim = varargin{1};
                 result = obj.nPx(dim);
             else
-                result = [obj.nPx(1),obj.nPx(2)]; 
+                result = [obj.nPx(1),obj.nPx(2)];
             end
         end
 
-%         function res = ctranspose(obj)
-%             res = obj;
-%             res.transposed = ~obj.transposed;
-%         end
+         function res = ctranspose(obj)
+             res = obj;
+         end
 
         function result = getMaxRowSumAbs(obj)
             result = 1; %matrix representation is identiy matrix -> max absolute value is 1
