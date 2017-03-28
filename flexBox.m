@@ -30,19 +30,11 @@ classdef flexBox < handle
             % Constructor
             obj.params.tol = 1e-5;
             obj.params.maxIt = 10000;
-            %obj.params.sigma = 0.1;
-            %obj.params.tau = 0.1;
             obj.params.checkError = 100;
             obj.params.theta = 1;
             obj.params.verbose = 0;
 
             obj.params.showPrimals = 0;
-
-%             %adaptiveStepsize
-%             obj.params.adaptivity = 0.5;
-%             obj.params.delta = 1.5;
-%             obj.params.eta = 0.95;
-%             obj.params.s = 255;
 
             %try to use CPP
             obj.params.tryCPP = 0;
@@ -150,20 +142,6 @@ classdef flexBox < handle
             y = obj.y{number};
         end
 
-        function doCPP(obj)
-            %create function call
-            [resultCPP{1:numel(obj.x)+numel(obj.y)}] = eval('flexBoxCPP(obj);');
-
-            for i=1:numel(obj.x)
-                obj.x{i} = resultCPP{i};
-            end
-
-            for i=1:numel(obj.y)
-                obj.y{i} = resultCPP{numel(obj.x)+i};
-            end
-
-        end
-
         function runAlgorithm(obj,varargin)
             %runAlgorithm
             %executes FlexBox and resets the internal iteration counter.
@@ -216,6 +194,20 @@ classdef flexBox < handle
     methods (Access=protected,Hidden=true )
         %protected methods that can only be accessed from class or
         %subclasses. These methods are hidden!
+        
+        function doCPP(obj)
+            %create function call
+            [resultCPP{1:numel(obj.x)+numel(obj.y)}] = eval('flexBoxCPP(obj);');
+
+            for i=1:numel(obj.x)
+                obj.x{i} = resultCPP{i};
+            end
+
+            for i=1:numel(obj.y)
+                obj.y{i} = resultCPP{numel(obj.x)+i};
+            end
+
+        end
 
             function doIteration(obj)
             %save old

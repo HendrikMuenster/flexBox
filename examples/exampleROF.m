@@ -24,15 +24,14 @@ numberU = main.addPrimalVar(size(image));
 main.addTerm(L2dataTerm(1,imageNoisy),numberU);
 
 %add regularizer: 0.08*\|\nabla u\|_1
-main.addTerm(L1gradientIso(0.08,size(image)),numberU);
+main.addTerm(L1gradientIso(0.1,size(image)),numberU);
 
 %run minimization algorithm
 tic;main.runAlgorithm;toc;
 
-%get result
+%% get result
 result = main.getPrimal(numberU);
 
-%show result
+%% show result
 figure(3);imagesc(result);axis image;colormap(gray);title('Denoised Image');
-
 figure(4);plot(1:size(image),result(150,:));title('1D Result - Staircasing');

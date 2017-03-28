@@ -1,24 +1,26 @@
 clear all;close all;clc;
 
 %% read data
-image = imread('data/a.png');
+addpath(genpath('..'));
+image = imread('data/hendrik.jpg');
 if (size(image,3) > 1)
     image = rgb2gray(image);
 end
 
 image = im2double(image);
+image = imresize(image,0.25);
 
 figure(1);imagesc(image);axis image;colormap(gray);colorbar;title('Image to cluster')
 %%
-
-numberOfLabels = 3;
+numberOfLabels = 5;
 dims = size(image);
-labels = [0.1,0.5,0.75];
-
+labels = [0.1,0.3,0.5,0.7,0.9];
 
 main = flexBox;
+main.params.tryCPP = 0; %change, if C++ module is compiled
 
 for i=1:numberOfLabels
+    %add one primal var for each label
     main.addPrimalVar(size(image));
 end
 
@@ -26,21 +28,21 @@ end
 main.addTerm(labelingTerm(1,image,labels),1:numberOfLabels);
 
 for i=1:numberOfLabels
-    main.addTerm(L1gradientIso(0.01,size(image)),i);
+    %add regularizer for each label
+    main.addTerm(L1gradientIso(0.05,size(image)),i);
 end
 
-main.runAlgorithm;
+%run minimization algorithm
+tic;main.runAlgorithm;toc;
 
 for i=1:numberOfLabels
     labelMatrix(:,:,i) = main.getPrimal(i);
 end
 
-%
+%%
+result = 0;
 for i=1:numberOfLabels
-    figure(1+i);imagesc(main.getPrimal(i));axis image;colormap(gray);colorbar;title(['Region ',num2str(i)])
-    completeLabels(:,:,i) = main.getPrimal(i);
+    result = result + main.getPrimal(i) * labels(i);
 end
 
-[~,indexMap] = max(completeLabels,[],3);
-
-figure(2+numberOfLabels);imagesc(indexMap);axis image;colormap(gray);colorbar;title('Segmentation')
+figure(1);imagesc(result);axis image;title('Result')
