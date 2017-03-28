@@ -62,7 +62,7 @@ classdef flexBox < handle
             %number = addPrimalVar(dims)
             %adds a primal var of dimensions #dims to FlexBox and returns
             %the internal #number
-            
+
             if (isscalar(dims))
                 dims = [dims,1];
             end
@@ -101,7 +101,7 @@ classdef flexBox < handle
                 obj.y{end+1} = zeros(term.length{i},1);
                 obj.yOld{end+1} = zeros(term.length{i},1);
             end
-            
+
         end
 
         function showPrimal(obj,number)
@@ -173,7 +173,7 @@ classdef flexBox < handle
 
                     if (mod(iteration,obj.params.checkError) == 0)
                         error = obj.calculateError;
-                        reverseStr = printToCmd( reverseStr,sprintf(['Iteration: #%d : Residual %.',num2str(-log10(obj.params.tol)),'f'],iteration,error) );
+                        reverseStr = printToCmd( reverseStr,sprintf(['Iteration: #%d : Residual %.',num2str(-log10(obj.params.tol)),'f','\n'],iteration,error) );
                     end
 
                     if (obj.params.showPrimals > 0 && mod(iteration,obj.params.showPrimals) == 1)

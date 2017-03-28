@@ -33,10 +33,9 @@ classdef diagonalOperator < basicOperator
             end
         end
 
-%         function res = ctranspose(obj)
-%             res = obj;
-%             res.transposed = ~obj.transposed;
-%         end
+         function res = ctranspose(obj)
+             res = obj;
+         end
 
         function result = getMaxRowSumAbs(obj)
             result = max(abs(obj.diagonalElements));

@@ -1,4 +1,4 @@
-classdef L2proxDual < handle
+classdef L2proxDual < basicProx
     properties
     end
     

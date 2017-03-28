@@ -1,5 +1,5 @@
 % 
-classdef KLDataProxDual < handle
+classdef KLDataProxDual < basicProx
     properties
     end
     

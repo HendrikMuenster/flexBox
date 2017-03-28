@@ -27,7 +27,7 @@ concatOp = concatOperator(blurrOperator,identityOp,'composition');
 
 imageBlurred = reshape(concatOp * imageNoisy(:),size(image));
 
-figure(2);imagesc(imageBlurred);axis image;colormap(gray);title('Blurred and Noisy Image')
+figure(2);imagesc(real(imageBlurred));axis image;colormap(gray);title('Blurred and Noisy Image')
 %% ROF deblurring
 main = flexBox;
 
@@ -46,4 +46,4 @@ main.runAlgorithm();
 %get result
 result = main.getPrimal(numberU);
 
-figure(3);imagesc(result);axis image;colormap(gray);title('Deblurred and Denoised Image');
+figure(3);imagesc(real(result));axis image;colormap(gray);title('Deblurred and Denoised Image');

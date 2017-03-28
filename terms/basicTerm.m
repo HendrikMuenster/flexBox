@@ -130,8 +130,4 @@ classdef basicTerm < handle
             end
         end
     end
-    
-    methods (Abstract)
-        applyProx(obj)  %abstract method for prox function (see primal dual algorithm)
-    end
 end

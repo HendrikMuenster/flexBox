@@ -1,6 +1,6 @@
 % prox for point-wise projection onto L1 balls
 % min_y 1/2\|y-x\|_2^2 + <y,f> + \delta_{ \|y\|_2 \leq \alpha }
-classdef L1DataProxDual < handle
+classdef L1DataProxDual < basicProx
     properties
     end
     

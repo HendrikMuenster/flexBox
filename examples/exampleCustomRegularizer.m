@@ -23,13 +23,13 @@ figure(2);imagesc(f2);axis image;colormap(gray);title('Image 2')
 % u_2)^2  ) |_1
 
 main = flexBox;
-main.params.tryCPP = 1;
+main.params.tryCPP = 0; %change, if C++ module is compiled
 
 %add primal vars v_1,v_2
 numberU1 = main.addPrimalVar(size(f1));
 numberU2 = main.addPrimalVar(size(f2));
 
-%add data-fidelities: 
+%add data-fidelities:
 main.addTerm(L2dataTerm(1,f1),numberU1);
 main.addTerm(L2dataTerm(1,f2),numberU2);
 

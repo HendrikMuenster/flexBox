@@ -1,6 +1,6 @@
 % prox for point-wise projection onto L2 balls
 % min_y 1/2\|y-x\|_2^2 + \delta_{ \|y\|_2 \leq \alpha }
-classdef L1IsoProxDual < handle
+classdef L1IsoProxDual < basicProx
     properties
     end
     

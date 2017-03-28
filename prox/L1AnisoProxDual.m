@@ -1,4 +1,4 @@
-classdef L1AnisoProxDual < handle
+classdef L1AnisoProxDual < basicProx
     properties
     end
     
