@@ -84,13 +84,17 @@ classdef convolutionOperator < basicOperator
             result = obj;
             result.isMinus = ~result.isMinus;
         end
-
-        function result = getMaxRowSumAbs(obj)
+        
+        function result = getRowSumAbs(obj)
             if (obj.transposed == 1)
                 result = sum(abs(obj.kernel(:)));
             else
                 result = sum(abs(obj.kernel(:)));
             end
+        end
+
+        function result = getMaxRowSumAbs(obj)
+            result = max(obj.getRowSumAbs());
         end
     end
 

@@ -86,24 +86,29 @@ classdef concatOperator < basicOperator
             end
         end
 
-        function result = getMaxRowSumAbs(obj)
+        function result = getRowSumAbs(obj)
             if (issparse(obj.A))
-                resultA = max(sum(abs(obj.A),1));
+                resultA = (sum(abs(obj.A),1));
             else
-                resultA = obj.A.getMaxRowSumAbs();
+                resultA = obj.A.getRowSumAbs();
             end
             if (issparse(obj.B))
-                resultB = max(sum(abs(obj.B),1));
+                resultB = (sum(abs(obj.B),1));
             else
-                resultB = obj.B.getMaxRowSumAbs();
+                resultB = obj.B.getRowSumAbs();
             end
 
             if (strcmp(obj.operation,'composition'))
-                result = resultA * resultB;
+                result = resultA .* resultB;
             elseif (strcmp(obj.operation,'addition') || strcmp(obj.operation,'difference'))
                 result = resultA + resultB;
             end
         end
+        
+        function result = getMaxRowSumAbs(obj)
+            result = getRowSumAbs(obj);
+        end
+        
     end
 
 end

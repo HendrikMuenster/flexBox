@@ -80,11 +80,11 @@ classdef basicTerm < handle
                     if (isa(obj.operator{opNum},'basicOperator'))
                         %this method must be implemented by every
                         %custom operator
-                        obj.mySigma{i} = obj.mySigma{i} + obj.operator{opNum}.getMaxRowSumAbs();
-                        obj.myTau{j} = obj.myTau{j} + obj.operatorT{opNum}.getMaxRowSumAbs();
+                        obj.mySigma{i} = obj.mySigma{i} + obj.operator{opNum}.getRowSumAbs();
+                        obj.myTau{j} = obj.myTau{j} + obj.operatorT{opNum}.getRowSumAbs();
                     else
-                        obj.mySigma{i} = obj.mySigma{i} + max(sum(abs(obj.operator{opNum}),1));
-                        obj.myTau{j} = obj.myTau{j} + max(sum(abs(obj.operator{opNum}),2));
+                        obj.mySigma{i} = obj.mySigma{i} + (sum(abs(obj.operator{opNum}),2));
+                        obj.myTau{j} = obj.myTau{j} + (sum(abs(obj.operator{opNum}),1)');
                     end
                 end
             end
@@ -98,7 +98,7 @@ classdef basicTerm < handle
             for i=1:numel(dualNumbers)
                 for j=1:numel(primalNumbers)
                     operatorNumber = numel(primalNumbers)*(i-1) + j;
-                    main.yTilde{dualNumbers(i)} = main.yTilde{dualNumbers(i)} + main.params.sigma{dualNumbers(i)} * (obj.operator{operatorNumber}* main.xBar{primalNumbers(j)});
+                    main.yTilde{dualNumbers(i)} = main.yTilde{dualNumbers(i)} + main.params.sigma{dualNumbers(i)} .* (obj.operator{operatorNumber}* main.xBar{primalNumbers(j)});
                 end
             end
         end
@@ -107,7 +107,7 @@ classdef basicTerm < handle
             for i=1:numel(dualNumbers)
                 for j=1:numel(primalNumbers)
                     operatorNumber = numel(primalNumbers)*(i-1) + j;
-                    main.xTilde{primalNumbers(j)} = main.xTilde{primalNumbers(j)} - main.params.tau{primalNumbers(j)}*(obj.operatorT{operatorNumber} * main.y{dualNumbers(i)});
+                    main.xTilde{primalNumbers(j)} = main.xTilde{primalNumbers(j)} - main.params.tau{primalNumbers(j)}.*(obj.operatorT{operatorNumber} * main.y{dualNumbers(i)});
                 end
             end
         end

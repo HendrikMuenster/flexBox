@@ -40,7 +40,10 @@ classdef zeroOperator < basicOperator
          function res = ctranspose(obj)
              res = obj;
          end
-
+         
+        function result = getRowSumAbs(obj)
+            result = 0;
+        end
         function result = getMaxRowSumAbs(obj)
             result = 0;
         end

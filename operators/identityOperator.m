@@ -62,6 +62,10 @@ classdef identityOperator < basicOperator
              res = obj;
          end
 
+         function result = getRowSumAbs(obj)
+            result = 1; %matrix representation is identiy matrix -> max absolute value is 1
+         end
+        
         function result = getMaxRowSumAbs(obj)
             result = 1; %matrix representation is identiy matrix -> max absolute value is 1
         end

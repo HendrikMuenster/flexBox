@@ -45,4 +45,4 @@ for i=1:numberOfLabels
     result = result + main.getPrimal(i) * labels(i);
 end
 
-figure(1);imagesc(result);axis image;title('Result')
+figure(2);imagesc(result);axis image;title('Result')

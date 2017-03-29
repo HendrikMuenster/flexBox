@@ -62,8 +62,12 @@ classdef superpixelOperator < basicOperator
 
         end
 
+        function result = getRowSumAbs(obj)
+            result = sum(abs(obj.matrix),2);
+        end
+        
         function result = getMaxRowSumAbs(obj)
-            result = 1;
+            result = max(obj.getRowSumAbs());
         end
     end
 

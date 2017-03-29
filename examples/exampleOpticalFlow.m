@@ -23,6 +23,7 @@ figure(2);imagesc(f2);axis image;colormap(gray);title('Image 2')
 %%
 main = flexBox;
 main.params.tryCPP = 0; %change, if C++ module is compiled
+main.params.verbose = 1; %change, if C++ module is compiled
 
 %add primal vars v_1,v_2
 numberV1 = main.addPrimalVar(size(f1));

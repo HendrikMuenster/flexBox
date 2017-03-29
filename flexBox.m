@@ -152,7 +152,7 @@ classdef flexBox < handle
             if (exist('noInit','var') && noInit == 1)
 
             else
-                obj.init(); %check for orphaned primals, initialize tau and sigma
+                obj.init(); %initialize tau and sigma
             end
 
             if (obj.checkCPP())
@@ -177,16 +177,13 @@ classdef flexBox < handle
                     end
 
                     if (obj.params.showPrimals > 0 && mod(iteration,obj.params.showPrimals) == 1)
-                        obj.showPrimals
+                        obj.showPrimals;
                     end
-
-                    %if (mod(iteration,1) == 0)
-                    %    obj.adaptStepsize;
-                    %end
 
                     iteration = iteration + 1;
                 end
                 printToCmd( reverseStr,'');
+                iteration
             end
         end
     end
@@ -234,7 +231,7 @@ classdef flexBox < handle
                 for i=1:numel(dualNumbers)
                     for j=1:numel(primalNumbers)
                         operatorNumber = numel(primalNumbers)*(i-1) + j;
-                        obj.x{primalNumbers(j)} = obj.x{primalNumbers(j)} - obj.params.tau{primalNumbers(j)}*(obj.duals{k}.operatorT{operatorNumber} * obj.y{dualNumbers(i)});
+                        obj.x{primalNumbers(j)} = obj.x{primalNumbers(j)} - obj.params.tau{primalNumbers(j)}.*(obj.duals{k}.operatorT{operatorNumber} * obj.y{dualNumbers(i)});
                     end
                 end
             end
@@ -277,11 +274,11 @@ classdef flexBox < handle
         function init(obj)
             %init with zero
             for i=1:numel(obj.x)
-                obj.params.tau{i} = 0;
+                obj.params.tau{i} = zeros(numel(obj.x{i}),1);
             end
 
             for i=1:numel(obj.y)
-                obj.params.sigma{i} = 0;
+                obj.params.sigma{i} = zeros(numel(obj.y{i}),1);
             end
 
             %init primals
@@ -308,11 +305,11 @@ classdef flexBox < handle
 
             %calculate reciprocals
             for i=1:numel(obj.x)
-                obj.params.tau{i} = 1 ./ obj.params.tau{i};
+                obj.params.tau{i} = 1 ./ max(0.0001,obj.params.tau{i});
             end
 
             for i=1:numel(obj.y)
-                obj.params.sigma{i} = 1 ./ obj.params.sigma{i};
+                obj.params.sigma{i} = 1 ./ max(0.0001,obj.params.sigma{i});
             end
         end
 
@@ -321,10 +318,10 @@ classdef flexBox < handle
 
             %calculate first part
             for i=1:numel(obj.x)
-                obj.xError{i} = (obj.x{i} - obj.xOld{i}) / obj.params.tau{i};
+                obj.xError{i} = (obj.x{i} - obj.xOld{i}) ./ obj.params.tau{i};
             end
             for i=1:numel(obj.y)
-                obj.yError{i} =  (obj.y{i} - obj.yOld{i}) / obj.params.sigma{i};
+                obj.yError{i} =  (obj.y{i} - obj.yOld{i}) ./ obj.params.sigma{i};
             end
 
             %calculate second part

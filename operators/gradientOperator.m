@@ -94,9 +94,13 @@ classdef gradientOperator < basicOperator
                 result = size(obj.matrix,varargin{1});
             end
         end
-
+        
+        function result = getRowSumAbs(obj)
+            result = sum(abs(obj.matrix),2);
+        end
+        
         function result = getMaxRowSumAbs(obj)
-            result = 2;
+            result = max(obj.getRowSumAbs());
         end
     end
 

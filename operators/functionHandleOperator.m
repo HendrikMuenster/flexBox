@@ -69,8 +69,12 @@ classdef functionHandleOperator < basicOperator
             end
         end
 
-        function result = getMaxRowSumAbs(obj)
+        function result = getRowSumAbs(obj)
             result = obj.operatorNorm;
+        end
+        
+        function result = getMaxRowSumAbs(obj)
+            result = max(obj.getRowSumAbs());
         end
     end
 

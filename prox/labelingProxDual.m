@@ -20,7 +20,7 @@ classdef labelingProxDual < basicProx
 			%(1) calculate prox_{1/sigma}F(tildeY/sigma)
 			
             for i=1:obj.numVars
-                tmpList(:,i) = (main.yTilde{dualNumbers(i)} - obj.f{i}) / main.params.sigma{dualNumbers(i)};
+                tmpList(:,i) = (main.yTilde{dualNumbers(i)} - obj.f{i}) ./ main.params.sigma{dualNumbers(i)};
             end
             
             %do projection
@@ -46,7 +46,7 @@ classdef labelingProxDual < basicProx
             zVec = zeros(size(tmpList,1),1);
             %update primal variables
             for i=1:obj.numVars
-                main.y{dualNumbers(i)} = main.yTilde{dualNumbers(i)} - main.params.sigma{dualNumbers(i)} * max([tmpList(:,i)-tMaxValues,zVec],[],2);
+                main.y{dualNumbers(i)} = main.yTilde{dualNumbers(i)} - main.params.sigma{dualNumbers(i)} .* max([tmpList(:,i)-tMaxValues,zVec],[],2);
             end
 			
         end

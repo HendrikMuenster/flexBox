@@ -11,7 +11,7 @@ classdef HuberDataProxDual < basicProx
             %factor = 1 ./ (1+main.params.sigma{dualNumber}*obj.epsi ./ obj.factor);
             
             for i=1:obj.numVars
-                tmpVar = obj.factor / (obj.factor + main.params.sigma{dualNumber(i)}*obj.epsi) * (main.yTilde{dualNumber(i)} - main.params.sigma{dualNumber(i)}*obj.f{i});
+                tmpVar = obj.factor ./ (obj.factor + main.params.sigma{dualNumber(i)}*obj.epsi) .* (main.yTilde{dualNumber(i)} - main.params.sigma{dualNumber(i)}.*obj.f{i});
                 
                 main.y{dualNumber(i)} = tmpVar ./ max(1,abs(tmpVar) / obj.factor);
                 

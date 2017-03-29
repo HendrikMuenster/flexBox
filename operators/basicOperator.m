@@ -14,6 +14,7 @@ classdef basicOperator
         returnMatrix(obj)
         size(obj,dim)
         getMaxRowSumAbs(obj)
+        getRowSumAbs(obj)
     end
     
     methods

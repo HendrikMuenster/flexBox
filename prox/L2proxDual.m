@@ -8,7 +8,7 @@ classdef L2proxDual < basicProx
 
         function applyProx(obj,main,dualNumbers,~)
             for i=1:obj.numVars
-                main.y{dualNumbers(i)} = (obj.factor/(main.params.sigma{dualNumbers(i)}+obj.factor)) * main.yTilde{dualNumbers(i)};
+                main.y{dualNumbers(i)} = obj.factor./(main.params.sigma{dualNumbers(i)}+obj.factor) .* main.yTilde{dualNumbers(i)};
             end
         end
         
