@@ -1,7 +1,7 @@
 %represents base class for terms containing the shear operator
-%K(u,v) = 
+%K(u,v) =
 %corresponds to two primal variables (u,v)
-classdef basicShear < dualPart & tildeMultiOperatorMultiDual
+classdef basicShear < basicDualizedOperator
     properties
     end
 
@@ -18,20 +18,16 @@ classdef basicShear < dualPart & tildeMultiOperatorMultiDual
                 opTmp = generateForwardGradientND( dims,ones(numel(dims),1) );
             end
 
-            obj = obj@dualPart(alpha);
-            obj.numVars = 2; %divergence produces scalar quantity
             for i=1:numel(dims)
-                obj.length{i} = prod(dims);
-                obj.operator{i} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: )';
-                obj.myTau{i} = 2;
+                operatorList{i} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: )';
             end
-            obj.mySigma{1} = 3*numel(dims);
-            obj.mySigma{2} = 3*numel(dims);
 
-            obj.operator{2} = -obj.operator{2};
+            operatorList{2} = -operatorList{2};
+            operatorList{3} = operatorList{2};
+            operatorList{4} = operatorList{1};
 
-            obj.operator{3} = obj.operator{2};
-            obj.operator{4} = obj.operator{1};
+            obj = obj@basicDualizedOperator(alpha,numel(operatorList),operatorList,varargin);
+
         end
     end
 end

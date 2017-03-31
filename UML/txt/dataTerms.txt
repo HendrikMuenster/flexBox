@@ -1,31 +1,23 @@
 Data Terms
-#basics
-primalPart.m
-dualPart.m
-
 #terms
+basicTerm.m
 basicDualizedDataterm.m
 basicOpticalFlow.m
-emptyDataTerm.m
-emptyTermMinMax.m
+huberDataTerm.m
 huberDataTermOperator.m
 KLdataTermOperator.m
 L1dataTerm.m
-#L1dataTermOld.m
 L1dataTermOperator.m
 L1opticalFlowTerm.m
 L2dataTerm.m
-#L2dataTermOld.m
 L2dataTermOperator.m
 L2opticalFlowTerm.m
 labelingTerm.m
 
-#tilde
-tildeMultiOperatorMultiDual.m
-
 #proxs
-IdentityProxPrimal.m
-MinMaxProxPrimal.m
+basicProx.m
+HuberDataProxDual.m
+KLDataProxDual.m
 L1DataProxDual.m
-L1HuberDataProxDual.m
 L2DataProxDual.m
+labelingProxDual.m

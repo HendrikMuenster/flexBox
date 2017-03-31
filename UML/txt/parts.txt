@@ -1,5 +1,0 @@
-Primal/Dual Part
-#basics
-functionalPart.m
-primalPart.m
-dualPart.m

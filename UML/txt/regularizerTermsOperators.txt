@@ -1,10 +1,7 @@
-Regularizer Terms (General Operator)
-#basics
-dualPart.m
-
+Regularizer Terms (operators)
 #terms
+basicTerm.m
 basicDualizedOperator.m
-
 frobeniusOperator.m
 huberOperator.m
 innerProductOperator.m
@@ -13,12 +10,10 @@ L1operatorIso.m
 L2operator.m
 
 
-#tilde
-tildeMultiOperatorMultiDual.m
-
 #proxs
+basicProx.m
 FrobeniusProxDual.m
-L1HuberProxDual.m
+HuberProxDual.m
 innerProductProxDual.m
 L1AnisoProxDual.m
 L1IsoProxDual.m

@@ -1,25 +1,12 @@
-Regularizer Terms (Other)
-#basics
-dualPart.m
-
+Regularizer Terms (other)
 #terms
+basicTerm.m
 basicDualizedOperator.m
 basicIdentity.m
-basicGradient.m
-basicGradientDifference.m
-innerProductGradient.m
-innerProductGradientDiff.m
-L1plusInnerProductGradient.m
-L1plusInnerProductGradientDifference.m
 L1identity.m
 L2identity.m
 
-
-#tilde
-tildeMultiOperatorMultiDual.m
-
 #proxs
-innerProductProxDual.m
+basicProx.m
 L1AnisoProxDual.m
 L2proxDual.m
-L1IsoProxDualShift.m

@@ -1,8 +1,6 @@
-Regularizer Terms (Hessian / Laplace)
-#basics
-dualPart.m
-
+Regularizer Terms (hessian / laplace)
 #terms
+basicTerm.m
 basicDualizedOperator.m
 basicHessian.m
 basicLaplace.m
@@ -11,10 +9,7 @@ L1laplace.m
 L2hessian.m
 L2laplace.m
 
-
-#tilde
-tildeMultiOperatorMultiDual.m
-
 #proxs
+basicProx.m
 L1AnisoProxDual.m
 L2proxDual.m

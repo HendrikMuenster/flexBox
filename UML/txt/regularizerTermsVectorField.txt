@@ -1,13 +1,11 @@
-Regularizer Terms (Vector-field)
-#basics
-dualPart.m
-
+Regularizer Terms (vector field)
 #terms
+basicTerm.m
 basicDualizedOperator.m
 basicCurl.m
 basicDivAnticurl.m
-basicDivergence.m
 basicDivCurl.m
+basicDivergence.m
 basicShear.m
 L1curl.m
 L1curlPlus.m
@@ -21,10 +19,8 @@ L2curl.m
 L2divergence.m
 L2shear.m
 
-#tilde
-tildeMultiOperatorMultiDual.m
-
 #proxs
+basicProx.m
 L1AnisoProxDual.m
 L1IsoProxDual.m
 L2proxDual.m
