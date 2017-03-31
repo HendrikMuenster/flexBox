@@ -1,0 +1,76 @@
+From c398f26aae30ec0295e4ff59d6edce6f2ccca008 Mon Sep 17 00:00:00 2001
+From: Lars Haalck <l_haal02@uni-muenster.de>
+Date: Fri, 31 Mar 2017 16:16:35 +0200
+Subject: [PATCH] converted to octave
+
+---
+ operators/basicOperator.m | 36 ++++++++++++++++++++++++++++--------
+ prox/basicProx.m          |  6 ++++--
+ 2 files changed, 32 insertions(+), 10 deletions(-)
+
+diff --git a/operators/basicOperator.m b/operators/basicOperator.m
+index 10131b8..3cffba0 100644
+--- a/operators/basicOperator.m
++++ b/operators/basicOperator.m
+@@ -9,14 +9,34 @@ classdef basicOperator
+         isMinus
+     end
+ 
+-    methods (Abstract)
+-        abs(obj)
+-        ctranspose(obj)
+-        getMaxRowSumAbs(obj)
+-        getRowSumAbs(obj)
+-        mtimes(obj,vector)
+-        returnMatrix(obj)
+-        size(obj,dim)
++    methods %(Abstract)
++        function abs(obj)
++          error('used operator did not define abs()');
++        end
++
++        function ctranspose(obj)
++          error('used operator did not define ctranspose()');
++        end
++
++        function getMaxRowSumAbs(obj)
++          error('used operator did not define getMaxRowSumAbs()');
++        end
++
++        function getRowSumAbs(obj)
++          error('used operator did not define getRowSumAbs()');
++        end
++
++        function mtimes(obj,vector)
++          error('used operator did not define mtimes()');
++        end
++
++        function returnMatrix(obj)
++          error('used operator did not define returnMatrix()');
++        end
++
++        function size(obj,dim)
++          error('used operator did not define size()');
++        end
+     end
+ 
+     methods
+diff --git a/prox/basicProx.m b/prox/basicProx.m
+index 382e7bf..3a504af 100644
+--- a/prox/basicProx.m
++++ b/prox/basicProx.m
+@@ -2,7 +2,9 @@ classdef basicProx < handle
+ 	properties
+ 	end
+ 
+-	methods (Abstract)
+-		applyProx(obj)
++	methods %(Abstract)
++		function applyProx(obj)
++			error('used prox did not define applyProx()');
++		end
+ 	end
+ end
+-- 
+2.10.2.windows.1
+
