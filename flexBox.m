@@ -291,6 +291,7 @@ classdef flexBox < handle
                 %sum up tau
                 for j=1:numel(obj.DcP{i})
                     indexTmp = obj.DcP{i}(j);
+
                     obj.params.tau{ indexTmp } = obj.params.tau{ indexTmp } + obj.duals{i}.myTau{j};
                 end
 
