@@ -17,18 +17,10 @@ classdef basicDivergence < basicDualizedOperator
                 usedims = ones(numel(dims),1);
             end
 
-            if (exist('discretization','var') && strcmp(discretization,'backward'))
-                opTmp = generateBackwardGradND( dims,ones(numel(dims),1) );
-            else
-                opTmp = generateForwardGradND( dims,ones(numel(dims),1) );
-            end
-
             opNum = 1;
             for i=1:numel(dims)
-                if (usedims(i) == 1 && dims(i) ~= 1)
-                    operatorList{opNum} = opTmp( (i-1)*prod(dims) + 1 : i * prod(dims),: );
-                    opNum = opNum + 1;
-                end
+                operatorList{opNum} = gradientOperator(dims,i,varargin);
+                opNum = opNum + 1;
             end
 
 			%numPrimals is numel(operatorList)

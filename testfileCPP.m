@@ -64,8 +64,8 @@ main.addTerm(L2operator(0.5,1,speye(numel(image))),numberU);
 main.addTerm(frobeniusOperator(10,1,speye(numel(image))),numberU);
 
 %vector field
-main.addTerm(L1divergence(0.5,size(image),'usedims',[0,1]),numberU);
-main.addTerm(L2divergence(0.5,size(image),'usedims',[0,1]),numberU);
+main.addTerm(L1divergence(0.5,size(image),'usedims',[0,1]),[numberU,numberU2]);
+main.addTerm(L2divergence(0.5,size(image),'usedims',[0,1]),[numberU,numberU2]);
 main.addTerm(L1curl(0.5,size(image)),[numberU,numberU]);
 main.addTerm(L2curl(0.5,size(image)),[numberU,numberU]);
 
