@@ -21,8 +21,6 @@ classdef flexBox < handle
 
         xError      %error estimates for primal parts
         yError      %error estimates for dual parts
-
-        %adaptive
     end
 
     methods
@@ -36,8 +34,8 @@ classdef flexBox < handle
 
             obj.params.showPrimals = 0;
 
-            %try to use CPP
             obj.params.tryCPP = 0;
+            obj.params.relativePathToMEX = 'flexBox_CPP/source/build/bin';
 
             obj.primals = {};
             obj.duals = {};
@@ -191,7 +189,7 @@ classdef flexBox < handle
     methods (Access=protected,Hidden=true )
         %protected methods that can only be accessed from class or
         %subclasses. These methods are hidden!
-        
+
         function doCPP(obj)
             %create function call
             [resultCPP{1:numel(obj.x)+numel(obj.y)}] = eval('flexBoxCPP(obj);');
@@ -359,13 +357,22 @@ classdef flexBox < handle
         function result = checkCPP(obj)
             if (~obj.params.tryCPP)
                 CPPsupport = 0;
-            elseif (obj.params.tryCPP && exist('flexBoxCPP','file') ~= 3)
-                CPPsupport = 0;
-                disp(['Warning: C++ module is not compiled!']);
-            else
-                CPPsupport = 1;
+            elseif (obj.params.tryCPP)
+                absPathToMEX = strcat(fileparts(mfilename('fullpath')), '/', obj.params.relativePathToMEX);
+                if (exist(absPathToMEX, 'dir') ~= 7)
+                    CPPsupport = 0;
+                    disp(['Warning: relative Path to MEX-File is not correct!']);
+                else
+                    %make sure the intended MEX file is called
+                    addpath(absPathToMEX);
+                    if (exist('flexBoxCPP','file') ~= 3)
+                        CPPsupport = 0;
+                        disp(['Warning: C++ module is not compiled!']);
+                    else
+                        CPPsupport = 1;
+                    end
+                end
             end
-
             result = CPPsupport;
         end
     end
