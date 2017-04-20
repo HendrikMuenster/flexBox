@@ -22,6 +22,12 @@ classdef labelingTerm < basicDualizedDataterm & labelingProxDual
             else
                 numL = size(labels,1);
             end
+            
+            if (strcmp(lastDim,'feature'))
+                sizeOperator = numel(f(:,:,1));
+            else
+                sizeOperator = numel(f);
+            end
 			
             %operator is a diagonal block matrix with identity operators
 			for i=1:numL
@@ -29,9 +35,9 @@ classdef labelingTerm < basicDualizedDataterm & labelingProxDual
                     operatorNumber = (i-1)*numL + j;
                     
                     if (i==j)
-                        A{operatorNumber} = identityOperator(numel(f));
+                        A{operatorNumber} = identityOperator(sizeOperator);
                     else
-                        A{operatorNumber} = zeroOperator(numel(f));
+                        A{operatorNumber} = zeroOperator(sizeOperator);
                     end
                 end
 			end

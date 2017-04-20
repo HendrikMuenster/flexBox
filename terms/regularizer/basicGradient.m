@@ -14,7 +14,6 @@ classdef basicGradient < basicDualizedOperator
             %dimension should be used or not
             initVar('usedims',ones(numel(dims),1));
 
-
             opNum = 1;
             for i=1:numel(usedims)
                 %if dims(i) equals 1 then matrix is empty
