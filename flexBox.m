@@ -181,7 +181,6 @@ classdef flexBox < handle
                     iteration = iteration + 1;
                 end
                 printToCmd( reverseStr,'');
-                iteration
             end
         end
     end

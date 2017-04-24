@@ -119,16 +119,12 @@ classdef basicOpticalFlow < basicDualizedDataterm
 				gradientX = (gradientYf.matrix + gradientYb.matrix)/2;
 
                 
-                I2wx = reshape(gradientX * image2(:),size(image2)); %todo implement warp
-                I2wy = reshape(gradientY * image2(:),size(image2)); %todo implement warp
+                dI2w{1} = reshape(gradientX * image2(:),size(image2)); %todo implement warp
+                dI2w{2} = reshape(gradientY * image2(:),size(image2)); %todo implement warp
                 I2w = image2;  %todo implement warp
                 
-                I1x = 0;
-                I1y = 0;
-                I2wxx = 0;
-                I2wxy = 0;
-                I2wyx = 0;
-                I2wyy = 0;
+                ddI2w = 0;
+                dI1 = 0;
                 markerOutOfGrid = 0;
 			elseif (exist('discretization','var') && strcmp(discretization,'interpolated'))
                 for i=1:numSpatial
