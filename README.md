@@ -26,12 +26,15 @@ University of Muenster, Germany
 **FlexBox** is copyright ©2016-2017 by Hendrik Dirks.
 If you plan to distribute the software (commercially or not), please contact Hendrik Dirks for more information.
 
-### Dependencies
+## Dependencies
 In order to use the MATLAB version of FlexBox the following requirements should be met:
 * Matlab >= R2015b
 * Image Processing Toolbox
 
 In order to use the C++/CUDA version please refer to the repository: https://github.com/HendrikMuenster/flexBox_CPP
+
+## Usage
+We recommend to look at the provided examples in the folder examples/.
 
 ## C++/CUDA Module
 
