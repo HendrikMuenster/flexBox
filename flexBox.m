@@ -154,15 +154,8 @@ classdef flexBox < handle
             end
 
             if (obj.checkCPP())
-                if (obj.params.verbose > 0)
-                    disp('C++ support detected. Running in C++ mode');
-                end
                 obj.doCPP();
             else
-                if (obj.params.verbose > 0)
-                    disp('Running in MATLAB mode');
-                end
-
                 reverseStr = [];
 
                 iteration = 1;error = Inf;
@@ -358,18 +351,22 @@ classdef flexBox < handle
                 CPPsupport = 0;
             elseif (obj.params.tryCPP)
                 absPathToMEX = strcat(fileparts(mfilename('fullpath')), '/', obj.params.relativePathToMEX);
-                if (exist(absPathToMEX, 'dir') ~= 7)
+                if (exist(absPathToMEX, 'dir') ~= 7) %dir is not correct. Try to find it through path
                     CPPsupport = 0;
                     disp(['Warning: relative Path to MEX-File is not correct!']);
                 else
                     %make sure the intended MEX file is called
                     addpath(absPathToMEX);
-                    if (exist('flexBoxCPP','file') ~= 3)
-                        CPPsupport = 0;
-                        disp(['Warning: C++ module is not compiled!']);
-                    else
-                        CPPsupport = 1;
-                    end
+                end
+                
+                if (exist('flexBoxCPP','file') ~= 3)
+                    CPPsupport = 0;
+                    disp(['Warning: C++ module is not compiled!']);
+                    disp(['Running in MATLAB mode']);
+                else
+                    CPPsupport = 1;
+                    disp(['using MEX-File: ', which('flexBoxCPP')]);
+                    disp('Running in C++ mode');
                 end
             end
             result = CPPsupport;
