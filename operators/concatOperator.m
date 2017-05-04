@@ -92,14 +92,14 @@ classdef concatOperator < basicOperator
             else
                 resultA = obj.A.getRowSumAbs();
             end
-            if (issparse(obj.B) || islogical(obj.A))
+            if (issparse(obj.B) || islogical(obj.B))
                 resultB = (sum(abs(obj.B),1));
             else
                 resultB = obj.B.getRowSumAbs();
             end
 
             if (strcmp(obj.operation,'composition'))
-                result = max(resultA) * max(resultB);
+                result = resultA .* resultB;
             elseif (strcmp(obj.operation,'addition') || strcmp(obj.operation,'difference'))
                 result = resultA + resultB;
             end
