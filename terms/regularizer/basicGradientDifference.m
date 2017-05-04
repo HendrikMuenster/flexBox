@@ -1,7 +1,7 @@
 %represents base class for terms containing the gradient differences
 %\nabla(u-w)
 %corresponds to two primal variables (u,v)
-%todo: generalize for higher dimensions
+%TODO: generalize for higher dimensions
 classdef basicGradientDifference < basicDualizedOperator
     methods
         function obj = basicGradientDifference(alpha,dims,varargin)
