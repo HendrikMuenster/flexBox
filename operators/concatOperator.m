@@ -87,7 +87,7 @@ classdef concatOperator < basicOperator
         end
 
         function result = getRowSumAbs(obj)
-            if (issparse(obj.A))
+            if (issparse(obj.A) || islogical(obj.A))
                 resultA = (sum(abs(obj.A),1));
             else
                 resultA = obj.A.getRowSumAbs();
