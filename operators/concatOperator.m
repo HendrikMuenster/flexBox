@@ -87,20 +87,31 @@ classdef concatOperator < basicOperator
         end
 
         function result = getRowSumAbs(obj)
-            if (issparse(obj.A) || islogical(obj.A))
-                resultA = (sum(abs(obj.A),1));
-            else
-                resultA = obj.A.getRowSumAbs();
-            end
-            if (issparse(obj.B) || islogical(obj.B))
-                resultB = (sum(abs(obj.B),1));
-            else
-                resultB = obj.B.getRowSumAbs();
-            end
-
             if (strcmp(obj.operation,'composition'))
-                result = resultA .* resultB;
+                if (isa(obj.A,'basicOperator'))
+                    resultA = obj.A.getRowSumAbs();
+                else
+                    resultA = (sum(abs(obj.A),2));
+                end
+                if (isa(obj.B,'basicOperator'))
+                    resultB = obj.B.getRowSumAbs();
+                else
+                    resultB = (sum(abs(obj.B),1));
+                end
+                
+                result = max(resultA(:)) * max(resultB(:));
             elseif (strcmp(obj.operation,'addition') || strcmp(obj.operation,'difference'))
+                if (isa(obj.A,'basicOperator'))
+                    resultA = obj.A.getRowSumAbs();
+                else
+                    resultA = (sum(abs(obj.A),2));
+                end
+                if (isa(obj.B,'basicOperator'))
+                    resultB = obj.B.getRowSumAbs();
+                else
+                    resultB = (sum(abs(obj.B),2));
+                end
+                
                 result = resultA + resultB;
             end
         end

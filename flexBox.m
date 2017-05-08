@@ -353,7 +353,7 @@ classdef flexBox < handle
                 absPathToMEX = strcat(fileparts(mfilename('fullpath')), '/', obj.params.relativePathToMEX);
                 if (exist(absPathToMEX, 'dir') ~= 7) %dir is not correct. Try to find it through path
                     CPPsupport = 0;
-                    disp(['Warning: relative Path to MEX-File is not correct!']);
+                    disp(['Warning: relative Path to MEX-File is not correct! The default path is stored in params.relativePathToMEX']);
                 else
                     %make sure the intended MEX file is called
                     addpath(absPathToMEX);
