@@ -23,7 +23,7 @@ numberU = main.addPrimalVar(size(image));
 %add data-fidelity: 1/2\|u-f\|_2^2
 main.addTerm(L2dataTerm(1,imageNoisy),numberU);
 
-%add regularizer: 0.08*\|\nabla u\|_1
+%add regularizer: 0.1*\|\nabla u\|_1
 main.addTerm(L1gradientIso(0.1,size(image)),numberU);
 
 %run minimization algorithm
