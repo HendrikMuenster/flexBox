@@ -23,11 +23,11 @@ classdef identityOperator < basicOperator
                 result = vector;
             end
 
-			if (obj.nPx(1) < obj.nPx(2))
-				result = result(1:obj.nPx(1));
-			elseif (obj.nPx(1) > obj.nPx(2))
-				result(obj.nPx(2)+1:obj.nPx(1)) = 0;
-			end
+      			if (obj.nPx(1) < obj.nPx(2))
+      				result = result(1:obj.nPx(1));
+      			elseif (obj.nPx(1) > obj.nPx(2))
+      				result(obj.nPx(2)+1:obj.nPx(1)) = 0;
+      			end
         end
 
         function result = abs(obj)
@@ -46,7 +46,7 @@ classdef identityOperator < basicOperator
                 result = speye(obj.nPx);
             end
 
-			result = result(1:nPx(1),1:nPx(2));
+			result = result(1:obj.nPx(1),1:obj.nPx(2));
         end
 
         function result = size(obj,varargin)
@@ -65,7 +65,7 @@ classdef identityOperator < basicOperator
          function result = getRowSumAbs(obj)
             result = 1; %matrix representation is identiy matrix -> max absolute value is 1
          end
-        
+
         function result = getMaxRowSumAbs(obj)
             result = 1; %matrix representation is identiy matrix -> max absolute value is 1
         end
