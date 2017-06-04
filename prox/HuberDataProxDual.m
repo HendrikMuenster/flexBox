@@ -8,16 +8,21 @@ classdef HuberDataProxDual < basicProx
         end
 
         function applyProx(obj,main,dualNumber,~)
-            %factor = 1 ./ (1+main.params.sigma{dualNumber}*obj.epsi ./ obj.factor);
-            
+            %calc norm
+            norm = 0;
             for i=1:obj.numVars
-                tmpVar = obj.factor ./ (obj.factor + main.params.sigma{dualNumber(i)}*obj.epsi) .* (main.yTilde{dualNumber(i)} - main.params.sigma{dualNumber(i)}.*obj.f{i});
                 
-                main.y{dualNumber(i)} = tmpVar ./ max(1,abs(tmpVar) / obj.factor);
-                
-                %main.y{dualNumber(i)} = max(-obj.factor,min(obj.factor,main.yTilde{dualNumber(i)}.* factor - factor*main.params.sigma{dualNumber(i)}*obj.f{i}));
+				main.yTilde{dualNumbers(i)} = (main.yTilde{dualNumbers(i)} - main.params.sigma{dualNumber(i)}.*obj.f{i}(:)) .* obj.factor ./ (obj.factor + obj.epsi.*main.params.sigma{dualNumbers(i)});
+				
+				norm = max(1,abs(main.yTilde{dualNumbers(i)}) / obj.factor);
+				
+				main.y{dualNumbers(i)} = main.yTilde{dualNumbers(i)} ./ norm;
             end
+
         end
+		
+		
+		
         
     end
 end
