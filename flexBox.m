@@ -365,8 +365,10 @@ classdef flexBox < handle
                     disp(['Running in MATLAB mode']);
                 else
                     CPPsupport = 1;
-                    disp(['using MEX-File: ', which('flexBoxCPP')]);
-                    disp('Running in C++ mode');
+					if (obj.params.verbose > 0)
+						disp(['using MEX-File: ', which('flexBoxCPP')]);
+						disp('Running in C++ mode');
+					end
                 end
             end
             result = CPPsupport;
