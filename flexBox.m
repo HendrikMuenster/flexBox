@@ -3,7 +3,6 @@ classdef flexBox < handle
     properties
         params      %FlexBox params (tolerances, number of iterations, etc. see documentation)
 
-        primals     %cell array of primal terms
         duals       %cell array of dual terms
 
         x           %current iteration values for primal part
@@ -37,7 +36,6 @@ classdef flexBox < handle
             obj.params.tryCPP = 0;
             obj.params.relativePathToMEX = 'flexBox_CPP/source/build/bin';
 
-            obj.primals = {};
             obj.duals = {};
 
             obj.x = {};
@@ -150,9 +148,11 @@ classdef flexBox < handle
             if (exist('noInit','var') && noInit == 1)
 
             else
-                obj.init(); %initialize tau and sigma
+				%initialize tau and sigma
+                obj.init(); 
             end
 
+			%check if C++ module is activated and compiled
             if (obj.checkCPP())
                 obj.doCPP();
             else
@@ -262,18 +262,13 @@ classdef flexBox < handle
 %         end
 
         function init(obj)
-            %init with zero
+            %init tau and sigma with all zero vectors
             for i=1:numel(obj.x)
                 obj.params.tau{i} = zeros(numel(obj.x{i}),1);
             end
 
             for i=1:numel(obj.y)
                 obj.params.sigma{i} = zeros(numel(obj.y{i}),1);
-            end
-
-            %init primals
-            for i=1:numel(obj.primals)
-                obj.primals{i}.init();
             end
 
             %init duals
@@ -347,6 +342,9 @@ classdef flexBox < handle
         end
 
         function result = checkCPP(obj)
+            %checkCPP
+            %checks if the tryCPP parameter is true and, if yes, checks if the C++ module is compiled
+			%if the C++ module is compiled, but cannot be found the folder specified by obj.params.relativePathToMEX, a warning is displayed
             if (~obj.params.tryCPP)
                 CPPsupport = 0;
             elseif (obj.params.tryCPP)
