@@ -29,8 +29,8 @@ myOperator = functionHandleOperator(myHandle,myHandleT,argumentSize,operatorNorm
 % min_{u} |u-f1|_2^2 + |myHandle(u)|_2^2
 
 main = flexBox;
-
 %add primal vars v_1,v_2
+
 numberU = main.addPrimalVar(size(f1));
 
 %add data-fidelities: 
