@@ -10,12 +10,12 @@ classdef L1InfProxDual < basicProx
             %calc norm
             norm = 0;
             for i=1:obj.numVars
-                norm = norm + abs(main.yTilde{dualNumbers(i)});
+                norm = norm + abs(main.yTilde{dualNumbers(i)} ./ main.params.sigma{dualNumbers(i)});
             end
             norm = max(obj.factor,norm);
 
             for i=1:obj.numVars
-                main.y{dualNumbers(i)} = obj.factor*main.yTilde{dualNumbers(i)} ./ norm;
+                main.y{dualNumbers(i)} = main.yTilde{dualNumbers(i)} - obj.factor*main.yTilde{dualNumbers(i)} ./ norm;
             end
         end
 
