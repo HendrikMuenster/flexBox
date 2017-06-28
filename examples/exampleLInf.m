@@ -21,11 +21,11 @@ main.params.tryCPP = 0; %change, if C++ module is compiled
 %add primal var u
 numberU = main.addPrimalVar(size(image));
 
-%main.addTerm(L1InfdataTerm(1,imageNoisy),numberU);
-main.addTerm(L2dataTerm(1,imageNoisy),numberU);
+main.addTerm(L1InfdataTerm(1,imageNoisy),numberU);
+%main.addTerm(L2dataTerm(1,imageNoisy),numberU);
 
 %main.addTerm(L1gradientIso(0.1,size(image)),numberU);
-main.addTerm(L1Infgradient(0.01,size(image)),numberU);
+%main.addTerm(L1Infgradient(0.01,size(image)),numberU);
 
 %run minimization algorithm
 tic;main.runAlgorithm;toc;
