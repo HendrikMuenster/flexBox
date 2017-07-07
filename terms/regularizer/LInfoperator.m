@@ -1,9 +1,9 @@
-classdef L1Infoperator < basicDualizedOperator & L1InfProxDual
+classdef LInfoperator < basicDualizedOperator & LInfProxDual
     properties
     end
 
     methods
-        function obj = L1Infoperator(alpha,numPrimals,A,varargin)
+        function obj = LInfoperator(alpha,numPrimals,A,varargin)
             obj = obj@basicDualizedOperator(alpha,numPrimals,A,varargin);
         end
     end

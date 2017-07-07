@@ -1,9 +1,9 @@
-classdef L1Infgradient < basicGradient & L1InfProxDual
+classdef LInfgradient < basicGradient & LInfProxDual
     properties
     end
 
     methods
-        function obj = L1Infgradient(alpha,dims,varargin)
+        function obj = LInfgradient(alpha,dims,varargin)
             obj = obj@basicGradient(alpha,dims,varargin);
         end
     end

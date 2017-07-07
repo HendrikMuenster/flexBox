@@ -1,6 +1,6 @@
-classdef L1InfdataTermOperator < basicDualizedDataterm & L1InfDataProxDual
+classdef LInfdataTermOperator < basicDualizedDataterm & LInfDataProxDual
     methods
-        function obj = L1InfdataTermOperator(alpha,A,f,varargin)
+        function obj = LInfdataTermOperator(alpha,A,f,varargin)
             if (iscell(A))
                 numPrimals = numel(A);
             else

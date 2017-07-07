@@ -1,9 +1,9 @@
-classdef L1Infidentity < basicIdentity & L1InfProxDual
+classdef LInfidentity < basicIdentity & LInfProxDual
     properties
     end
 
     methods
-        function obj = L1Infidentity(alpha,dims)
+        function obj = LInfidentity(alpha,dims)
             obj = obj@basicIdentity(alpha,dims);
         end
 
