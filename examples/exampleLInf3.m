@@ -3,15 +3,15 @@ clear all;close all;clc;
 %% read data
 addpath(genpath('..'));
 
-dimension = 10;
+dimension = 1000000;
 weightL2 = 2;
-weightLInf = 0.2;
+weightLInf = 0.5;
 dataPart = linspace(0,10,dimension);
 %func receives n dimensional x
 func = @(x) weightL2/2 * norm(x - dataPart, 2)^2 + weightLInf * norm(x, Inf);
-minXMatlab = fminunc(func, dataPart);
-disp(["Matlab min: ", minXMatlab]);
-disp(["with value of: ", func(minXMatlab)]);
+%minXMatlab = fminunc(func, dataPart);
+%disp(["Matlab min: ", minXMatlab]);
+%disp(["with value of: ", func(minXMatlab)]);
 %%
 main = flexBox;
 main.params.tryCPP = 0; %change, if C++ module is compiled
@@ -29,7 +29,7 @@ tic;main.runAlgorithm;toc;
 
 %% get result
 minXFlex = main.getPrimal(numberT);
-disp(["FlexBox min: ", minXFlex]);
+%disp(["FlexBox min: ", minXFlex]);
 disp(["with value of: ", func(minXFlex)]);
 %% show result
 %figure(2);
