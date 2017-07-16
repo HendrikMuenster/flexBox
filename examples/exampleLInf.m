@@ -3,35 +3,26 @@ clear all;close all;clc;
 %% read data
 addpath(genpath('..'));
 
-weightL2 = 3;
-weightLInf = 25.5;
-dataPart = [10, 12];
-[X,Y] = meshgrid(-20:0.5:20,-20:0.5:20);
-fx = @(X,Y) weightL2/2*((X - dataPart(1)).^2 + (Y - dataPart(2)).^2) + weightLInf*(max(abs(X),abs(Y)));
-Z = fx(X,Y);
-surf(X,Y,Z);
-minX = fminunc(@(x) fx(x(1),x(2)), [0,0]);
-disp(["MATLAB: ", minX]);
+dimension = 10;
+weightL2 = 2;
+weightLInf = 0.5;
+dataPart = 5*rand(1,dimension);
+%func receives n dimensional x
+func = @(x) weightL2/2 * norm(x - dataPart, 2)^2 + weightLInf * norm(x, Inf);
 %%
 main = flexBox;
 main.params.tryCPP = 0; %change, if C++ module is compiled
 
-%add primal var u
 numberT = main.addPrimalVar(size(dataPart));
-
 main.addTerm(L2dataTerm(weightL2,dataPart),numberT);
-
 main.addTerm(LInfidentity(weightLInf,size(dataPart)),numberT);
-%main.addTerm(LInfgradient(weightLInf,size(dataPart)),numberT);
 
 %run minimization algorithm
 tic;main.runAlgorithm;toc;
 
 %% get result
-result = main.getPrimal(numberT);
-disp(result);
-fx(minX(1),minX(2))
-fx(result(1),result(2))
-%% show result
-%figure(2);
-%plot(result);
+minXFlex = main.getPrimal(numberT);
+
+%% print result
+disp(["FlexBox min: ", minXFlex]);
+disp(["with value of: ", func(minXFlex)]);
