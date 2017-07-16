@@ -24,5 +24,5 @@ tic;main.runAlgorithm;toc;
 minXFlex = main.getPrimal(numberT);
 
 %% print result
-disp(['FlexBox min: ', minXFlex]);
-disp(['with value of: ', func(minXFlex)]);
+disp(['FlexBox min: ', num2str(minXFlex)]);
+disp(['with value of: ', num2str(func(minXFlex))]);
