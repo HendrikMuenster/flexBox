@@ -28,6 +28,7 @@ classdef basicOperator
         function uplus(obj)
             error('You cannot use plus with operator classes. Please use concatOperator instead!')
         end
+        
 
         function plus(obj,B)
             error('You cannot use plus with operator classes. Please use concatOperator instead!')
