@@ -3,10 +3,11 @@ clear all;close all;clc;
 %% read data
 addpath(genpath('..'));
 
-dimension = 100;
+dimension = 50000;
 weightL2 = 3;
 weightL2Inf = 0.1;
 dataPart = [5*rand(1,dimension);5*rand(1,dimension)];
+%dataPart = [1:10; 10:-1:1];
 %% FlexBox
 main = flexBox;
 main.params.tryCPP = 0; %change, if C++ module is compiled
@@ -32,3 +33,5 @@ minXFlex = main.getPrimal(numberT);
 %disp('FlexBox min: ')
 %disp(num2str(minXFlex));
 disp(['with value of: ', num2str(func(minXFlex))]);
+%tic;resMatlab = fminsearch(func, dataPart);toc;
+%disp(['rel erro: ', num2str(norm(resMatlab - minXFlex))]);
