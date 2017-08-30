@@ -3,7 +3,7 @@ clear all;close all;clc;
 %% read data
 addpath(genpath('..'));
 
-dimension = 50000;
+dimension = 500000;
 weightL2 = 3;
 weightL2Inf = 0.1;
 dataPart = [5*rand(1,dimension);5*rand(1,dimension)];
