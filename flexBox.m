@@ -20,8 +20,11 @@ classdef flexBox < handle
 
         xError      %error estimates for primal parts
         yError      %error estimates for dual parts
+        error       %combined error estimate
+        
+        firstRun    %internal flag specifying if algortihm has already been run
     end
-
+    
     methods
         function obj = flexBox
             % Constructor
@@ -52,6 +55,8 @@ classdef flexBox < handle
 
             obj.xError = {};
             obj.yError = {};
+            
+            obj.firstRun = true;
         end
 
         function number = addPrimalVar(obj,dims)
@@ -149,7 +154,7 @@ classdef flexBox < handle
 
             else
 				%initialize tau and sigma
-                obj.init(); 
+                obj.init();
             end
 
 			%check if C++ module is activated and compiled
@@ -158,13 +163,20 @@ classdef flexBox < handle
             else
                 reverseStr = [];
 
-                iteration = 1;error = Inf;
-                while error > obj.params.tol && iteration <= obj.params.maxIt
+                if obj.firstRun
+                    obj.error = Inf;
+                    obj.firstRun = false;
+                else
+                    obj.error = obj.calculateError();
+                end
+                
+                iteration = 1;
+                while obj.error > obj.params.tol && iteration <= obj.params.maxIt
                     obj.doIteration;
 
                     if (mod(iteration,obj.params.checkError) == 0)
-                        error = obj.calculateError;
-                        reverseStr = printToCmd( reverseStr,sprintf(['Iteration: #%d : Residual %.',num2str(-log10(obj.params.tol)),'f','\n'],iteration,error) );
+                        obj.error = obj.calculateError();
+                        reverseStr = printToCmd( reverseStr, sprintf(['Iteration: #%d : Residual %.', num2str(-log10(obj.params.tol)), 'f', '\n'], iteration, obj.error) );
                     end
 
                     if (obj.params.showPrimals > 0 && mod(iteration,obj.params.showPrimals) == 1)
@@ -194,6 +206,7 @@ classdef flexBox < handle
                 obj.y{i} = resultCPP{numel(obj.x)+i};
             end
 
+            obj.firstRun = false;
         end
 
             function doIteration(obj)
@@ -356,7 +369,7 @@ classdef flexBox < handle
                     %make sure the intended MEX file is called
                     addpath(absPathToMEX);
                 end
-                
+
                 if (exist('flexBoxCPP','file') ~= 3)
                     CPPsupport = 0;
                     disp(['Warning: C++ module is not compiled!']);
