@@ -18,11 +18,11 @@ kernelSize = 11;
 sigma = 2;
 
 %create convolution operator with gaussian kernel and identity operator
-blurrOperator = convolutionOperator(size(image),kernelSize,sigma);
+blurOperator = blurOperator(size(image),kernelSize,sigma);
 identityOp = identityOperator(numel(image));
 
 %concat both operators using the concatOperator class
-concatOp = concatOperator(blurrOperator,identityOp,'composition');
+concatOp = concatOperator(blurOperator,identityOp,'composition');
 
 
 imageBlurred = reshape(concatOp * imageNoisy(:),size(image));

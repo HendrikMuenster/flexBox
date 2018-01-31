@@ -1,5 +1,6 @@
-%represents a convolution operator
-classdef convolutionOperator < basicOperator
+%represents a blur operator
+%note: was called convolutionalOperator in an earlier version
+classdef blurOperator < basicOperator
     properties
         kernel          %2d kernel
         fftFilter       %kernel in fourier space
@@ -9,17 +10,33 @@ classdef convolutionOperator < basicOperator
     end
 
     methods
-        function obj = convolutionOperator(kernel, inputDimension, varargin)
+        function obj = blurOperator(inputDimension,hsize,sigma,varargin)
             if (nargin > 2 && numel(varargin) == 1)
                 varargin = varargin{1};
             end
             vararginParser;
 
-            obj.kernel = kernel; 
+            if (mod(hsize,2) == 0)
+                error('kernel size must be odd')
+            end
+
+            if (sigma < 0)
+                error('sigma size must positive')
+            end
+
             obj.inputDimension = inputDimension;
 
-            %precalculate fft with truncation and padding
-            obj.fftFilter = fftn(obj.kernel, inputDimension);
+            obj.kernel = fspecial('gaussian', hsize, sigma);
+
+            obj.fftFilter = zeros(obj.inputDimension);
+            obj.fftFilter(1:size(obj.kernel,1),1:size(obj.kernel,2)) = obj.kernel;
+
+            %center kernel
+            obj.fftFilter = circshift(obj.fftFilter,-(size(obj.kernel,1)-1)/2,1);
+            obj.fftFilter = circshift(obj.fftFilter,-(size(obj.kernel,2)-1)/2,2);
+
+            %precalculate fft
+            obj.fftFilter = fftn(obj.fftFilter);
             obj.fftFilterC = conj(obj.fftFilter);
 
             obj.transposed = 0;
@@ -28,10 +45,10 @@ classdef convolutionOperator < basicOperator
 
         function result = mtimes(obj,vector)
             if (obj.transposed)
-                result = ifftn(fftn(reshape(vector,obj.inputDimension), obj.inputDimension) .* obj.fftFilter);
+                result = ifftn(fftn( reshape(vector,obj.inputDimension)  ) .* obj.fftFilter);
                 result = result(:);
             else
-                result = ifftn(fftn(reshape(vector,obj.inputDimension), obj.inputDimension) .* obj.fftFilterC);
+                result = ifftn(fftn( reshape(vector,obj.inputDimension)  ) .* obj.fftFilterC);
                 result = result(:);
             end
             

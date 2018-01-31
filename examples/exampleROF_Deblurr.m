@@ -18,9 +18,9 @@ kernelSize = 11;
 sigma = 2;
 
 %create convolution operator with gaussian kernel
-blurrOperator = convolutionOperator(size(image),kernelSize,sigma);
+blurOperator = blurOperator(size(image),kernelSize,sigma);
 
-imageBlurred = reshape(blurrOperator * imageNoisy(:),size(image));
+imageBlurred = reshape(blurOperator * imageNoisy(:),size(image));
 
 figure(2);imagesc(real(imageBlurred));axis image;colormap(gray);title('Blurred and Noisy Image')
 %% ROF deblurring
@@ -30,7 +30,7 @@ main = flexBox;
 numberU = main.addPrimalVar(size(image));
 
 %add data-fidelity: 1/2\|u-f\|_2^2
-main.addTerm(L2dataTermOperator(1,blurrOperator,imageBlurred),numberU);
+main.addTerm(L2dataTermOperator(1,blurOperator,imageBlurred),numberU);
 
 %add regularizer: 0.1*\|\nabla u\|_1
 main.addTerm(L1gradientIso(0.1,size(image)),numberU);
