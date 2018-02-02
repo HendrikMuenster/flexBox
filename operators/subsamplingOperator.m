@@ -30,6 +30,8 @@ classdef subsamplingOperator < basicOperator
             if (obj.isMinus)
                 result = -result;
             end
+            
+            result = result(:);
         end
 
         function result = abs(obj)

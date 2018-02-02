@@ -16,12 +16,12 @@ classdef permutationOperator < basicOperator
     end
 
     methods
-        function obj = permutationOperator(indices, inputDimension, varargin)
+        function obj = permutationOperator(indices, varargin)
             obj.indices = indices(:);
-            obj.numElem = prod(inputDimension);
+            obj.numElem = length(indices);
             obj.isMinus = 0;
             
-            if length(indices) ~= length(unique(indices)) || length(indices) ~= obj.numElem
+            if length(indices) ~= length(unique(indices))
                 error('Index in indicies was repeated or omitted. Consider using subsamplingOperator');
             end
         end
@@ -32,6 +32,7 @@ classdef permutationOperator < basicOperator
             if (obj.isMinus)
                 result = -result;
             end
+            result = result(:);
         end
 
         function result = abs(obj)
