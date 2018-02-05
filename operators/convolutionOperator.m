@@ -28,10 +28,10 @@ classdef convolutionOperator < basicOperator
 
         function result = mtimes(obj,vector)
             if (obj.transposed)
-                result = ifftn(fftn(reshape(vector,obj.inputDimension), obj.inputDimension) .* obj.fftFilter);
+                result = ifftn(fftn(reshape(vector,obj.inputDimension), obj.inputDimension) .* obj.fftFilterC);
                 result = result(:);
             else
-                result = ifftn(fftn(reshape(vector,obj.inputDimension), obj.inputDimension) .* obj.fftFilterC);
+                result = ifftn(fftn(reshape(vector,obj.inputDimension), obj.inputDimension) .* obj.fftFilter);
                 result = result(:);
             end
             
