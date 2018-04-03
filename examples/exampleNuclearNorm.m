@@ -14,7 +14,6 @@ figure(1);imagesc(image);axis image;colormap(gray);title('Input Image')
 figure(2);imagesc(imageNoisy);axis image;colormap(gray);title('Noisy Image')
 %% FlexBox
 main = flexBox;
-main.params.tryCPP = 0;
 
 numberL = main.addPrimalVar(size(image));
 numberS = main.addPrimalVar(size(image));
@@ -30,7 +29,7 @@ main.addTerm(L2dataTermOperator(weightL2,{identityOperator(nPx), identityOperato
 %nuclear norm regularizer
 main.addTerm(nuclearIdentity(weightNuclear,size(image)), numberL);
 
-%1-norm regularizer (doesnt matter if L1
+%1-norm regularizer
 main.addTerm(L1identity(weightL1,size(image)), numberS);
 
 %run minimization algorithm
@@ -44,9 +43,4 @@ minSFlex = main.getPrimal(numberS);
 %% print results
 figure(3);imagesc(minLFlex);axis image;colormap(gray);title('L');
 figure(4);imagesc(minSFlex);axis image;colormap(gray);title('S');
-
-%% print diffs
-%figure(5);imagesc(minLFlex + minSFlex);axis image;colormap(gray);title('L+S');
-%figure(6);imagesc(minLFlex + minSFlex - imageNoisy);axis image;colormap(gray);title('L+S - data');
-%figure(7);imagesc(minLFlex - image);axis image;colormap(gray);title('L - original');
 
